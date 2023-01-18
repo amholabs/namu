@@ -15,6 +15,70 @@ import { definition } from '../out/__generated__/runtime'
 let ceramicUrl = ''
 let graphqlUrl = ''
 
+const QUERY_PROFILE_VIEWER = `
+query {
+  viewer {
+    isViewer
+    profile {
+      id
+    }
+  }
+}
+`
+
+const MUTATE_CREATE_PROFILE = `
+    mutation CreateProfile($i: CreateProfileInput!) {
+      createProfile(input: $i) {
+        document {
+          name
+          image
+          description
+          walletAddresses {
+            address
+            blockchainNetwork
+          }
+        }
+      }
+    }`
+
+const MUTATE_UPDATE_PROFILE = `
+mutation UpdateProfile($i: UpdateProfileInput!) {
+  updateProfile(input: $i) {
+    document {
+      name
+      image
+      description
+      walletAddresses {
+        address
+        blockchainNetwork
+      }
+    }
+  }
+}
+`
+const MUTATE_CREATE_URLLINK = `
+mutation CreateUrlLink($i: CreateUrlLinkInput!) {
+  createUrlLink(input: $i) {
+    document {
+      type
+      title
+      link
+    }
+  }
+}
+`
+
+const MUTATE_UPDATE_URLLINK = `
+mutation UpdateUrlLink($i: UpdateUrlLinkInput!) {
+  updateUrlLink(input: $i) {
+    document {
+      type
+      title
+      link
+    }
+  }
+}`
+
 switch (process.env.NODE_ENV) {
   case 'development':
     // ceramicUrl = 'http://localhost:7007'
@@ -172,12 +236,13 @@ export default function Home() {
             <h1 className="text-xs font-normal">{name}</h1>
             <h1 className="text-xs font-normal">{did}</h1>
           </div>
-          <button className="btn btn-light btn-sm" onClick={genSession}>
-            generate
-          </button>
-          <button className="btn btn-light btn-sm" onClick={queryProfiles}>
-            query profile
-          </button>
+          <Button className="btn btn-sm" onClick={genSession}>
+            Start
+          </Button>
+          <Button className="btn btn-sm" onClick={queryProfiles}>
+            Query Profile
+          </Button>
+          <h1 className="py-5 text-xl">Create a profile</h1>
           <Input
             className="input input-bordered input-sm"
             type="text"
@@ -199,15 +264,13 @@ export default function Home() {
             value={inputImage}
             onChange={(e) => setImage(e.target.value)}
           />
-          {/* <Input
-            className="input input-bordered input-sm"
-            type="text"
-            placeholder="Wallet Addresses"
-            value={inputWallet.address}
-            onChange={(e) => setWalletAddresses({ ...inputWallet, address: e.target.value, blockchainNetwork: 'ethereum' })}
-          /> */}
-          <Button onClick={() => createProfile(inputName, inputDesc, inputImage)}>Create Profile</Button>
-          <Button onClick={queryDid}>query did</Button>
+          <Button className="btn btn-sm" onClick={() => createProfile(inputName, inputDesc, inputImage)}>
+            Create Profile
+          </Button>
+          <Button className="btn btn-sm" onClick={queryDid}>
+            query did
+          </Button>
+          <h1 className="py-5 text-xl">Create a UrlLink</h1>
         </div>
       </main>
     </>

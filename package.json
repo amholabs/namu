@@ -11,7 +11,7 @@
     "prepare": "husky install",
     "gql:compile": "graphql-codegen",
     "gql:watch": "graphql-codegen -w",
-    "gql:server": "composedb graphql:server --graphiql --port=5000 ./ceramic/runtime.json --did-private-key $(cat ./ceramic/priv.key)",
+    "gql:server": "./start-server.sh",
     "ceramic:daemon": "CERAMIC_ENABLE_EXPERIMENTAL_COMPOSE_DB='true' ceramic daemon",
     "ceramic:generate-profile": "composedb composite:create ./ceramic/schemas/Profile.graphql --output ./ceramic/profile.json --did-private-key $(cat ./ceramic/priv.key) && (sleep 2 && ts-node --esm ./scripts/utils/generate.ts Profile)",
     "ceramic:generate-urllink": "composedb composite:create ./ceramic/schemas/UrlLink.graphql --output ./ceramic/urllink.json --did-private-key $(cat ./ceramic/priv.key) && (echo \"Generate env variable...\" && sleep 2 && node ./scripts/utils/update.ts updateUl UrlLink.graphql)",
@@ -19,7 +19,7 @@
     "ceramic:runtime": "composedb composite:compile ./ceramic/merged.json ./ceramic/runtime.json",
     "ceramic:runtime-js": "composedb composite:compile ./ceramic/merged.json ./out/__generated__/runtime.js",
     "ceramic:generate": "yarn run ceramic:generate-profile && yarn run ceramic:generate-urllink && yarn run ceramic:merge && yarn run ceramic:runtime && yarn run ceramic:runtime-js",
-    "deploy:pre-staging": "concurrently \"lt --port $WEBP -s amhohw\" \"lt --port $GQLP -s amhoql\" \"lt --port $CERP -s amhocer\"",
+    "deploy:pre": "./lt.sh",
     "network:setup": "ts-node --esm ./scripts/utils/setip.ts",
     "storybook": "start-storybook -p 6006",
     "build-storybook": "build-storybook"
