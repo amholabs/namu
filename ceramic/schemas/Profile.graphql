@@ -1,0 +1,11 @@
+type Profile @createModel(accountRelation: SINGLE, description: "Profile Metadata"){
+    name: String! @string(maxLength: 100)
+    description: String! @string(maxLength: 100)
+    image: String! @string(maxLength: 300)
+    walletAddresses: [WalletAddress!] @list(maxLength: 50)
+}
+
+type WalletAddress{
+    address:String! @string(maxLength: 100)
+    blockchainNetwork: String! @string(maxLength: 100)
+}

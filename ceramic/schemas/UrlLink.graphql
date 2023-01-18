@@ -1,0 +1,24 @@
+enum SocialType {
+    INSTAGRAM 
+    FACEBOOK 
+    TWITTER 
+    TIKTOK 
+    SOUNDCLOUD 
+    YOUTUBE 
+    PINTEREST 
+    WEBSITE 
+}
+
+type Profile @loadModel(id: "kjzl6hvfrbw6c7ohbsqx4dpmaecobeabwkzdne5j6733mimodyy9gtfinnqe94v") {
+    id: ID!
+}
+
+type UrlLink @createModel(accountRelation: LIST, description: "UrlLink") {
+    profileId: StreamID! @documentReference(model: "Profile")
+    profile: Profile! @relationDocument(property: "profileId")
+    type: SocialType!
+    name: String! @string(maxLength: 100)
+    uri: String! @string(maxLength: 200)
+    # urlLinkEntryId: StreamID @documentReference(model: "UrlLinkEntry")
+    # urlLinkEntries: [UrlLinkEntry] @relationFrom(property: "urlLinkEntryId")
+}
