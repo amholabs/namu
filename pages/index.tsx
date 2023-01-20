@@ -1,7 +1,8 @@
+/* eslint-disable unused-imports/no-unused-vars */
 import { useState } from 'react'
 
 import { CeramicClient } from '@ceramicnetwork/http-client'
-import { Button, Input } from '@chakra-ui/react'
+import { Button, Input, Select } from '@chakra-ui/react'
 import { ComposeClient } from '@composedb/client'
 import { EthereumWebAuth } from '@didtools/pkh-ethereum'
 import { AccountId, AccountIdParams, ChainId, ChainIdParams } from 'caip'
@@ -9,8 +10,43 @@ import { DIDSession } from 'did-session'
 import { ExecutionResult } from 'graphql'
 import { ethSignMessage, listKeys, readStorage } from 'halo-chip'
 
+import UrlLink from '@/components/app/UrlLink'
+import UrlLinkWrapper from '@/components/app/UrlLinkWrapper'
+import { useStore } from '@/src/store'
+
 import { Query } from '../out/__generated__/graphql'
 import { definition } from '../out/__generated__/runtime'
+
+enum SocialType {
+  BASE = 'BASE',
+  ETH = 'ETH',
+  BTC = 'BTC',
+  VENMO = 'VENMO',
+  CASHAPP = 'CASHAPP',
+  PAYPAL = 'PAYPAL',
+  EMAIL = 'EMAIL',
+  BANDCAMP = 'BANDCAMP',
+  LINKEDIN = 'LINKEDIN',
+  CLUBHOUSE = 'CLUBHOUSE',
+  GITHUB = 'GITHUB',
+  SUBSTACK = 'SUBSTACK',
+  TELEGRAM = 'TELEGRAM',
+  SIGNAL = 'SIGNAL',
+  TWITCH = 'TWITCH',
+  PATREON = 'PATREON',
+  CAMEO = 'CAMEO',
+  SPOTIFY = 'SPOTIFY',
+  AMAZON = 'AMAZON',
+  APPLEMUSIC = 'APPLEMUSIC',
+  SNAPCHAT = 'SNAPCHAT',
+  INSTAGRAM = 'INSTAGRAM',
+  FACEBOOK = 'FACEBOOK',
+  TWITTER = 'TWITTER',
+  TIKTOK = 'TIKTOK',
+  SOUNDCLOUD = 'SOUNDCLOUD',
+  YOUTUBE = 'YOUTUBE',
+  PINTEREST = 'PINTEREST',
+}
 
 let ceramicUrl = ''
 let graphqlUrl = ''
@@ -21,6 +57,21 @@ query {
     isViewer
     profile {
       id
+      name
+    }
+  }
+}
+`
+const QUERY_URLLINK_VIEWER = `
+query {
+  viewer {
+    urlLinkList(first:10) {
+      edges {
+        node {
+          title
+          link
+        }
+      }
     }
   }
 }
@@ -63,6 +114,7 @@ mutation CreateUrlLink($i: CreateUrlLinkInput!) {
       type
       title
       link
+      profileId
     }
   }
 }
@@ -105,13 +157,6 @@ const compose = new ComposeClient({ ceramic: process.env.NEXT_CERAMIC_URL ? proc
 console.log('NODE_ENV' + process.env.NODE_ENV)
 console.log('Starting with ceramic url: ' + ceramicUrl)
 console.log('Starting with gql url: ' + graphqlUrl)
-
-type AccountId = {
-  address: string
-  chainId: ChainId
-  toString(): string
-  toJSON(): AccountIdParams
-}
 
 type AuthMethodParams = Parameters<typeof EthereumWebAuth.getAuthMethod>[0]
 
@@ -161,53 +206,60 @@ const generateSession = async () => {
 
 // mutation
 
-const createProfile = async (name: string, image: string, description: string) => {
+const createProfile = async (
+  name: string,
+  image: string,
+  description: string,
+  walletAddresses: { address: string; blockchainNetwork: 'ethereum' }
+) => {
   // Replace by the URL of the Ceramic node you want to deploy the models to
-  compose.executeQuery(
-    `
-    mutation CreateProfile($i: CreateProfileInput!) {
-      createProfile(input: $i) {
-        document {
-          name
-          image
-          description
-        }
-      }
-    }`,
-    {
-      i: {
-        content: {
-          name,
-          image,
-          description,
-        },
+  compose.executeQuery(`${MUTATE_CREATE_PROFILE}`, {
+    i: {
+      content: {
+        name,
+        image,
+        description,
+        walletAddresses: walletAddresses,
       },
-    }
-  )
+    },
+  })
+}
+
+const createUrlLink = async (type: SocialType, title: string, link: string, profileId: string) => {
+  compose.executeQuery(`${MUTATE_CREATE_URLLINK}`, {
+    i: {
+      content: {
+        type,
+        title,
+        link,
+        profileId,
+      },
+    },
+  })
 }
 
 const queryProfile = async (): Promise<ExecutionResult<Pick<Query, 'viewer'>>> => {
-  const output = compose.executeQuery(
-    `
-      query {
-        viewer {
-          isViewer
-          profile {
-            name
-          }
-        }
-      }
-    `
-  )
+  const output = compose.executeQuery(QUERY_PROFILE_VIEWER)
+  return output
+}
+
+const queryUrlLink = async (): Promise<ExecutionResult<Pick<Query, 'viewer'>>> => {
+  const output = compose.executeQuery(QUERY_URLLINK_VIEWER)
   return output
 }
 
 export default function Home() {
   const [did, setDID] = useState<string>('')
   const [name, setName] = useState<string>('')
-  const [inputName, setInputName] = useState<string>('testname')
-  const [inputDesc, setDesc] = useState<string>('testdesc')
-  const [inputImage, setImage] = useState<string>('testimage')
+  const [inputName, setInputName] = useState<string>('')
+  const [inputDesc, setDesc] = useState<string>('')
+  const [inputImage, setImage] = useState<string>('')
+  // give me input for type, title, link
+  const [inputType, setType] = useState<SocialType>(SocialType.TWITTER)
+  const [inputTitle, setTitle] = useState<string>('')
+  const [inputLink, setLink] = useState<string>('')
+  const [inputProfileId, setProfileId] = useState<string>('')
+
   // const [inputWallet, setWalletAddresses] = useState<WalletAddresses>({ address: '', blockchainNetwork: '' })
 
   const genSession = async () => {
@@ -220,6 +272,11 @@ export default function Home() {
     const output = await queryProfile()
     console.log(output)
     setName(output.data?.viewer?.profile?.name)
+    setProfileId(output.data?.viewer?.profile?.id)
+  }
+  const queryUrlLinks = async () => {
+    const output = await queryUrlLink()
+    console.log(output)
   }
 
   const queryDid = async (): Promise<void> => {
@@ -233,8 +290,9 @@ export default function Home() {
         <div className="flex-center flex h-full flex-1 flex-col items-center justify-center text-center">
           <div className="pb-5">
             <h1 className="text-xs font-normal">Logged in with</h1>
-            <h1 className="text-xs font-normal">{name}</h1>
-            <h1 className="text-xs font-normal">{did}</h1>
+            <h1 className="text-xs font-normal">Authenticated name: {name}</h1>
+            <h1 className="text-xs font-normal">Authenticated profile id: {inputProfileId}</h1>
+            <h1 className="text-xs font-normal">Authenticated DID: {did}</h1>
           </div>
           <Button className="btn btn-sm" onClick={genSession}>
             Start
@@ -264,13 +322,46 @@ export default function Home() {
             value={inputImage}
             onChange={(e) => setImage(e.target.value)}
           />
-          <Button className="btn btn-sm" onClick={() => createProfile(inputName, inputDesc, inputImage)}>
+          <Button
+            className="btn btn-sm"
+            onClick={() => createProfile(inputName, inputDesc, inputImage, { address: '0x0', blockchainNetwork: 'ethereum' })}>
             Create Profile
           </Button>
-          <Button className="btn btn-sm" onClick={queryDid}>
-            query did
-          </Button>
           <h1 className="py-5 text-xl">Create a UrlLink</h1>
+          <Select className="input input-bordered input-sm" value={inputType} onChange={(e) => setType(e.target.value)}>
+            {Object.keys(SocialType).map((key) => (
+              <option key={key} value={key}>
+                {key}
+              </option>
+            ))}
+          </Select>
+          <Input
+            className="input input-bordered input-sm"
+            type="text"
+            placeholder="Title"
+            value={inputTitle}
+            onChange={(e) => setTitle(e.target.value)}
+          />
+          <Input
+            className="input input-bordered input-sm"
+            type="text"
+            placeholder="Link"
+            value={inputLink}
+            onChange={(e) => setLink(e.target.value)}
+          />
+          <Button className="btn btn-sm" onClick={() => createUrlLink(inputType, inputTitle, inputLink, inputProfileId)}>
+            Create Url Link
+          </Button>
+          <Button className="btn btn-sm" onClick={queryUrlLinks}>
+            Query Url Links
+          </Button>
+          <UrlLinkWrapper>
+            <UrlLink />
+            {useStore.getState().urlLink.map((urlLink: string, key: number) => (
+              <h1 key={key}>{urlLink}</h1>
+            ))}
+            {useStore.getState().authenticatedUser}
+          </UrlLinkWrapper>
         </div>
       </main>
     </>

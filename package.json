@@ -79,7 +79,8 @@
     "storybook-addon-next": "^1.7.1",
     "tailwindcss": "^3.2.4",
     "typechain": "^8.1.1",
-    "wagmi": "^0.9.2"
+    "wagmi": "^0.9.2",
+    "zustand": "^4.3.2"
   },
   "devDependencies": {
     "@babel/core": "^7.20.12",
@@ -125,7 +126,7 @@
     "eslint-plugin-unused-imports": "^2.0.0",
     "fs": "^0.0.1-security",
     "hardhat": "^2.12.5",
-    "husky": "^8.0.2",
+    "husky": "^8.0.3",
     "jsonwebtoken": "^9.0.0",
     "lint-staged": "^13.1.0",
     "make-runnable": "^1.4.1",
