@@ -12,124 +12,23 @@ import { ethSignMessage, listKeys, readStorage } from 'halo-chip'
 
 import UrlLink from '@/components/app/UrlLink'
 import UrlLinkWrapper from '@/components/app/UrlLinkWrapper'
+import {
+  MUTATE_CREATE_PROFILE,
+  MUTATE_CREATE_URLLINK,
+  MUTATE_UPDATE_PROFILE,
+  MUTATE_UPDATE_URLLINK,
+  QUERY_PROFILE_VIEWER,
+  QUERY_URLLINK_VIEWER,
+  SocialType,
+} from '@/lib/constants'
+import { AuthMethodParams } from '@/lib/types'
 import { useStore } from '@/src/store'
 
 import { Query } from '../out/__generated__/graphql'
 import { definition } from '../out/__generated__/runtime'
 
-enum SocialType {
-  BASE = 'BASE',
-  ETH = 'ETH',
-  BTC = 'BTC',
-  VENMO = 'VENMO',
-  CASHAPP = 'CASHAPP',
-  PAYPAL = 'PAYPAL',
-  EMAIL = 'EMAIL',
-  BANDCAMP = 'BANDCAMP',
-  LINKEDIN = 'LINKEDIN',
-  CLUBHOUSE = 'CLUBHOUSE',
-  GITHUB = 'GITHUB',
-  SUBSTACK = 'SUBSTACK',
-  TELEGRAM = 'TELEGRAM',
-  SIGNAL = 'SIGNAL',
-  TWITCH = 'TWITCH',
-  PATREON = 'PATREON',
-  CAMEO = 'CAMEO',
-  SPOTIFY = 'SPOTIFY',
-  AMAZON = 'AMAZON',
-  APPLEMUSIC = 'APPLEMUSIC',
-  SNAPCHAT = 'SNAPCHAT',
-  INSTAGRAM = 'INSTAGRAM',
-  FACEBOOK = 'FACEBOOK',
-  TWITTER = 'TWITTER',
-  TIKTOK = 'TIKTOK',
-  SOUNDCLOUD = 'SOUNDCLOUD',
-  YOUTUBE = 'YOUTUBE',
-  PINTEREST = 'PINTEREST',
-}
-
 let ceramicUrl = ''
 let graphqlUrl = ''
-
-const QUERY_PROFILE_VIEWER = `
-query {
-  viewer {
-    isViewer
-    profile {
-      id
-      name
-    }
-  }
-}
-`
-const QUERY_URLLINK_VIEWER = `
-query {
-  viewer {
-    urlLinkList(first:10) {
-      edges {
-        node {
-          title
-          link
-        }
-      }
-    }
-  }
-}
-`
-
-const MUTATE_CREATE_PROFILE = `
-    mutation CreateProfile($i: CreateProfileInput!) {
-      createProfile(input: $i) {
-        document {
-          name
-          image
-          description
-          walletAddresses {
-            address
-            blockchainNetwork
-          }
-        }
-      }
-    }`
-
-const MUTATE_UPDATE_PROFILE = `
-mutation UpdateProfile($i: UpdateProfileInput!) {
-  updateProfile(input: $i) {
-    document {
-      name
-      image
-      description
-      walletAddresses {
-        address
-        blockchainNetwork
-      }
-    }
-  }
-}
-`
-const MUTATE_CREATE_URLLINK = `
-mutation CreateUrlLink($i: CreateUrlLinkInput!) {
-  createUrlLink(input: $i) {
-    document {
-      type
-      title
-      link
-      profileId
-    }
-  }
-}
-`
-
-const MUTATE_UPDATE_URLLINK = `
-mutation UpdateUrlLink($i: UpdateUrlLinkInput!) {
-  updateUrlLink(input: $i) {
-    document {
-      type
-      title
-      link
-    }
-  }
-}`
 
 switch (process.env.NODE_ENV) {
   case 'development':
@@ -153,12 +52,11 @@ switch (process.env.NODE_ENV) {
 }
 
 const ceramic = new CeramicClient(process.env.NEXT_CERAMIC_URL)
-const compose = new ComposeClient({ ceramic: process.env.NEXT_CERAMIC_URL ? process.env.NEXT_CERAMIC_URL : 'https://amhocer.loca.lt', definition })
-console.log('NODE_ENV' + process.env.NODE_ENV)
+const compose = new ComposeClient({ ceramic: process.env.NEXT_CERAMIC_URL ? process.env.NEXT_CERAMIC_URL : '', definition })
+
+console.log('NODE_ENV=' + process.env.NODE_ENV)
 console.log('Starting with ceramic url: ' + ceramicUrl)
 console.log('Starting with gql url: ' + graphqlUrl)
-
-type AuthMethodParams = Parameters<typeof EthereumWebAuth.getAuthMethod>[0]
 
 const generateSession = async () => {
   const keys = await listKeys()
@@ -270,9 +168,10 @@ export default function Home() {
 
   const queryProfiles = async () => {
     const output = await queryProfile()
-    console.log(output)
-    setName(output.data?.viewer?.profile?.name)
-    setProfileId(output.data?.viewer?.profile?.id)
+    if (output.data?.viewer?.profile) {
+      setName(output.data?.viewer?.profile?.name)
+      setProfileId(output.data?.viewer?.profile?.id)
+    }
   }
   const queryUrlLinks = async () => {
     const output = await queryUrlLink()
@@ -357,7 +256,7 @@ export default function Home() {
           </Button>
           <UrlLinkWrapper>
             <UrlLink />
-            {useStore.getState().urlLink.map((urlLink: string, key: number) => (
+            {useStore.getState().urlLinks.map((urlLink: string, key: number) => (
               <h1 key={key}>{urlLink}</h1>
             ))}
             {useStore.getState().authenticatedUser}
