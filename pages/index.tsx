@@ -3,6 +3,7 @@ import { useState } from 'react'
 
 import { CeramicClient } from '@ceramicnetwork/http-client'
 import { Button, Input, Select } from '@chakra-ui/react'
+import { ComposeClient } from '@composedb/client'
 import { EthereumWebAuth } from '@didtools/pkh-ethereum'
 import { AccountId, AccountIdParams, ChainId, ChainIdParams } from 'caip'
 import { DIDSession } from 'did-session'
@@ -22,7 +23,6 @@ import {
 } from '@/lib/constants'
 import { AuthMethodParams } from '@/lib/types'
 import { useStore } from '@/src/store'
-import { ComposeClient } from '@composedb/client'
 
 import { Query } from '../out/__generated__/graphql'
 
