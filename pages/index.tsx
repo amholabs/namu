@@ -1,14 +1,13 @@
 /* eslint-disable unused-imports/no-unused-vars */
 import { useState } from 'react'
 
-import { CeramicClient } from '@ceramicnetwork/http-client'
 import { Button, Input, Select } from '@chakra-ui/react'
 import { ComposeClient } from '@composedb/client'
 import { EthereumWebAuth } from '@didtools/pkh-ethereum'
 import { AccountId, AccountIdParams, ChainId, ChainIdParams } from 'caip'
 import { DIDSession } from 'did-session'
 import { ExecutionResult } from 'graphql'
-import { ethSignMessage, listKeys, readStorage } from 'halo-chip'
+import { ethSignMessage, listKeys } from 'halo-chip'
 
 import UrlLink from '@/components/app/UrlLink'
 import UrlLinkWrapper from '@/components/app/UrlLinkWrapper'
