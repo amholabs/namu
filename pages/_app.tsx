@@ -4,11 +4,12 @@ import { ChakraProvider, extendTheme } from '@chakra-ui/react'
 import { ComposeClient } from '@composedb/client'
 import type { AppProps } from 'next/app'
 
-import { definition } from '../out/__generated__/runtime'
 import { Layout } from '@/components/layout'
 import Fonts from '@/lib/Fonts'
 import { useIsMounted } from '@/src/hooks/useIsMounted'
 import { RainbowKitProvider } from '@/src/providers/RainbowKit'
+
+import { definition } from '../out/__generated__/runtime'
 
 export default function App({ Component, pageProps }: AppProps) {
   const isMounted = useIsMounted()

@@ -9,7 +9,6 @@ import { DIDSession } from 'did-session'
 import { ExecutionResult } from 'graphql'
 import { ethSignMessage, listKeys, readStorage } from 'halo-chip'
 
-import { Query } from '../out/__generated__/graphql'
 import UrlLink from '@/components/app/UrlLink'
 import UrlLinkWrapper from '@/components/app/UrlLinkWrapper'
 import {
@@ -24,6 +23,8 @@ import {
 import { AuthMethodParams } from '@/lib/types'
 import { useStore } from '@/src/store'
 import { ComposeClient } from '@composedb/client'
+
+import { Query } from '../out/__generated__/graphql'
 
 let ceramicUrl = ''
 let graphqlUrl = ''
