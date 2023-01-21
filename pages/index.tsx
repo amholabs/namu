@@ -3,13 +3,13 @@ import { useState } from 'react'
 
 import { CeramicClient } from '@ceramicnetwork/http-client'
 import { Button, Input, Select } from '@chakra-ui/react'
-import { ComposeClient } from '@composedb/client'
 import { EthereumWebAuth } from '@didtools/pkh-ethereum'
 import { AccountId, AccountIdParams, ChainId, ChainIdParams } from 'caip'
 import { DIDSession } from 'did-session'
 import { ExecutionResult } from 'graphql'
 import { ethSignMessage, listKeys, readStorage } from 'halo-chip'
 
+import { Query } from '../out/__generated__/graphql'
 import UrlLink from '@/components/app/UrlLink'
 import UrlLinkWrapper from '@/components/app/UrlLinkWrapper'
 import {
@@ -23,9 +23,7 @@ import {
 } from '@/lib/constants'
 import { AuthMethodParams } from '@/lib/types'
 import { useStore } from '@/src/store'
-
-import { Query } from '../out/__generated__/graphql'
-import { definition } from '../out/__generated__/runtime'
+import { ComposeClient } from '@composedb/client'
 
 let ceramicUrl = ''
 let graphqlUrl = ''
@@ -51,102 +49,16 @@ switch (process.env.NODE_ENV) {
     break
 }
 
-const ceramic = new CeramicClient(process.env.NEXT_CERAMIC_URL)
-const compose = new ComposeClient({ ceramic: process.env.NEXT_CERAMIC_URL ? process.env.NEXT_CERAMIC_URL : '', definition })
+// const ceramic = new CeramicClient(process.env.NEXT_CERAMIC_URL)
 
 console.log('NODE_ENV=' + process.env.NODE_ENV)
 console.log('Starting with ceramic url: ' + ceramicUrl)
 console.log('Starting with gql url: ' + graphqlUrl)
 
-const generateSession = async () => {
-  const keys = await listKeys()
-  const { address, slot } = keys[0]
-  const accountId: AccountId = {
-    address: address.toLowerCase(),
-    chainId: {
-      reference: '1',
-      namespace: 'eip155',
-      toJSON: (): ChainIdParams => {
-        return {
-          reference: '1',
-          namespace: 'eip155',
-        }
-      },
-    },
-    toJSON: (): AccountIdParams => {
-      return {
-        address: address.toLowerCase(),
-        chainId: {
-          reference: '1',
-          namespace: 'eip155',
-        },
-      }
-    },
-  }
-
-  const authMethod = await EthereumWebAuth.getAuthMethod(
-    {
-      request: async ({ params }: AuthMethodParams) => ethSignMessage(params[0], slot, params[1]),
-    },
-    accountId
-  )
-  const resources = compose.resources
-  const session = await DIDSession.authorize(authMethod, { resources })
-  // const session = await DIDSession.authorize(authMethod, {
-  //   resources: [`ceramic://*?model=${process.env.NEXT_PROFILE_STREAM_ID}`],
-  // })
-  localStorage.setItem('didsession', session.serialize())
-  // compose.setDID(session.did)
-  compose.setDID(session.did)
-  ceramic.did = session.did
-  return session
+type PropTypes = {
+  compose: ComposeClient
 }
-
-// mutation
-
-const createProfile = async (
-  name: string,
-  image: string,
-  description: string,
-  walletAddresses: { address: string; blockchainNetwork: 'ethereum' }
-) => {
-  // Replace by the URL of the Ceramic node you want to deploy the models to
-  compose.executeQuery(`${MUTATE_CREATE_PROFILE}`, {
-    i: {
-      content: {
-        name,
-        image,
-        description,
-        walletAddresses: walletAddresses,
-      },
-    },
-  })
-}
-
-const createUrlLink = async (type: SocialType, title: string, link: string, profileId: string) => {
-  compose.executeQuery(`${MUTATE_CREATE_URLLINK}`, {
-    i: {
-      content: {
-        type,
-        title,
-        link,
-        profileId,
-      },
-    },
-  })
-}
-
-const queryProfile = async (): Promise<ExecutionResult<Pick<Query, 'viewer'>>> => {
-  const output = compose.executeQuery(QUERY_PROFILE_VIEWER)
-  return output
-}
-
-const queryUrlLink = async (): Promise<ExecutionResult<Pick<Query, 'viewer'>>> => {
-  const output = compose.executeQuery(QUERY_URLLINK_VIEWER)
-  return output
-}
-
-export default function Home() {
+export default function Home({ compose }: PropTypes) {
   const [did, setDID] = useState<string>('')
   const [name, setName] = useState<string>('')
   const [inputName, setInputName] = useState<string>('')
@@ -159,6 +71,94 @@ export default function Home() {
   const [inputProfileId, setProfileId] = useState<string>('')
 
   // const [inputWallet, setWalletAddresses] = useState<WalletAddresses>({ address: '', blockchainNetwork: '' })
+
+  const generateSession = async () => {
+    const keys = await listKeys()
+    const { address, slot } = keys[0]
+    const accountId: AccountId = {
+      address: address.toLowerCase(),
+      chainId: {
+        reference: '1',
+        namespace: 'eip155',
+        toJSON: (): ChainIdParams => {
+          return {
+            reference: '1',
+            namespace: 'eip155',
+          }
+        },
+      },
+      toJSON: (): AccountIdParams => {
+        return {
+          address: address.toLowerCase(),
+          chainId: {
+            reference: '1',
+            namespace: 'eip155',
+          },
+        }
+      },
+    }
+
+    const authMethod = await EthereumWebAuth.getAuthMethod(
+      {
+        request: async ({ params }: AuthMethodParams) => ethSignMessage(params[0], slot, params[1]),
+      },
+      accountId
+    )
+    const resources = compose.resources
+    const session = await DIDSession.authorize(authMethod, { resources })
+    // const session = await DIDSession.authorize(authMethod, {
+    //   resources: [`ceramic://*?model=${process.env.NEXT_PROFILE_STREAM_ID}`],
+    // })
+    localStorage.setItem('didsession', session.serialize())
+    // compose.setDID(session.did)
+    compose.setDID(session.did)
+    // ceramic.did = session.did
+    return session
+  }
+
+  // mutation
+
+  const createProfile = async (
+    name: string,
+    image: string,
+    description: string,
+    walletAddresses: { address: string; blockchainNetwork: 'ethereum' }
+  ) => {
+    // Replace by the URL of the Ceramic node you want to deploy the models to
+    compose.executeQuery(`${MUTATE_CREATE_PROFILE}`, {
+      i: {
+        content: {
+          name,
+          image,
+          description,
+          walletAddresses: walletAddresses,
+        },
+      },
+    })
+  }
+
+  const createUrlLink = async (type: SocialType, title: string, link: string, profileId: string) => {
+    compose.executeQuery(`${MUTATE_CREATE_URLLINK}`, {
+      i: {
+        content: {
+          type,
+          title,
+          link,
+          profileId,
+        },
+      },
+    })
+  }
+
+  const queryProfile = async (): Promise<ExecutionResult<Pick<Query, 'viewer'>>> => {
+    const output = compose.executeQuery(QUERY_PROFILE_VIEWER)
+    return output
+  }
+
+  const queryUrlLink = async (): Promise<ExecutionResult<Pick<Query, 'viewer'>>> => {
+    const output = compose.executeQuery(QUERY_URLLINK_VIEWER)
+    return output
+  }
 
   const genSession = async () => {
     const sess = await generateSession()
@@ -179,7 +179,7 @@ export default function Home() {
   }
 
   const queryDid = async (): Promise<void> => {
-    console.log(ceramic.did)
+    // console.log(ceramic.did)
     console.log(compose.did)
   }
 
