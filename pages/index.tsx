@@ -3,6 +3,7 @@ import { useState } from 'react'
 
 import { CeramicClient } from '@ceramicnetwork/http-client'
 import { Button, Input, Select } from '@chakra-ui/react'
+import { ComposeClient } from '@composedb/client'
 import { EthereumWebAuth } from '@didtools/pkh-ethereum'
 import { AccountId, AccountIdParams, ChainId, ChainIdParams } from 'caip'
 import { DIDSession } from 'did-session'
@@ -23,7 +24,6 @@ import {
 } from '@/lib/constants'
 import { AuthMethodParams } from '@/lib/types'
 import { useStore } from '@/src/store'
-import { ComposeClient } from '@composedb/client'
 
 let ceramicUrl = ''
 let graphqlUrl = ''
@@ -69,10 +69,11 @@ export default function Home({ compose }: PropTypes) {
   const [inputTitle, setTitle] = useState<string>('')
   const [inputLink, setLink] = useState<string>('')
   const [inputProfileId, setProfileId] = useState<string>('')
+  const [loading, setLoading] = useState<boolean>(false)
 
   // const [inputWallet, setWalletAddresses] = useState<WalletAddresses>({ address: '', blockchainNetwork: '' })
 
-  const generateSession = async () => {
+  const generateSession = async (): Promise<DIDSession> => {
     const keys = await listKeys()
     const { address, slot } = keys[0]
     const accountId: AccountId = {
@@ -110,8 +111,8 @@ export default function Home({ compose }: PropTypes) {
     //   resources: [`ceramic://*?model=${process.env.NEXT_PROFILE_STREAM_ID}`],
     // })
     localStorage.setItem('didsession', session.serialize())
-    // compose.setDID(session.did)
     compose.setDID(session.did)
+    setDID(session.did.toString())
     // ceramic.did = session.did
     return session
   }
@@ -161,12 +162,13 @@ export default function Home({ compose }: PropTypes) {
   }
 
   const genSession = async () => {
-    const sess = await generateSession()
-    setDID(sess.id)
-    console.log(compose.did)
+    await generateSession().then((test: DIDSession) => {
+      queryProfiles()
+      setDID(test.id)
+    })
   }
 
-  const queryProfiles = async () => {
+  const queryProfiles = async (): Promise<void> => {
     const output = await queryProfile()
     if (output.data?.viewer?.profile) {
       setName(output.data?.viewer?.profile?.name)
@@ -176,11 +178,6 @@ export default function Home({ compose }: PropTypes) {
   const queryUrlLinks = async () => {
     const output = await queryUrlLink()
     console.log(output)
-  }
-
-  const queryDid = async (): Promise<void> => {
-    // console.log(ceramic.did)
-    console.log(compose.did)
   }
 
   return (

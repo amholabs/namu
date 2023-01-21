@@ -12,7 +12,7 @@ import { RainbowKitProvider } from '@/src/providers/RainbowKit'
 
 export default function App({ Component, pageProps }: AppProps) {
   const isMounted = useIsMounted()
-  const compose = new ComposeClient({ ceramic: process.env.NEXT_CERAMIC_URL || 'http://localhost:7007', definition })
+  const compose = new ComposeClient({ ceramic: process.env.NEXT_CERAMIC_URL || 'https://amhocer.loca.lt', definition })
   const breakpoints = {
     sm: '30em',
     md: '48em',
