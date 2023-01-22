@@ -1,6 +1,7 @@
 import { Box, Heading, Text, VStack } from '@chakra-ui/react'
 
 import { CoreButton } from '@/components/shared'
+import { generateSession } from '@/src/utils/scan'
 
 export default function Congratulations() {
   return (
@@ -12,7 +13,7 @@ export default function Congratulations() {
         {/* eslint-disable-next-line react/no-unescaped-entities */}
         <Text fontSize="3xl">Let's start registration</Text>
         <Text fontSize="md">Scan to verify you are the owner.</Text>
-        <CoreButton>SCAN</CoreButton>
+        <CoreButton clickHandler={generateSession}>SCAN</CoreButton>
       </VStack>
     </Box>
   )

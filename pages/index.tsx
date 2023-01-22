@@ -110,9 +110,10 @@ export default function Home() {
   }
 
   const genSession = async () => {
-    const sess = await generateSession(compose)
-    setDID(sess.id)
-    console.log(compose.did)
+    await generateSession().then((data) => {
+      queryProfiles()
+      setDID(data.id)
+    })
   }
 
   const queryProfiles = async () => {
