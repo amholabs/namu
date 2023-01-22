@@ -3,11 +3,7 @@ import { useState } from 'react'
 
 import { Button, Input, Select } from '@chakra-ui/react'
 import { ComposeClient } from '@composedb/client'
-import { EthereumWebAuth } from '@didtools/pkh-ethereum'
-import { AccountId, AccountIdParams, ChainId, ChainIdParams } from 'caip'
-import { DIDSession } from 'did-session'
 import { ExecutionResult } from 'graphql'
-import { ethSignMessage, listKeys } from 'halo-chip'
 
 import UrlLink from '@/components/app/UrlLink'
 import UrlLinkWrapper from '@/components/app/UrlLinkWrapper'
@@ -20,8 +16,8 @@ import {
   QUERY_URLLINK_VIEWER,
   SocialType,
 } from '@/lib/constants'
-import { AuthMethodParams } from '@/lib/types'
 import { useStore } from '@/src/store'
+import { generateSession } from '@/src/utils/scan'
 
 import { Query } from '../out/__generated__/graphql'
 
@@ -30,10 +26,8 @@ let graphqlUrl = ''
 
 switch (process.env.NODE_ENV) {
   case 'development':
-    // ceramicUrl = 'http://localhost:7007'
-    // graphqlUrl = 'http://localhost:60021'
-    ceramicUrl = `${process.env.NEXT_CERAMIC_URL}`
-    graphqlUrl = `${process.env.NEXT_QL_URL}`
+    ceramicUrl = `${process.env.NEXT_PUBLIC_CERAMIC_URL}`
+    graphqlUrl = `${process.env.NEXT_PUBLIC_QL_URL}`
     break
   case 'test':
     ceramicUrl = `${process.env.NEXT_CERAMIC_URL}`
@@ -55,10 +49,7 @@ console.log('NODE_ENV=' + process.env.NODE_ENV)
 console.log('Starting with ceramic url: ' + ceramicUrl)
 console.log('Starting with gql url: ' + graphqlUrl)
 
-type PropTypes = {
-  compose: ComposeClient
-}
-export default function Home({ compose }: PropTypes) {
+export default function Home() {
   const [did, setDID] = useState<string>('')
   const [name, setName] = useState<string>('')
   const [inputName, setInputName] = useState<string>('')
@@ -70,51 +61,9 @@ export default function Home({ compose }: PropTypes) {
   const [inputLink, setLink] = useState<string>('')
   const [inputProfileId, setProfileId] = useState<string>('')
 
+  const compose = useStore.getState().compose
+
   // const [inputWallet, setWalletAddresses] = useState<WalletAddresses>({ address: '', blockchainNetwork: '' })
-
-  const generateSession = async () => {
-    const keys = await listKeys()
-    const { address, slot } = keys[0]
-    const accountId: AccountId = {
-      address: address.toLowerCase(),
-      chainId: {
-        reference: '1',
-        namespace: 'eip155',
-        toJSON: (): ChainIdParams => {
-          return {
-            reference: '1',
-            namespace: 'eip155',
-          }
-        },
-      },
-      toJSON: (): AccountIdParams => {
-        return {
-          address: address.toLowerCase(),
-          chainId: {
-            reference: '1',
-            namespace: 'eip155',
-          },
-        }
-      },
-    }
-
-    const authMethod = await EthereumWebAuth.getAuthMethod(
-      {
-        request: async ({ params }: AuthMethodParams) => ethSignMessage(params[0], slot, params[1]),
-      },
-      accountId
-    )
-    const resources = compose.resources
-    const session = await DIDSession.authorize(authMethod, { resources })
-    // const session = await DIDSession.authorize(authMethod, {
-    //   resources: [`ceramic://*?model=${process.env.NEXT_PROFILE_STREAM_ID}`],
-    // })
-    localStorage.setItem('didsession', session.serialize())
-    // compose.setDID(session.did)
-    compose.setDID(session.did)
-    // ceramic.did = session.did
-    return session
-  }
 
   // mutation
 
@@ -161,7 +110,7 @@ export default function Home({ compose }: PropTypes) {
   }
 
   const genSession = async () => {
-    const sess = await generateSession()
+    const sess = await generateSession(compose)
     setDID(sess.id)
     console.log(compose.did)
   }

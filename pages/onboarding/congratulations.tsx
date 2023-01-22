@@ -1,4 +1,4 @@
-import { Box, Heading, Text, VStack, HStack, PinInput, PinInputField } from '@chakra-ui/react'
+import { Box, Heading, Text, VStack } from '@chakra-ui/react'
 
 import { CoreButton } from '@/components/shared'
 
@@ -11,18 +11,8 @@ export default function Congratulations() {
         </Box>
         {/* eslint-disable-next-line react/no-unescaped-entities */}
         <Text fontSize="3xl">Let's start registration</Text>
-        <Text fontSize="md">Enter the six digit code you received with your package.</Text>
-        <HStack paddingTop="1em" paddingBottom="1em">
-          <PinInput variant="outline" focusBorderColor="black" type="alphanumeric" size="lg">
-            <PinInputField />
-            <PinInputField />
-            <PinInputField />
-            <PinInputField />
-            <PinInputField />
-            <PinInputField />
-          </PinInput>
-        </HStack>
-        <CoreButton>CONFIRM</CoreButton>
+        <Text fontSize="md">Scan to verify you are the owner.</Text>
+        <CoreButton>SCAN</CoreButton>
       </VStack>
     </Box>
   )

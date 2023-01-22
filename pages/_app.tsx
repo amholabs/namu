@@ -8,12 +8,33 @@ import { Layout } from '@/components/layout'
 import Fonts from '@/lib/Fonts'
 import { useIsMounted } from '@/src/hooks/useIsMounted'
 import { RainbowKitProvider } from '@/src/providers/RainbowKit'
+import { useStore } from '@/src/store'
 
 import { definition } from '../out/__generated__/runtime'
 
 export default function App({ Component, pageProps }: AppProps) {
   const isMounted = useIsMounted()
-  const compose = new ComposeClient({ ceramic: process.env.NEXT_CERAMIC_URL || 'http://localhost:7007', definition })
+  let ceramicUrl = ''
+
+  switch (process.env.NODE_ENV) {
+    case 'development':
+      ceramicUrl = `${process.env.NEXT_PUBLIC_CERAMIC_URL}`
+      break
+    case 'test':
+      ceramicUrl = `${process.env.NEXT_PUBLIC_CERAMIC_URL}`
+      break
+    case 'production':
+      ceramicUrl = 'https://amho.xyz/'
+      break
+    default:
+      ceramicUrl = 'error: ceramic'
+      break
+  }
+
+  useStore.setState({
+    compose: new ComposeClient({ ceramic: process.env.NEXT_PUBLIC_CERAMIC_URL || ceramicUrl, definition }),
+  })
+
   const breakpoints = {
     sm: '30em',
     md: '48em',
@@ -77,7 +98,7 @@ export default function App({ Component, pageProps }: AppProps) {
           <Fonts />
           <RainbowKitProvider>
             <Layout>
-              <Component {...pageProps} compose={compose} />
+              <Component {...pageProps} />
             </Layout>
           </RainbowKitProvider>
         </ChakraProvider>
