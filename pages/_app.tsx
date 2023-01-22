@@ -22,6 +22,7 @@ export default function App({ Component, pageProps }: AppProps) {
     '2xl': '96em',
   }
   const theme = extendTheme({
+    config: { initialColorMode: 'light' },
     breakpoints,
     fonts: {
       heading: `Helvetica Neue Bold, sans-serif`,
@@ -48,6 +49,22 @@ export default function App({ Component, pageProps }: AppProps) {
       Input: {
         baseStyle: {
           focusBorderColor: 'brand.900',
+        },
+      },
+      PinInput: {
+        sizes: {
+          lg: {
+            borderRadius: '0px',
+          },
+          md: {
+            borderRadius: '0px',
+          },
+          sm: {
+            borderRadius: '0px',
+          },
+          xs: {
+            borderRadius: '0px',
+          },
         },
       },
     },

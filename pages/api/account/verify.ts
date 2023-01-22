@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next'
 import { SiweMessage } from 'siwe'
 
-import { withSessionRoute } from 'utils/server'
+import { withSessionRoute } from '@/src/utils/server'
 
 export default withSessionRoute(async function handler(req: NextApiRequest, res: NextApiResponse) {
   console.log(req.method, '/api/account/verify', req.session)
