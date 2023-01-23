@@ -1,15 +1,18 @@
 import { useState } from 'react'
 
 import { Box, Container, Flex, Heading, Image, Input, Text, VStack } from '@chakra-ui/react'
+import { useRouter } from 'next/router'
 
 import MobileLayout from '@/components/layout/MobileLayout'
 import { CoreButton } from '@/components/shared'
 import { useStore } from '@/src/store'
 
 export default function Found() {
+  const router = useRouter()
   const [name, setName] = useState<string>('')
   const submitName = () => {
     useStore.setState({ name })
+    router.push('/onboarding/profile/setup')
   }
   return (
     <MobileLayout>

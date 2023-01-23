@@ -1,17 +1,42 @@
+import { PropsWithChildren, useState } from 'react'
+
 import { Center, Flex, Input, Stack } from '@chakra-ui/react'
 
-import { useStore } from '@/src/store'
+type UrlLinkProps = {
+  title: string
+  uri: string
+}
 
-export default function UrlLink() {
-  useStore.setState({ urlLinks: [''], authenticatedUser: '0x0' })
+export default function UrlLink(props: PropsWithChildren<UrlLinkProps>) {
+  const { title, uri } = props
+  const [newTitle, setTitle] = useState<string>(title)
+  const [newUri, setUri] = useState<string>(uri)
   return (
     <Flex border="3px">
       <Stack paddingTop={2} paddingLeft={4} paddingRight={4} paddingBottom={4}>
         <Center bg="white" outlineColor={'black'} outline="1">
-          <Input focusBorderColor="brand.900" variant="flushed" placeholder="Enter Title" size="sm" />
+          <Input
+            onChange={(e) => {
+              setTitle(e.target.value)
+            }}
+            focusBorderColor="brand.900"
+            variant="flushed"
+            value={newTitle.length > 0 ? newTitle : ''}
+            placeholder="Enter Title"
+            size="sm"
+          />
         </Center>
         <Center>
-          <Input focusBorderColor="brand.900" variant="flushed" placeholder="https://" size="sm" />
+          <Input
+            onChange={(e) => {
+              setUri(e.target.value)
+            }}
+            focusBorderColor="brand.900"
+            variant="flushed"
+            value={newUri.length > 0 ? newUri : ''}
+            placeholder="https://"
+            size="sm"
+          />
         </Center>
       </Stack>
     </Flex>
