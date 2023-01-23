@@ -68,7 +68,27 @@ export default function App({ Component, pageProps }: AppProps) {
         },
       },
       Input: {
+        sizes: {
+          lg: {
+            field: {
+              borderRadius: 'none',
+            },
+          },
+          md: {
+            field: {
+              borderRadius: 'none',
+            },
+          },
+          sm: {
+            field: {
+              borderRadius: 'none',
+            },
+          },
+        },
         baseStyle: {
+          field: {
+            borderColor: 'brand.900',
+          },
           focusBorderColor: 'brand.900',
         },
       },

@@ -3,7 +3,7 @@ import { Center, Flex, Input, Stack } from '@chakra-ui/react'
 import { useStore } from '@/src/store'
 
 export default function UrlLink() {
-  useStore.setState({ urlLinks: ['https://www.google.com'], authenticatedUser: '0x0' })
+  useStore.setState({ urlLinks: [''], authenticatedUser: '0x0' })
   return (
     <Flex border="3px">
       <Stack paddingTop={2} paddingLeft={4} paddingRight={4} paddingBottom={4}>
