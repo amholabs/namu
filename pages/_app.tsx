@@ -67,7 +67,20 @@ export default function App({ Component, pageProps }: AppProps) {
           borderRadius: '0px',
         },
       },
+      InputLeftAddon: {
+        baseStyle: {
+          borderRadius: '0px',
+          bg: 'transparent',
+        },
+      },
       Input: {
+        variants: {
+          unstyled: {
+            addon: {
+              bg: 'white',
+            },
+          },
+        },
         sizes: {
           lg: {
             field: {

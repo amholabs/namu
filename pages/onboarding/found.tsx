@@ -40,7 +40,7 @@ export default function Found() {
           <Box>
             <Input onChange={(e) => setName(e.target.value)} border="2px" size="lg" focusBorderColor="brand.900" placeholder="What is your name?" />
           </Box>
-          <CoreButton size="sm" clickHandler={submitName}>
+          <CoreButton isLoading={false} size="sm" clickHandler={submitName}>
             NEXT
           </CoreButton>
         </VStack>

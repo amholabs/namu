@@ -204,13 +204,13 @@ export default function Home() {
           <Button className="btn btn-sm" onClick={queryUrlLinks}>
             Query Url Links
           </Button>
-          <UrlLinkWrapper>
-            <UrlLink />
+          {/* <UrlLinkWrapper> */}
+          {/* <UrlLink />
             {useStore.getState().urlLinks.map((urlLink: string, key: number) => (
               <h1 key={key}>{urlLink}</h1>
             ))}
-            {useStore.getState().authenticatedUser}
-          </UrlLinkWrapper>
+            {useStore.getState().authenticatedUser} */}
+          {/* </UrlLinkWrapper> */}
         </div>
       </main>
     </>

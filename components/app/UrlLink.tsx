@@ -1,43 +1,70 @@
 import { PropsWithChildren, useState } from 'react'
 
-import { Center, Flex, Input, Stack } from '@chakra-ui/react'
+import { CheckIcon } from '@chakra-ui/icons'
+import { Box, Flex, Input, InputGroup, InputLeftAddon, Spinner, Stack } from '@chakra-ui/react'
+import { IconType } from 'react-icons'
+
+import { useStore } from '@/src/store'
 
 type UrlLinkProps = {
-  title: string
-  uri: string
+  uri?: string
+  placeholder: string
+  icon: IconType
 }
 
 export default function UrlLink(props: PropsWithChildren<UrlLinkProps>) {
-  const { title, uri } = props
-  const [newTitle, setTitle] = useState<string>(title)
-  const [newUri, setUri] = useState<string>(uri)
+  const { placeholder, icon, uri } = props
+  const [newUri, setUri] = useState<string>(uri || '')
+  const [isComplete, setComplete] = useState<boolean>(false)
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { value } = e.target
+    if (value.length === 0) {
+      setComplete(false)
+    }
+    setUri(value)
+  }
+  const handleBlur = (): string => {
+    const result = checkValue(newUri)
+    const validity = result.length > 0
+    setComplete(validity)
+    return result
+  }
+
+  // generate function to check from "@" at the beginning of the string if not add it
+  const checkValue = (uri: string) => {
+    // check if value is empty
+    if (uri.length === 0) {
+      return ''
+    }
+    const regex = new RegExp('^@', 'i')
+    return regex.test(uri) ? uri : `@${uri}`
+  }
+
   return (
-    <Flex border="3px">
-      <Stack paddingTop={2} paddingLeft={4} paddingRight={4} paddingBottom={4}>
-        <Center bg="white" outlineColor={'black'} outline="1">
-          <Input
-            onChange={(e) => {
-              setTitle(e.target.value)
+    <Flex>
+      <Stack w="100%">
+        <InputGroup>
+          <InputLeftAddon
+            css={{
+              background: 'white',
+              borderRadius: '0',
+              border: 'none',
             }}
-            focusBorderColor="brand.900"
-            variant="flushed"
-            value={newTitle.length > 0 ? newTitle : ''}
-            placeholder="Enter Title"
-            size="sm"
+            pointerEvents="none"
+            // eslint-disable-next-line react/no-children-prop
+            children={isComplete ? <CheckIcon fontSize="md" /> : <Box fontSize="2xl" as={icon} />}
           />
-        </Center>
-        <Center>
           <Input
-            onChange={(e) => {
-              setUri(e.target.value)
-            }}
+            onChange={handleChange}
             focusBorderColor="brand.900"
-            variant="flushed"
+            onBlur={handleBlur}
+            variant="unstyled"
             value={newUri.length > 0 ? newUri : ''}
-            placeholder="https://"
-            size="sm"
+            placeholder={placeholder}
+            size="md"
           />
-        </Center>
+        </InputGroup>
       </Stack>
     </Flex>
   )

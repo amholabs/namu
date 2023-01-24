@@ -8,4 +8,12 @@ export const useStore = create(() => ({
   name: '',
   authenticatedUser: '',
   urlLinks: [''],
+  twitter: {
+    value: '',
+    loading: false,
+  },
+  instagram: {
+    value: '',
+    loading: false,
+  },
 }))
