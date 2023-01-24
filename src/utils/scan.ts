@@ -2,6 +2,7 @@ import { ComposeClient } from '@composedb/client'
 import { EthereumWebAuth } from '@didtools/pkh-ethereum'
 import { AccountId, AccountIdParams, ChainId, ChainIdParams } from 'caip'
 import { DIDSession } from 'did-session'
+// @ts-ignore
 import { ethSignMessage, listKeys } from 'halo-chip'
 
 import { AuthMethodParams } from '@/lib/types'

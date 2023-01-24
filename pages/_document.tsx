@@ -1,6 +1,6 @@
 import { Head, Html, Main, NextScript } from 'next/document'
 
-import { APP_CONFIG } from 'utils/config'
+import { APP_CONFIG } from '@/src/utils/config'
 
 export default function Document() {
   return (
@@ -8,6 +8,9 @@ export default function Document() {
       <Head>
         <meta charSet="utf-8" />
         <link rel="icon" href="/favicon.ico" />
+        <link rel="manifest" href="/manifest.json" />
+        <link rel="apple-touch-icon" href="/icons/favicon-16x16.png"></link>
+        <meta name="theme-color" content="#000000" />
         <meta property="og:title" content={APP_CONFIG.title} />
         <meta property="twitter:title" content={APP_CONFIG.title} />
         <meta property="og:type" content="website" />

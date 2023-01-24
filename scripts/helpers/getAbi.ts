@@ -1,7 +1,7 @@
 import fs from 'fs'
 import path from 'path'
 
-export default function getAbi(pathName) {
+export default function getAbi(pathName: string) {
   try {
     const dir = path.resolve(__dirname, pathName)
     const file = fs.readFileSync(dir, 'utf8')

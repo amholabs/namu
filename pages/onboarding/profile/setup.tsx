@@ -1,6 +1,7 @@
 import { useState } from 'react'
 
-import { Box, Flex, Heading, Text, VStack } from '@chakra-ui/react'
+import { Box, Center, Button, Flex, Heading, Text, VStack } from '@chakra-ui/react'
+import { useRouter } from 'next/router'
 import { SiBehance, SiDribbble, SiGithub, SiGumroad, SiInstagram, SiSubstack, SiTiktok, SiTwitter, SiYoutube } from 'react-icons/si'
 
 import UrlLink from '@/components/app/UrlLink'
@@ -9,9 +10,13 @@ import { CoreButton } from '@/components/shared'
 import { useStore } from '@/src/store'
 
 export default function Setup() {
+  const router = useRouter()
   const name = useStore.getState().name
   const nameCapitalized = name.charAt(0).toUpperCase() + name.slice(1)
   const [isLoading, setLoading] = useState<boolean>(false)
+  const nextPage = (uri: string) => {
+    router.push(uri)
+  }
   return (
     <MobileLayout>
       <VStack align="stretch">
@@ -29,15 +34,21 @@ export default function Setup() {
         <UrlLink icon={SiSubstack} placeholder="@" />
         <UrlLink icon={SiDribbble} placeholder="@" />
         <UrlLink icon={SiGumroad} placeholder="@" />
-        <Box pt="0.5em">
-          <CoreButton
-            isLoading={isLoading}
-            clickHandler={() => {
-              setLoading(true)
-            }}>
-            SUBMIT
-          </CoreButton>
-        </Box>
+        <VStack align="stretch">
+          <Box pt="0.5em">
+            <CoreButton
+              isLoading={isLoading}
+              clickHandler={() => {
+                nextPage('/onboarding/profile/complete')
+                setLoading(true)
+              }}>
+              SUBMIT
+            </CoreButton>
+          </Box>
+          <Button size="xs" variant="unstyled">
+            SKIP
+          </Button>
+        </VStack>
       </VStack>
     </MobileLayout>
   )

@@ -5,7 +5,7 @@ import { RainbowKitProvider as RainbowKitProv, darkTheme, getDefaultWallets } fr
 import { WagmiConfig, configureChains, createClient } from 'wagmi'
 import { alchemyProvider } from 'wagmi/providers/alchemy'
 
-import { ETH_CHAINS } from 'utils/config'
+import { ETH_CHAINS } from '@/src/utils/config'
 
 interface Props {
   children: ReactNode

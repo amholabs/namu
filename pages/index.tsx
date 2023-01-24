@@ -177,7 +177,7 @@ export default function Home() {
             Create Profile
           </Button>
           <h1 className="py-5 text-xl">Create a UrlLink</h1>
-          <Select className="input input-bordered input-sm" value={inputType} onChange={(e) => setType(e.target.value)}>
+          <Select className="input input-bordered input-sm" value={inputType} onChange={(e) => setType(e.target.value as SocialType)}>
             {Object.keys(SocialType).map((key) => (
               <option key={key} value={key}>
                 {key}
@@ -209,7 +209,7 @@ export default function Home() {
             {useStore.getState().urlLinks.map((urlLink: string, key: number) => (
               <h1 key={key}>{urlLink}</h1>
             ))}
-            {useStore.getState().authenticatedUser} */}
+          {useStore.getState().authenticatedUser} */}
           {/* </UrlLinkWrapper> */}
         </div>
       </main>
