@@ -44,9 +44,10 @@ export default function UrlLink(props: PropsWithChildren<UrlLinkProps>) {
   return (
     <Flex>
       <Stack w="100%">
-        <InputGroup>
+        <InputGroup marginTop="1em">
           <InputLeftAddon
             css={{
+              paddingLeft: '0',
               background: 'white',
               borderRadius: '0',
               border: 'none',

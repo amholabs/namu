@@ -1,5 +1,7 @@
+import { useState } from 'react'
+
 import { Box, Flex, Heading, Text, VStack } from '@chakra-ui/react'
-import { SiInstagram, SiTwitter } from 'react-icons/si'
+import { SiBehance, SiDribbble, SiGithub, SiGumroad, SiInstagram, SiSubstack, SiTiktok, SiTwitter, SiYoutube } from 'react-icons/si'
 
 import UrlLink from '@/components/app/UrlLink'
 import MobileLayout from '@/components/layout/MobileLayout'
@@ -9,6 +11,7 @@ import { useStore } from '@/src/store'
 export default function Setup() {
   const name = useStore.getState().name
   const nameCapitalized = name.charAt(0).toUpperCase() + name.slice(1)
+  const [isLoading, setLoading] = useState<boolean>(false)
   return (
     <MobileLayout>
       <VStack align="stretch">
@@ -19,8 +22,21 @@ export default function Setup() {
         </Box>
         <UrlLink uri="" icon={SiTwitter} placeholder="@" />
         <UrlLink icon={SiInstagram} placeholder="@" />
+        <UrlLink icon={SiTiktok} placeholder="@" />
+        <UrlLink icon={SiYoutube} placeholder="@" />
+        <UrlLink icon={SiBehance} placeholder="@" />
+        <UrlLink icon={SiGithub} placeholder="@" />
+        <UrlLink icon={SiSubstack} placeholder="@" />
+        <UrlLink icon={SiDribbble} placeholder="@" />
+        <UrlLink icon={SiGumroad} placeholder="@" />
         <Box pt="0.5em">
-          <CoreButton clickHandler={() => {}}>SUBMIT</CoreButton>
+          <CoreButton
+            isLoading={isLoading}
+            clickHandler={() => {
+              setLoading(true)
+            }}>
+            SUBMIT
+          </CoreButton>
         </Box>
       </VStack>
     </MobileLayout>

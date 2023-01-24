@@ -19,11 +19,7 @@ export default function Congratulations() {
       <Text fontSize="3xl">Let's start registration</Text>
       {/* eslint-disable-next-line react/no-unescaped-entities */}
       <Text fontSize="md">Click "NEXT" to start</Text>
-      <CoreButton
-        size="sm"
-        clickHandler={() => {
-          nextPage('/onboarding/tap')
-        }}>
+      <CoreButton size="sm" clickHandler={() => nextPage('/onboarding/tap')}>
         NEXT
       </CoreButton>
     </MobileLayout>
