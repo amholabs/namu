@@ -14,7 +14,7 @@ import { definition } from '../out/__generated__/runtime'
 
 export default function App({ Component, pageProps }: AppProps) {
   const isMounted = useIsMounted()
-  let ceramicUrl = ''
+  let ceramicUrl = 'https://amhocer.tunnelto.dev'
 
   switch (process.env.NODE_ENV) {
     case 'development':

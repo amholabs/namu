@@ -25,6 +25,7 @@ export default function Tap() {
         setLoading(false)
         router.push('/onboarding/found')
       } else {
+        setLoading(false)
         toast({
           title: 'Scanning Failed. Try again.',
           status: 'error',
