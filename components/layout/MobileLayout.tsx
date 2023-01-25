@@ -4,7 +4,7 @@ import { Box, VStack } from '@chakra-ui/react'
 
 export default function MobileLayout({ children }: { children: React.ReactNode }) {
   return (
-    <Box padding="20px" display="flex" justifyContent="center" alignItems="center" h="calc(100vh)" w="100%" bg="white">
+    <Box padding="2rem" display="flex" justifyContent="center" alignItems="center" h="calc(100vh)" w="100%" bg="white">
       <VStack align="stretch">{children}</VStack>
     </Box>
   )

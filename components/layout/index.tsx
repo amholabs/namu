@@ -1,6 +1,6 @@
 import React, { ReactNode } from 'react'
 
-import classNames from 'classnames'
+// import classNames from 'classnames'
 
 interface Props {
   children: ReactNode
@@ -8,11 +8,11 @@ interface Props {
 }
 
 export function Layout(props: Props) {
-  const classes = classNames(props.className, 'Footer', 'dark:bg-slate-900 dark:text-white min-h-[100vh]  flex flex-col')
+  // const classes = classNames(props.className, 'Footer', 'dark:bg-slate-900 dark:text-white min-h-[100vh]  flex flex-col')
   return (
-    <div className={classes}>
+    <div>
       {/* <Header /> */}
-      <div className="container  mx-auto my-12 flex flex-1">{props.children}</div>
+      <div>{props.children}</div>
       {/* <Footer /> */}
     </div>
   )

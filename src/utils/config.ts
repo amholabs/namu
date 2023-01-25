@@ -1,6 +1,6 @@
 import { arbitrum, goerli, mainnet, optimism, polygon, sepolia } from '@wagmi/chains'
 export const SITE_CANONICAL = 'https://amho.xyz'
-export const SITE_EMOJI = '⚡'
+export const SITE_EMOJI = ''
 export const SITE_NAME = 'AMHO'
 export const SITE_TITLE = 'AMHO'
 export const SITE_DESCRIPTION = 'Disrupting the way we think about fashion and the goods we own.'

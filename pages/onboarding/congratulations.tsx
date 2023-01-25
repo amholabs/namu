@@ -1,5 +1,6 @@
+import { useState } from 'react'
+
 import { Box, Heading, Text } from '@chakra-ui/react'
-import Link from 'next/link'
 import { useRouter } from 'next/router'
 
 import MobileLayout from '@/components/layout/MobileLayout'
@@ -7,19 +8,24 @@ import { CoreButton } from '@/components/shared'
 
 export default function Congratulations() {
   const router = useRouter()
+  const [loading, setLoading] = useState(false)
   const nextPage = (uri: string) => {
     router.push(uri)
   }
+  const handleClick = () => {
+    setLoading(true)
+    nextPage('/onboarding/tap')
+  }
   return (
     <MobileLayout>
-      <Box justifyContent="start">
-        <Heading size="2xl">Congratulations on your purchase!</Heading>
+      <Box paddingBottom="1rem" justifyContent="start">
+        <Heading paddingBottom="1rem" size="md">
+          CONGRATULATIONS ON YOUR NEW PURCHASE!
+        </Heading>
+        {/* eslint-disable-next-line react/no-unescaped-entities */}
+        <Text fontSize="sm">Let's start registration. Click NEXT to continue.</Text>
       </Box>
-      {/* eslint-disable-next-line react/no-unescaped-entities */}
-      <Text fontSize="3xl">Let's start registration</Text>
-      {/* eslint-disable-next-line react/no-unescaped-entities */}
-      <Text fontSize="md">Click "NEXT" to start</Text>
-      <CoreButton size="sm" clickHandler={() => nextPage('/onboarding/tap')}>
+      <CoreButton isLoading={loading} size="xs" clickHandler={handleClick}>
         NEXT
       </CoreButton>
     </MobileLayout>

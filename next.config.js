@@ -2,6 +2,7 @@
 const withPWA = require('next-pwa')({
   dest: 'public',
 })
+
 const nextConfig = {
   reactStrictMode: true,
   env: {
@@ -26,4 +27,15 @@ const nextConfig = {
   },
 }
 
-module.exports = withPWA({ nextConfig })
+module.exports = withPWA({
+  nextConfig,
+  async redirects() {
+    return [
+      {
+        source: '/',
+        destination: '/onboarding/congratulations',
+        permanent: true,
+      },
+    ]
+  },
+})
