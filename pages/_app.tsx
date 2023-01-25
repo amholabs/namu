@@ -62,6 +62,14 @@ export default function App({ Component, pageProps }: AppProps) {
           900: '#000000',
         },
       },
+      Card: {
+        baseStyle: {
+          container: {
+            borderRadius: '0px',
+            boxShadow: 'none',
+          },
+        },
+      },
       Button: {
         baseStyle: {
           borderRadius: '0px',

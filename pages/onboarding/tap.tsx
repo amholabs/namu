@@ -22,7 +22,6 @@ export default function Tap() {
     try {
       const session = await generateSession()
       if (session) {
-        setLoading(false)
         router.push('/onboarding/found')
       } else {
         setLoading(false)

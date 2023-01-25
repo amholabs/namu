@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 
-import { Box, Flex, Heading, Image, Input, Text, VStack } from '@chakra-ui/react'
-import { ExecutionResult } from 'graphql'
+import { Avatar, Box, Card, CardBody, Flex, HStack, Heading, Image, Input, Skeleton, SkeletonCircle, Text, VStack } from '@chakra-ui/react'
+import { ExecutionResult, isOutputType } from 'graphql'
 import { useRouter } from 'next/router'
 
 import MobileLayout from '@/components/layout/MobileLayout'
@@ -14,20 +14,25 @@ import { Query } from 'out/__generated__/graphql'
 export default function Found() {
   const compose = useStore.getState().compose
   const router = useRouter()
-  const [name, setName] = useState<string>('default name')
-  // const [image, setImage] = useState<string>('default image')
-  // const [description, setDescription] = useState<string>('default description')
+  const [found, setFound] = useState<boolean>(false)
+  const [name, setName] = useState<string>('')
   const [loading, setLoading] = useState<boolean>(false)
-  const [walletAddresses] = useState<{ address: string; blockchainNetwork: 'ethereum' }[]>([
-    { address: '0x0', blockchainNetwork: 'ethereum' },
-  ])
+  const [walletAddresses] = useState<{ address: string; blockchainNetwork: 'ethereum' }[]>([{ address: '0x0', blockchainNetwork: 'ethereum' }])
 
   const submitName = async () => {
     setLoading(true)
-    await createProfile(name, 'desc', 'asd', walletAddresses[0]).then(() => {
+    if (found) {
       setLoading(false)
-      useStore.setState({ name })
       router.push('/onboarding/profile/setup')
+    }
+    await createProfile(name, 'desc', 'asd', walletAddresses[0]).then((result: any) => {
+      if (result.data.createProfile?.document?.name) {
+        const loadedName = result.data.createProfile?.document?.name
+        useStore.setState({ name: loadedName })
+        setLoading(false)
+        router.push('/onboarding/profile/setup')
+      }
+      console.log('results: ', result)
     })
   }
 
@@ -38,10 +43,8 @@ export default function Found() {
       const output = await queryProfile()
       if (output.data?.viewer?.profile) {
         setName(output.data?.viewer?.profile?.name)
-        // setImage(output.data?.viewer?.profile?.image)
-        // setDescription(output.data?.viewer?.profile?.description)
+        setFound(true)
       } else {
-        console.log(output)
       }
     })()
   }, [])
@@ -70,7 +73,7 @@ export default function Found() {
         },
       },
     })
-    console.log(output)
+    return output
   }
 
   return (
@@ -79,7 +82,7 @@ export default function Found() {
         <VStack>
           <Box>
             <Heading marginBottom="0.5em" size="md">
-              BAG FOUND
+              BAG DETECTED
             </Heading>
             <Text fontSize="sm">COLLECTION</Text>
             <Text fontSize="xs" fontWeight="bold">
@@ -92,17 +95,32 @@ export default function Found() {
         </Box>
       </Flex>
       <Flex>
-        <VStack marginTop="1em" flex="1" spacing="4" align="stretch">
-          {/* <Box>
-            <Text fontSize="lg">What is your name?</Text>
-          </Box> */}
+        <VStack marginTop="1em" flex="1" spacing="2" align="stretch">
+          {found && (
+            <Card border="3px">
+              <CardBody>
+                <HStack spacing="1.5rem">
+                  <Avatar bg="gray.900" />
+                  <Text>{name}</Text>
+                </HStack>
+              </CardBody>
+            </Card>
+          )}
           <Box>
-            <Input onChange={(e) => setName(e.target.value)} border="2px" size="lg" focusBorderColor="brand.900" placeholder="What is your name?" />
+            {!found && (
+              <Input
+                onChange={(e) => setName(e.target.value)}
+                value={name}
+                border="2px"
+                size="lg"
+                focusBorderColor="brand.900"
+                placeholder="What is your name?"
+              />
+            )}
           </Box>
           <CoreButton isLoading={loading} size="xs" clickHandler={submitName}>
             NEXT
           </CoreButton>
-          <h1>{name}</h1>
         </VStack>
       </Flex>
     </MobileLayout>
