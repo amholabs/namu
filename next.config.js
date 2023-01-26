@@ -29,6 +29,10 @@ const nextConfig = {
 
 module.exports = withPWA({
   nextConfig,
+  experimental: {
+    // Required:
+    appDir: true,
+  },
   async redirects() {
     return [
       {

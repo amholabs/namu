@@ -38,7 +38,6 @@ export default function Found() {
   }
 
   useEffect(() => {
-    // eslint-disable-next-line prettier/prettier
     ;(async () => {
       await loadSession()
       const output = await queryProfile()
