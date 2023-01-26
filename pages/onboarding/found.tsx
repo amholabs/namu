@@ -9,7 +9,8 @@ import { CoreButton } from '@/components/shared'
 import { MUTATE_CREATE_PROFILE, QUERY_PROFILE_VIEWER } from '@/lib/constants'
 import { useStore } from '@/src/store'
 import { loadSession } from '@/src/utils/scan'
-import { Query } from 'out/__generated__/graphql'
+
+import { Query } from '../../out/__generated__/graphql'
 
 export default function Found() {
   const compose = useStore.getState().compose

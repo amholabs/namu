@@ -8,6 +8,7 @@
     "paths": {
       "@/components/*": ["components/*"],
       "@/lib/*": ["lib/*"],
+      "@/out/*": ["out/*"],
       "@/src/*": ["src/*"]
     },
     "target": "es2020",

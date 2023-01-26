@@ -14,7 +14,7 @@ export default function Complete() {
   }
   const handleClick = async () => {
     // TODO: Save the complete profile
-    nextPage('/onboarding/profile/complete')
+    nextPage('/profile')
   }
   return (
     <MobileLayout>
