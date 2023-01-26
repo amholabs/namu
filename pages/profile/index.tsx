@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 
-import { Button, Center, Container, Heading, Image, Text, VStack } from '@chakra-ui/react'
+import { Button, Center, Container, Heading, HStack, Image, Text, VStack } from '@chakra-ui/react'
 import { ExecutionResult } from 'graphql'
 import { useRouter } from 'next/router'
 
@@ -46,7 +46,7 @@ export default function Profile() {
   return (
     <MobileLayout>
       <Center>
-        <Text fontSize="xs" textAlign="center">
+        <Text fontSize="xs" textAlign="center" marginTop="1.5rem">
           {DUMMY_TOKEN_DATA.name} #{DUMMY_TOKEN_DATA.id}
         </Text>
       </Center>
@@ -68,11 +68,13 @@ export default function Profile() {
           {data.title}
         </CoreButton>
       ))}
-      <Text textAlign={'center'} onClick={scan} as="sub" paddingTop="1.5rem" paddingBottom="0.5rem">
-        SETTINGS
-      </Text>
       <Center>
-        <WalletConnectCustom labelConnect="CONNECT" />
+        <HStack spacing="5" marginTop="1.5rem" marginBottom="1.5rem">
+          <WalletConnectCustom labelConnect="CONNECT" />
+          <Text textAlign={'center'} onClick={scan} as="sub">
+            SETTINGS
+          </Text>
+        </HStack>
       </Center>
     </MobileLayout>
   )

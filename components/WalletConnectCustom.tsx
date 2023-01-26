@@ -13,7 +13,7 @@ interface WalletConnectCustomProps {
 }
 
 export const WalletConnectCustom = ({
-  className,
+  // className,
   // classNameConnect,
   // classNameConnected,
   // classNameWrongNetwork,
@@ -26,17 +26,16 @@ export const WalletConnectCustom = ({
         const connected = account && chain && (!authenticationStatus || authenticationStatus === 'authenticated')
 
         return (
-          <div className={className}>
+          <>
+            {/* <div className={className}> */}
             {(() => {
               if (!connected) {
                 return (
                   <>
                     {/* <Button variant="unstyled" className={classNameConnect} onClick={openConnectModal}> */}
-                    <Button variant="unstyled" onClick={openConnectModal}>
-                      <Text size="xs" as="sub">
-                        {labelConnect}
-                      </Text>
-                    </Button>
+                    <Text size="xs" as="sub" fontWeight="normal" onClick={openConnectModal}>
+                      {labelConnect}
+                    </Text>
                   </>
                 )
               }
@@ -44,19 +43,16 @@ export const WalletConnectCustom = ({
               if (chain.unsupported) {
                 return (
                   // <Button variant="unstyled" className={classNameWrongNetwork} onClick={openChainModal}>
-                  <Button variant="unstyled" onClick={openChainModal}>
-                    {labelWrongNetwork}
-                  </Button>
+                  <Text onClick={openChainModal}>{labelWrongNetwork}</Text>
                 )
               }
 
               return (
                 <>
                   {/* <button className={classNameConnected} onClick={openChainModal} style={{ display: 'flex', alignItems: 'center' }} type="button"> */}
-                  <Box>
-                    <Button variant="unstyled" onClick={openChainModal}>
-                      <HStack align="stretch">
-                        {/* {chain.hasIcon && (
+                  {/* <Button variant="unstyled" onClick={openChainModal}> */}
+                  <HStack align="stretch">
+                    {/* {chain.hasIcon && (
                         <div
                           style={{
                             background: chain.iconBackground,
@@ -72,19 +68,19 @@ export const WalletConnectCustom = ({
                           )}
                         </div>
                       )} */}
-                        {/* <Text size="xs" as="sub">
+                    {/* <Text size="xs" as="sub">
                         {chain.name?.toUpperCase()}
                       </Text> */}
-                        <Text size="xs" as="sub">
-                          CONNECTED AS {account.address?.slice(0, 6) + '...' + account.address?.slice(-4)}
-                        </Text>
-                      </HStack>
-                    </Button>
-                  </Box>
+                    <Text size="xs" as="sub" fontWeight="normal">
+                      LOGGED IN AS {account.address?.slice(0, 6) + '...' + account.address?.slice(-4)}
+                    </Text>
+                  </HStack>
+                  {/* </Button> */}
                 </>
               )
             })()}
-          </div>
+            {/* </div> */}
+          </>
         )
       }}
     </ConnectButton.Custom>
