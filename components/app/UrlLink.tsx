@@ -4,8 +4,6 @@ import { CheckIcon } from '@chakra-ui/icons'
 import { Box, Flex, Input, InputGroup, InputLeftAddon, Spinner, Stack } from '@chakra-ui/react'
 import { IconType } from 'react-icons'
 
-import { useStore } from '@/src/store'
-
 type UrlLinkProps = {
   uri?: string
   placeholder: string

@@ -3,7 +3,7 @@ import { useState } from 'react'
 import { Box, Heading, Text, Toast, useToast } from '@chakra-ui/react'
 import { useRouter } from 'next/router'
 
-import MobileLayout from '@/components/layout/MobileLayout'
+import MobileLayout from '@/app/MobileLayout'
 import { CoreButton } from '@/components/shared'
 import { generateSession } from '@/src/utils/scan'
 

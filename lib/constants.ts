@@ -1,6 +1,8 @@
 /* eslint-disable unused-imports/no-unused-vars */
 import { arbitrum, goerli, hardhat, mainnet, optimism, polygon, sepolia } from '@wagmi/chains'
 
+import { UrlLink, UrlLinkInput } from '@/out/__generated__/graphql'
+
 // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 // Application
 // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
@@ -128,33 +130,33 @@ mutation UpdateUrlLink($i: UpdateUrlLinkInput!) {
   }
 }`
 
-export enum SocialType {
-  BASE = 'BASE',
-  ETH = 'ETH',
-  BTC = 'BTC',
-  VENMO = 'VENMO',
-  CASHAPP = 'CASHAPP',
-  PAYPAL = 'PAYPAL',
-  EMAIL = 'EMAIL',
-  BANDCAMP = 'BANDCAMP',
-  LINKEDIN = 'LINKEDIN',
-  CLUBHOUSE = 'CLUBHOUSE',
-  GITHUB = 'GITHUB',
-  SUBSTACK = 'SUBSTACK',
-  TELEGRAM = 'TELEGRAM',
-  SIGNAL = 'SIGNAL',
-  TWITCH = 'TWITCH',
-  PATREON = 'PATREON',
-  CAMEO = 'CAMEO',
-  SPOTIFY = 'SPOTIFY',
-  AMAZON = 'AMAZON',
-  APPLEMUSIC = 'APPLEMUSIC',
-  SNAPCHAT = 'SNAPCHAT',
-  INSTAGRAM = 'INSTAGRAM',
-  FACEBOOK = 'FACEBOOK',
-  TWITTER = 'TWITTER',
-  TIKTOK = 'TIKTOK',
-  SOUNDCLOUD = 'SOUNDCLOUD',
-  YOUTUBE = 'YOUTUBE',
-  PINTEREST = 'PINTEREST',
-}
+// BASE = 'BASE',
+// ETH = 'ETH',
+// BTC = 'BTC',
+// VENMO = 'VENMO',
+// CASHAPP = 'CASHAPP',
+// PAYPAL = 'PAYPAL',
+// EMAIL = 'EMAIL',
+// BANDCAMP = 'BANDCAMP',
+// LINKEDIN = 'LINKEDIN',
+// CLUBHOUSE = 'CLUBHOUSE',
+// GITHUB = 'GITHUB',
+// SUBSTACK = 'SUBSTACK',
+// TELEGRAM = 'TELEGRAM',
+// SIGNAL = 'SIGNAL',
+// TWITCH = 'TWITCH',
+// PATREON = 'PATREON',
+// CAMEO = 'CAMEO',
+// SPOTIFY = 'SPOTIFY',
+// AMAZON = 'AMAZON',
+// APPLEMUSIC = 'APPLEMUSIC',
+// SNAPCHAT = 'SNAPCHAT',
+// INSTAGRAM = 'INSTAGRAM',
+// FACEBOOK = 'FACEBOOK',
+// TWITTER = 'TWITTER',
+// TIKTOK = 'TIKTOK',
+// SOUNDCLOUD = 'SOUNDCLOUD',
+// YOUTUBE = 'YOUTUBE',
+// PINTEREST = 'PINTEREST',
+
+export type SocialLink = Omit<UrlLinkInput, 'profileId'> & {}

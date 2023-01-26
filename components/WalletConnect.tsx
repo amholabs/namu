@@ -1,14 +1,15 @@
 import * as React from 'react'
 
+import { Flex } from '@chakra-ui/react'
 import { ConnectButton } from '@rainbow-me/rainbowkit'
 
-interface WalletConnectProps {
-  className?: string
-}
+// interface WalletConnectProps {
+//   className?: string
+// }
 
-export const WalletConnect = ({ className }: WalletConnectProps) => {
+export const WalletConnect = () => {
   return (
-    <span className={className}>
+    <Flex>
       <ConnectButton
         showBalance={false}
         accountStatus={{
@@ -20,7 +21,7 @@ export const WalletConnect = ({ className }: WalletConnectProps) => {
           largeScreen: 'icon',
         }}
       />
-    </span>
+    </Flex>
   )
 }
 

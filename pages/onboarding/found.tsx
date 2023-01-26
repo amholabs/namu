@@ -1,14 +1,14 @@
 import { useEffect, useState } from 'react'
 
 import { Avatar, Box, Card, CardBody, Flex, HStack, Heading, Image, Input, Skeleton, SkeletonCircle, Text, VStack } from '@chakra-ui/react'
-import { ExecutionResult, isOutputType } from 'graphql'
+import { ExecutionResult } from 'graphql'
 import { useRouter } from 'next/router'
 
-import MobileLayout from '@/components/layout/MobileLayout'
 import { CoreButton } from '@/components/shared'
 import { MUTATE_CREATE_PROFILE, QUERY_PROFILE_VIEWER } from '@/lib/constants'
 import { useStore } from '@/src/store'
 import { loadSession } from '@/src/utils/scan'
+import MobileLayout from 'app/MobileLayout'
 
 import { Query } from '../../out/__generated__/graphql'
 

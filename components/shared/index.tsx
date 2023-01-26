@@ -18,6 +18,7 @@ export const CoreButton = (props: PropsWithChildren<ButtonProps>) => {
         size={size}
         border={'3px'}
         isLoading={isLoading}
+        width="300px"
         flex="1"
         padding="6">
         {children}

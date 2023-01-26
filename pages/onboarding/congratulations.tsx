@@ -3,8 +3,8 @@ import { useState } from 'react'
 import { Box, Heading, Text } from '@chakra-ui/react'
 import { useRouter } from 'next/router'
 
-import MobileLayout from '@/components/layout/MobileLayout'
 import { CoreButton } from '@/components/shared'
+import MobileLayout from 'app/MobileLayout'
 
 export default function Congratulations() {
   const router = useRouter()

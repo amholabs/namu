@@ -1,5 +1,6 @@
 import * as React from 'react'
 
+import { Box, Button, Flex, HStack, Text } from '@chakra-ui/react'
 import { ConnectButton } from '@rainbow-me/rainbowkit'
 
 interface WalletConnectCustomProps {
@@ -13,9 +14,9 @@ interface WalletConnectCustomProps {
 
 export const WalletConnectCustom = ({
   className,
-  classNameConnect,
-  classNameConnected,
-  classNameWrongNetwork,
+  // classNameConnect,
+  // classNameConnected,
+  // classNameWrongNetwork,
   labelConnect,
   labelWrongNetwork,
 }: WalletConnectCustomProps) => {
@@ -30,43 +31,57 @@ export const WalletConnectCustom = ({
               if (!connected) {
                 return (
                   <>
-                    <button className={classNameConnect} onClick={openConnectModal} type="button">
-                      {labelConnect}
-                    </button>
+                    {/* <Button variant="unstyled" className={classNameConnect} onClick={openConnectModal}> */}
+                    <Button variant="unstyled" onClick={openConnectModal}>
+                      <Text size="xs" as="sub">
+                        {labelConnect}
+                      </Text>
+                    </Button>
                   </>
                 )
               }
 
               if (chain.unsupported) {
                 return (
-                  <button className={classNameWrongNetwork} onClick={openChainModal} type="button">
+                  // <Button variant="unstyled" className={classNameWrongNetwork} onClick={openChainModal}>
+                  <Button variant="unstyled" onClick={openChainModal}>
                     {labelWrongNetwork}
-                  </button>
+                  </Button>
                 )
               }
 
               return (
-                <div className="">
-                  <button className={classNameConnected} onClick={openChainModal} style={{ display: 'flex', alignItems: 'center' }} type="button">
-                    {chain.hasIcon && (
-                      <div
-                        style={{
-                          background: chain.iconBackground,
-                          width: 18,
-                          height: 18,
-                          borderRadius: 999,
-                          overflow: 'hidden',
-                          marginRight: 4,
-                        }}>
-                        {chain.iconUrl && (
-                          // eslint-disable-next-line @next/next/no-img-element
-                          <img alt={chain.name ?? 'Chain icon'} src={chain.iconUrl} style={{ width: 18, height: 18 }} />
-                        )}
-                      </div>
-                    )}
-                    <span className="ml-1 text-lg lowercase">{chain.name}</span>
-                  </button>
-                </div>
+                <>
+                  {/* <button className={classNameConnected} onClick={openChainModal} style={{ display: 'flex', alignItems: 'center' }} type="button"> */}
+                  <Box>
+                    <Button variant="unstyled" onClick={openChainModal}>
+                      <HStack align="stretch">
+                        {/* {chain.hasIcon && (
+                        <div
+                          style={{
+                            background: chain.iconBackground,
+                            width: 18,
+                            height: 18,
+                            borderRadius: 999,
+                            overflow: 'hidden',
+                            marginRight: 4,
+                          }}>
+                          {chain.iconUrl && (
+                            // eslint-disable-next-line @next/next/no-img-element
+                            <img alt={chain.name ?? 'Chain icon'} src={chain.iconUrl} style={{ width: 18, height: 18 }} />
+                          )}
+                        </div>
+                      )} */}
+                        {/* <Text size="xs" as="sub">
+                        {chain.name?.toUpperCase()}
+                      </Text> */}
+                        <Text size="xs" as="sub">
+                          CONNECTED AS {account.address?.slice(0, 6) + '...' + account.address?.slice(-4)}
+                        </Text>
+                      </HStack>
+                    </Button>
+                  </Box>
+                </>
               )
             })()}
           </div>

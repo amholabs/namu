@@ -2,10 +2,10 @@ import { Box, Heading, Text } from '@chakra-ui/react'
 import { ExecutionResult } from 'graphql'
 import { useRouter } from 'next/router'
 
-import MobileLayout from '@/components/layout/MobileLayout'
 import { CoreButton } from '@/components/shared'
 import { MUTATE_CREATE_PROFILE, QUERY_PROFILE_VIEWER } from '@/lib/constants'
 import { useStore } from '@/src/store'
+import MobileLayout from 'app/MobileLayout'
 
 export default function Complete() {
   const router = useRouter()

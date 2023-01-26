@@ -6,11 +6,11 @@ import { useRouter } from 'next/router'
 import { SiBehance, SiDribbble, SiGithub, SiGumroad, SiInstagram, SiSubstack, SiTiktok, SiTwitter, SiYoutube } from 'react-icons/si'
 
 import UrlLink from '@/components/app/UrlLink'
-import MobileLayout from '@/components/layout/MobileLayout'
 import { CoreButton } from '@/components/shared'
 import { MUTATE_CREATE_URLLINK, QUERY_URLLINK_VIEWER, SocialType } from '@/lib/constants'
 import { Query } from '@/out/__generated__/graphql'
 import { useStore } from '@/src/store'
+import MobileLayout from 'app/MobileLayout'
 
 export default function Setup() {
   const router = useRouter()

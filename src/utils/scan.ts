@@ -14,6 +14,7 @@ export const scan = async () => {
   const { address, slot } = keys[0]
   return { address, slot }
 }
+
 export const loadAuthMethod = async (address: string, slot: string): Promise<AuthMethod> => {
   const accountId: AccountId = {
     address: address.toLowerCase(),
