@@ -14,7 +14,7 @@ export default function WalletConnectCustom() {
 
   return (
     <Text size="xs" as="sub" fontWeight="normal" onClick={onOpen}>
-      {isConnecting ? 'LOADING...' : status == 'connected' ? truncateAddress(address) : 'CONNECT'}
+      {isConnecting ? 'LOADING...' : status == 'connected' && address ? truncateAddress(address) : 'CONNECT'}
     </Text>
   )
 }

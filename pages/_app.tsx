@@ -160,7 +160,7 @@ export default function App({ Component, pageProps }: AppProps) {
         <ChakraProvider theme={theme}>
           <Fonts />
           <WalletConnectProvider client={wagmiClient}>
-            <Web3Modal projectId={projectId} ethereumClient={ethereumClient} />
+            <Web3Modal themeMode="dark" themeColor="blackWhite" themeBackground="themeColor" projectId={projectId} ethereumClient={ethereumClient} />
             <Layout>
               <Component {...pageProps} />
             </Layout>
