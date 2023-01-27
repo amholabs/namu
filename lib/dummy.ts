@@ -9,19 +9,19 @@ export const DUMMY_SOCIAL_LINKS: SocialLink[] = [
     link: 'https://amho.xyz/ethdenver2023/scan',
   },
   {
-    type: UrlLinkSocialType.Base,
-    title: 'WEBSITE',
-    link: 'https://amho.xyz',
-  },
-  {
     type: UrlLinkSocialType.Instagram,
-    title: 'INSTAGRAM',
+    title: 'FOLLOW ON INSTAGRAM',
     link: 'https://twitter.com/amhoatelier',
   },
   {
     type: UrlLinkSocialType.Twitter,
-    title: 'TWITTER',
+    title: 'FOLLOW ON TWITTER',
     link: 'https://twitter.com/AMHOLTD',
+  },
+  {
+    type: UrlLinkSocialType.Signal,
+    title: 'LEARN MORE',
+    link: 'https://amho.xyz',
   },
 ]
 

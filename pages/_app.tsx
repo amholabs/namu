@@ -2,9 +2,12 @@ import './app.css'
 
 import { ChakraProvider, extendTheme } from '@chakra-ui/react'
 import { ComposeClient } from '@composedb/client'
-import { RuntimeCompositeDefinition } from '@composedb/types'
-import { RuntimeModel } from '@composedb/types'
+import * as ethereum from '@web3modal/ethereum'
+import { walletConnectProvider } from '@web3modal/ethereum'
+import { Web3Modal } from '@web3modal/react'
 import type { AppProps } from 'next/app'
+import * as wagmi from 'wagmi'
+import { mainnet, polygon } from 'wagmi/chains'
 
 import { Layout } from '@/components/layout'
 import Fonts from '@/lib/Fonts'
@@ -141,15 +144,27 @@ export default function App({ Component, pageProps }: AppProps) {
     },
   })
 
+  const chains = [mainnet, polygon]
+  const { provider } = wagmi.configureChains(chains, [ethereum.walletConnectProvider({ projectId: process.env.NEXT_PUBLIC_WC_PROJECT_ID as string })])
+  const wagmiClient = wagmi.createClient({
+    autoConnect: true,
+    connectors: ethereum.modalConnectors({ appName: 'AMHO', chains }),
+    provider,
+  })
+  const projectId = process.env.NEXT_PUBLIC_WC_PROJECT_ID as string
+  const ethereumClient = new ethereum.EthereumClient(wagmiClient, chains)
+
   return (
     <>
       {isMounted && (
         <ChakraProvider theme={theme}>
           <Fonts />
-          <WalletConnectProvider />
-          <Layout>
-            <Component {...pageProps} />
-          </Layout>
+          <WalletConnectProvider client={wagmiClient}>
+            <Web3Modal projectId={projectId} ethereumClient={ethereumClient} />
+            <Layout>
+              <Component {...pageProps} />
+            </Layout>
+          </WalletConnectProvider>
         </ChakraProvider>
       )}
     </>

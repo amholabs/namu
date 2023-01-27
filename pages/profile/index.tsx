@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react'
 
-import { Center, HStack, Heading, Image, Text, VStack, Tag } from '@chakra-ui/react'
+import { Center, HStack, Heading, Image, Tag, Text, VStack } from '@chakra-ui/react'
 import { useWeb3Modal } from '@web3modal/react'
 import { ExecutionResult } from 'graphql'
 import { useRouter } from 'next/router'
 import { useAccount } from 'wagmi'
 
+import EnsName from '@/app/EnsName'
 import { CoreButton } from '@/components/shared'
 import WalletConnectCustom from '@/components/WalletConnectCustom'
 import { QUERY_PROFILE_VIEWER } from '@/lib/constants'
@@ -48,22 +49,22 @@ export default function Profile() {
   useEffect(() => {
     ;(async () => {
       await loadSession()
+      useStore.setState({ address })
       const output = await queryProfile()
       if (output.data?.viewer?.profile) {
         setProfile(output.data?.viewer?.profile)
       }
     })()
-  }, [])
-  if (!profile) return null
+  }, [status])
   return (
     <MobileLayout>
       <Center>
-        <Text fontSize="xs" textAlign="center" marginTop="1.5rem">
-          {DUMMY_TOKEN_DATA.name} #{DUMMY_TOKEN_DATA.id}
-        </Text>
+        <Image paddingTop="2.5rem" boxSize="200px" objectFit="cover" src="/image/bagplaceholder.png" />
       </Center>
       <Center>
-        <Image boxSize="200px" objectFit="cover" src="/image/bagplaceholder.png" />
+        <Text fontSize="xs" textAlign="center">
+          {DUMMY_TOKEN_DATA.name} #{DUMMY_TOKEN_DATA.id}
+        </Text>
       </Center>
       <Center marginTop="1rem" paddingBottom="1rem">
         <VStack>
