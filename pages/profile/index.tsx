@@ -1,11 +1,10 @@
 import { useEffect, useState } from 'react'
 
-import { Button, Center, Container, Heading, HStack, Image, Text, VStack } from '@chakra-ui/react'
+import { Center, HStack, Heading, Image, Text } from '@chakra-ui/react'
 import { ExecutionResult } from 'graphql'
 import { useRouter } from 'next/router'
 
 import { CoreButton } from '@/components/shared'
-import WalletConnect from '@/components/WalletConnect'
 import WalletConnectCustom from '@/components/WalletConnectCustom'
 import { QUERY_PROFILE_VIEWER } from '@/lib/constants'
 import { DUMMY_SOCIAL_LINKS, DUMMY_TOKEN_DATA } from '@/lib/dummy'
@@ -70,7 +69,7 @@ export default function Profile() {
       ))}
       <Center>
         <HStack spacing="5" marginTop="1.5rem" marginBottom="1.5rem">
-          <WalletConnectCustom labelConnect="CONNECT" />
+          <WalletConnectCustom />
           <Text textAlign={'center'} onClick={scan} as="sub">
             SETTINGS
           </Text>

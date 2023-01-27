@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 
-import { Avatar, Box, Card, CardBody, Flex, HStack, Heading, Image, Input, Skeleton, SkeletonCircle, Text, VStack } from '@chakra-ui/react'
+import { Avatar, Box, Card, CardBody, Flex, HStack, Heading, Image, Input, Text, VStack } from '@chakra-ui/react'
 import { ExecutionResult } from 'graphql'
 import { useRouter } from 'next/router'
 

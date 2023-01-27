@@ -9,7 +9,7 @@ import type { AppProps } from 'next/app'
 import { Layout } from '@/components/layout'
 import Fonts from '@/lib/Fonts'
 import { useIsMounted } from '@/src/hooks/useIsMounted'
-import { RainbowKitProvider } from '@/src/providers/RainbowKit'
+import { WalletConnectProvider } from '@/src/providers/WalletConnect'
 import { useStore } from '@/src/store'
 
 import { definition } from '../out/__generated__/runtime'
@@ -139,11 +139,10 @@ export default function App({ Component, pageProps }: AppProps) {
       {isMounted && (
         <ChakraProvider theme={theme}>
           <Fonts />
-          <RainbowKitProvider>
-            <Layout>
-              <Component {...pageProps} />
-            </Layout>
-          </RainbowKitProvider>
+          <WalletConnectProvider />
+          <Layout>
+            <Component {...pageProps} />
+          </Layout>
         </ChakraProvider>
       )}
     </>

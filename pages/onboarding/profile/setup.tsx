@@ -7,8 +7,8 @@ import { SiBehance, SiDribbble, SiGithub, SiGumroad, SiInstagram, SiSubstack, Si
 
 import UrlLink from '@/components/app/UrlLink'
 import { CoreButton } from '@/components/shared'
-import { MUTATE_CREATE_URLLINK, QUERY_URLLINK_VIEWER, SocialType } from '@/lib/constants'
-import { Query } from '@/out/__generated__/graphql'
+import { MUTATE_CREATE_URLLINK, QUERY_URLLINK_VIEWER } from '@/lib/constants'
+import { Query, UrlLinkSocialType } from '@/out/__generated__/graphql'
 import { useStore } from '@/src/store'
 import MobileLayout from 'app/MobileLayout'
 
@@ -16,7 +16,7 @@ export default function Setup() {
   const router = useRouter()
   const compose = useStore.getState().compose
   // eslint-disable-next-line
-  const createUrlLink = async (type: SocialType, title: string, link: string, profileId: string) => {
+  const createUrlLink = async (type: UrlLinkSocialType, title: string, link: string, profileId: string) => {
     compose.executeQuery(`${MUTATE_CREATE_URLLINK}`, {
       i: {
         content: {
