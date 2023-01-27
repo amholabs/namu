@@ -5,23 +5,23 @@ import { SocialLink } from './constants'
 export const DUMMY_SOCIAL_LINKS: SocialLink[] = [
   {
     type: UrlLinkSocialType.Base,
+    title: 'SCAN FOR NFT',
+    link: 'https://amho.xyz/ethdenver2023/scan',
+  },
+  {
+    type: UrlLinkSocialType.Base,
     title: 'WEBSITE',
     link: 'https://amho.xyz',
   },
   {
-    type: UrlLinkSocialType.Base,
-    title: 'JOIN DISCORD',
-    link: 'https://discord.com',
-  },
-  {
-    type: UrlLinkSocialType.Base,
+    type: UrlLinkSocialType.Instagram,
     title: 'INSTAGRAM',
-    link: 'https://instagram.com',
+    link: 'https://twitter.com/amhoatelier',
   },
   {
-    type: UrlLinkSocialType.Base,
-    title: 'MINT POAP',
-    link: 'https://poap.xyz',
+    type: UrlLinkSocialType.Twitter,
+    title: 'TWITTER',
+    link: 'https://twitter.com/AMHOLTD',
   },
 ]
 

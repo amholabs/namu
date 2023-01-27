@@ -72,6 +72,13 @@ export default function App({ Component, pageProps }: AppProps) {
           },
         },
       },
+      Tag: {
+        baseStyle: {
+          container: {
+            borderRadius: '0px',
+          },
+        },
+      },
       Button: {
         baseStyle: {
           borderRadius: '0px',
