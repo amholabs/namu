@@ -1,5 +1,3 @@
-import { useState } from 'react'
-
 import { Text } from '@chakra-ui/react'
 import { useWeb3Modal } from '@web3modal/react'
 import { useAccount } from 'wagmi'

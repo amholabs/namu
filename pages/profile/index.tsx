@@ -68,7 +68,7 @@ export default function Profile() {
         </CoreButton>
       ))}
       <Center>
-        <HStack spacing="5" marginTop="1.5rem" marginBottom="1.5rem">
+        <HStack spacing="5" marginTop="1.0rem" marginBottom="1.5rem">
           <WalletConnectCustom />
           <Text textAlign={'center'} onClick={scan} as="sub">
             SETTINGS
