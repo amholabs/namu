@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 
-import { Center, HStack, Heading, Image, Input, Tag, Text, VStack } from '@chakra-ui/react'
+import { Center, HStack, Heading, Image, Tag, Text, VStack } from '@chakra-ui/react'
 import { useWeb3Modal } from '@web3modal/react'
 import { ExecutionResult } from 'graphql'
 import { useRouter } from 'next/router'
@@ -9,7 +9,7 @@ import { useAccount } from 'wagmi'
 import EnsName from '@/app/EnsName'
 import { CoreButton } from '@/components/shared'
 import WalletConnectCustom from '@/components/WalletConnectCustom'
-import { MUTATE_CREATE_PROFILE, QUERY_PROFILE_VIEWER } from '@/lib/constants'
+import { QUERY_PROFILE_VIEWER } from '@/lib/constants'
 import { DUMMY_SOCIAL_LINKS, DUMMY_TOKEN_DATA } from '@/lib/dummy'
 import { UrlLinkSocialType } from '@/out/__generated__/graphql'
 import { Profile as ProfileType, Query } from '@/out/__generated__/graphql'
@@ -34,33 +34,8 @@ export default function Profile() {
     const output = compose.executeQuery(QUERY_PROFILE_VIEWER)
     return output
   }
-
   const handleClick = (uri: string) => {
     router.push(uri)
-  }
-
-  // function handling onChange event in input and setting it to address value in profile
-  const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setProfile({ ...profile, name: e.target.value })
-  }
-
-  const handleProfileUpdate = async () => {
-    const { name } = profile
-    const output = await compose
-      .executeQuery(`${MUTATE_CREATE_PROFILE}`, {
-        i: {
-          content: {
-            name,
-            image: '',
-            description: '',
-            walletAddresses: { address: '0x0', blockchainNetwork: 'ethereum' },
-          },
-        },
-      })
-      .then((res) => {
-        console.log(res)
-      })
-    return output
   }
 
   const checkConnected = async () => {
@@ -96,16 +71,8 @@ export default function Profile() {
       </Center>
       <Center marginTop="1rem" paddingBottom="1rem">
         <VStack>
-          <Heading>
-            <Input
-              textAlign="center"
-              variant="unstyled"
-              placeholder="Enter Name"
-              value={profile.name}
-              width="auto"
-              onChange={handleNameChange}
-              onBlur={handleProfileUpdate}
-            />
+          <Heading textAlign="center">
+            <h1>{profile.name}</h1>
           </Heading>
           <Tag size="lg" variant="solid" color="white" bg="black">
             ETHDENVER 2023
