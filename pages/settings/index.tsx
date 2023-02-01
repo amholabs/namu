@@ -6,7 +6,7 @@ import { ExecutionResult } from 'graphql'
 import { useRouter } from 'next/router'
 import { useAccount } from 'wagmi'
 
-import EnsName from '@/app/EnsName'
+// import EnsName from '@/app/EnsName'
 import { CoreButton } from '@/components/shared'
 import WalletConnectCustom from '@/components/WalletConnectCustom'
 import { QUERY_PROFILE_VIEWER } from '@/lib/constants'
@@ -18,7 +18,7 @@ import { scan } from '@/src/utils/scan'
 import { loadSession } from '@/src/utils/scan'
 import MobileLayout from 'app/MobileLayout'
 
-export default function Settings() {
+export default function Profile() {
   const router = useRouter()
   const { address, status } = useAccount()
   const { open } = useWeb3Modal()
@@ -48,16 +48,17 @@ export default function Settings() {
 
   useEffect(() => {
     ;(async () => {
-      await loadSession()
-      useStore.setState({ address })
-      const output = await queryProfile()
-      console.log(output)
-      if (output.data?.viewer?.profile) {
-        setProfile(output.data?.viewer?.profile)
+      const wait = await checkConnected()
+      if (wait) {
+        await loadSession()
+        useStore.setState({ address })
+        const output = await queryProfile()
+        if (output.data?.viewer?.profile) {
+          setProfile(output.data?.viewer?.profile)
+        }
       }
     })()
   }, [status])
-
   return (
     <MobileLayout>
       <Center marginTop="1rem" paddingBottom="1rem">

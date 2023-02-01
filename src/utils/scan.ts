@@ -55,13 +55,12 @@ export const loadSession = async (): Promise<DIDSession> => {
   let session
   let resources = compose.resources
 
-  const authMethod = await loadAuthMethod(address, slot)
-
   if (sessionStr) {
     session = await DIDSession.fromSession(sessionStr)
   }
 
   if (!session || (session.hasSession && session.isExpired)) {
+    const authMethod = await loadAuthMethod(address, slot)
     session = await DIDSession.authorize(authMethod, { resources })
     localStorage.setItem('didsession', session.serialize())
   }
