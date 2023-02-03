@@ -17,6 +17,8 @@ export default function Found() {
   const router = useRouter()
   const [found, setFound] = useState<boolean>(false)
   const [name, setName] = useState<string>('')
+  const [image, setImage] = useState<string>('')
+  const [desc, setDesc] = useState<string>('')
   const [loading, setLoading] = useState<boolean>(false)
   const [walletAddresses] = useState<{ address: string; blockchainNetwork: 'ethereum' }[]>([{ address: '0x0', blockchainNetwork: 'ethereum' }])
 
@@ -26,7 +28,7 @@ export default function Found() {
       setLoading(false)
       router.push('/onboarding/profile/setup')
     }
-    await createProfile(name, 'desc', 'asd', walletAddresses[0]).then((result: any) => {
+    await createProfile(name, desc, image, walletAddresses[0]).then((result: any) => {
       if (result.data.createProfile?.document?.name) {
         const loadedName = result.data.createProfile?.document?.name
         useStore.setState({ name: loadedName })
@@ -43,6 +45,8 @@ export default function Found() {
       const output = await queryProfile()
       if (output.data?.viewer?.profile) {
         setName(output.data?.viewer?.profile?.name)
+        setImage(output.data?.viewer?.profile?.image)
+        setDesc(output.data?.viewer?.profile?.description)
         setFound(true)
       } else {
       }

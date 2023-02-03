@@ -71,7 +71,8 @@ export default function Profile() {
   }
 
   const checkConnected = async () => {
-    if (address && status == 'connected') {
+    const session = await loadSession()
+    if ((address && status == 'connected') || session) {
       return true
     } else {
       return false
