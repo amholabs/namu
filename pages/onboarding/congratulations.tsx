@@ -1,6 +1,6 @@
 import { useState } from 'react'
 
-import { Box, Heading, Text } from '@chakra-ui/react'
+import { Box, Heading, Spacer, Text, VStack } from '@chakra-ui/react'
 import { useRouter } from 'next/router'
 
 import { CoreButton } from '@/components/shared'
@@ -17,17 +17,21 @@ export default function Congratulations() {
     nextPage('/onboarding/tap')
   }
   return (
-    <MobileLayout>
-      <Box paddingBottom="1rem" justifyContent="start">
-        <Heading paddingBottom="1rem" size="md">
-          CONGRATULATIONS ON YOUR NEW PURCHASE!
+    <>
+      <Box padding="2rem" height="100vh" width="100%" display="flex" flexDirection="column" flex={1}>
+        <Heading paddingBottom="1rem" size="2xl" lineHeight={'3rem'}>
+          {/* eslint-disable-next-line react/no-unescaped-entities */}
+          Let's start setting up your bag.
         </Heading>
-        {/* eslint-disable-next-line react/no-unescaped-entities */}
-        <Text fontSize="sm">Let's start registration. Click NEXT to continue.</Text>
+        <Spacer />
+        <Box paddingBottom="1rem" marginTop="auto">
+          <Text fontSize="sm">Click NEXT to continue.</Text>
+        </Box>
+        <CoreButton isLoading={loading} size="xs" clickHandler={handleClick}>
+          NEXT
+        </CoreButton>
       </Box>
-      <CoreButton isLoading={loading} size="xs" clickHandler={handleClick}>
-        NEXT
-      </CoreButton>
-    </MobileLayout>
+      {/* <MobileLayout></MobileLayout> */}
+    </>
   )
 }
