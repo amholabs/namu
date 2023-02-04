@@ -26,14 +26,14 @@ export default function Found() {
     setLoading(true)
     if (found) {
       setLoading(false)
-      router.push('/onboarding/profile/setup')
+      router.push('/onboarding/profile/complete')
     }
     await createProfile(name, desc, image, walletAddresses[0]).then((result: any) => {
-      if (result.data.createProfile?.document?.name) {
+      if (result.data?.createProfile?.document?.name) {
         const loadedName = result.data.createProfile?.document?.name
         useStore.setState({ name: loadedName })
         setLoading(false)
-        router.push('/onboarding/profile/setup')
+        router.push('/onboarding/profile/complete')
       }
       console.log('results: ', result)
     })

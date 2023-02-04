@@ -14,7 +14,6 @@ import { DUMMY_SOCIAL_LINKS, DUMMY_TOKEN_DATA } from '@/lib/dummy'
 import { UrlLinkSocialType } from '@/out/__generated__/graphql'
 import { Profile as ProfileType, Query } from '@/out/__generated__/graphql'
 import { useStore } from '@/src/store'
-import { scan } from '@/src/utils/scan'
 import { loadSession } from '@/src/utils/scan'
 import MobileLayout from 'app/MobileLayout'
 
@@ -49,8 +48,8 @@ export default function Profile() {
     }
   }
 
-  const handleSettingNavigate = () => {
-    const session = loadSession()
+  const handleSettingNavigate = async () => {
+    const session = await loadSession()
     if (session) {
       handleNavigate('/settings')
     }
