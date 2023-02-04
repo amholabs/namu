@@ -1,6 +1,11 @@
+import { hashMessage } from '@ethersproject/hash'
+import { computeAddress, recoverAddress } from '@ethersproject/transactions'
+// @ts-ignore
+import { ethSignMessage, listKeys } from 'halo-chip'
 import { SiweMessage } from 'siwe'
 
 import { SITE_NAME } from '@/lib/constants'
+import { scan } from '@/src/utils/scan'
 
 export const siweLogin = async ({ address, chain, signMessageAsync }: any) => {
   // 1. Get random nonce from API
@@ -38,4 +43,25 @@ export const siweLogin = async ({ address, chain, signMessageAsync }: any) => {
   if (verifyRes.status === 200) {
     dispatchEvent(new Event('verified'))
   }
+}
+
+export const siweLoginWithChip = async () => {
+  const nonceRes = await fetch('/api/account/nonce')
+  const nonce = await nonceRes.text()
+  const { address, slot } = await scan()
+  const message = new SiweMessage({
+    domain: window.location.host,
+    address,
+    statement: `Sign in with Ethereum to ${SITE_NAME}`,
+    uri: window.location.origin,
+    version: '1',
+    chainId: 1,
+    nonce: nonce,
+  })
+  const preparedMessage = message.prepareMessage()
+  // const preparedMessage = 'test'
+  const sig = await ethSignMessage(preparedMessage, slot, address)
+  const recoveredAddress = recoverAddress(hashMessage(preparedMessage), sig)
+  console.log('original:', address)
+  console.log('recovered:', recoveredAddress)
 }

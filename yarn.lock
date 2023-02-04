@@ -6964,6 +6964,14 @@
     buffer "6.0.3"
     valtio "1.9.0"
 
+"@web3modal/core@2.1.1":
+  version "2.1.1"
+  resolved "https://registry.yarnpkg.com/@web3modal/core/-/core-2.1.1.tgz#e1ebe8faaae6e4b74df911fd5ac6023f280b12c1"
+  integrity sha512-GAZAvfkPHoX2/fghQmf+y36uDspk9wBJxG7qLPUNTHzvIfRoNHWbTt3iEvRdPmUZwbTGDn1jvz9z0uU67gvZdw==
+  dependencies:
+    buffer "6.0.3"
+    valtio "1.9.0"
+
 "@web3modal/ethereum@2.0.0":
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/@web3modal/ethereum/-/ethereum-2.0.0.tgz#d8e14c1857447c673567519aac5487b88cfc384d"
@@ -6985,12 +6993,30 @@
     "@web3modal/core" "2.0.0"
     "@web3modal/ui" "2.0.0"
 
+"@web3modal/standalone@^2.1.1":
+  version "2.1.1"
+  resolved "https://registry.yarnpkg.com/@web3modal/standalone/-/standalone-2.1.1.tgz#e496e54af5ecf6e282ff7f287eebce7f1ac90bd2"
+  integrity sha512-K06VkZqltLIBKpnLeM2oszRDSdLnwXJWCcItWEOkH4LDFQIiq8lSeLhcamuadRxRKF4ZyTSLHHJ5MFcMfZEHQQ==
+  dependencies:
+    "@web3modal/core" "2.1.1"
+    "@web3modal/ui" "2.1.1"
+
 "@web3modal/ui@2.0.0":
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/@web3modal/ui/-/ui-2.0.0.tgz#a06127bc09bb0da2a914f51f91bd54b636b4ff88"
   integrity sha512-kNSXD/YI+Sl92hxMzsjkRWUj8H+CyV89WDS0Ywy2YV9HxVzC6MzntnsYZ4rti5//IzeDlxPhTKKaiBWE68Gwzw==
   dependencies:
     "@web3modal/core" "2.0.0"
+    lit "2.6.1"
+    motion "10.15.5"
+    qrcode "1.5.1"
+
+"@web3modal/ui@2.1.1":
+  version "2.1.1"
+  resolved "https://registry.yarnpkg.com/@web3modal/ui/-/ui-2.1.1.tgz#300dceeee8a54be70aad74fb4a781ac22439eded"
+  integrity sha512-0jRDxgPc/peaE5KgqnzzriXhdVu5xNyCMP5Enqdpd77VkknJIs7h16MYKidxgFexieyHpCOssWySsryWcP2sXA==
+  dependencies:
+    "@web3modal/core" "2.1.1"
     lit "2.6.1"
     motion "10.15.5"
     qrcode "1.5.1"

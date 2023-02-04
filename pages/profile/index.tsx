@@ -8,7 +8,7 @@ import { useAccount, useNetwork, useSignMessage } from 'wagmi'
 
 import { CoreButton } from '@/components/shared'
 import WalletConnectCustom from '@/components/WalletConnectCustom'
-import { siweLogin } from '@/lib/actions/siweLogin'
+import { siweLogin, siweLoginWithChip } from '@/lib/actions/siweLogin'
 import { MUTATE_CREATE_PROFILE, QUERY_PROFILE_VIEWER } from '@/lib/constants'
 import { DUMMY_SOCIAL_LINKS, DUMMY_TOKEN_DATA } from '@/lib/dummy'
 import { UrlLinkSocialType } from '@/out/__generated__/graphql'
@@ -48,12 +48,12 @@ export default function Profile() {
     }
   }
 
-  const handleSettingNavigate = async () => {
-    const session = await loadSession()
-    if (session) {
-      handleNavigate('/settings')
-    }
-  }
+  // const handleSettingNavigate = async () => {
+  //   const session = await loadSession()
+  //   if (session) {
+  //     handleNavigate('/settings')
+  //   }
+  // }
 
   // function handling onChange event in input and setting it to address value in profile
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -150,7 +150,8 @@ export default function Profile() {
       <Center>
         <HStack spacing="5" marginTop="1.0rem" marginBottom="1.5rem">
           <WalletConnectCustom />
-          <Text textAlign={'center'} onClick={handleSettingNavigate} as="sub">
+          {/* <Text textAlign={'center'} onClick={handleSettingNavigate} as="sub"> */}
+          <Text textAlign={'center'} onClick={siweLoginWithChip} as="sub">
             SETTINGS
           </Text>
         </HStack>
