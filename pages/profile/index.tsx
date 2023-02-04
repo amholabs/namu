@@ -4,11 +4,11 @@ import { Center, HStack, Heading, Image, Input, Tag, Text, VStack } from '@chakr
 import { useWeb3Modal } from '@web3modal/react'
 import { ExecutionResult } from 'graphql'
 import { useRouter } from 'next/router'
-import { useAccount } from 'wagmi'
+import { useAccount, useNetwork, useSignMessage } from 'wagmi'
 
-import EnsName from '@/app/EnsName'
 import { CoreButton } from '@/components/shared'
 import WalletConnectCustom from '@/components/WalletConnectCustom'
+import { siweLogin } from '@/lib/actions/siweLogin'
 import { MUTATE_CREATE_PROFILE, QUERY_PROFILE_VIEWER } from '@/lib/constants'
 import { DUMMY_SOCIAL_LINKS, DUMMY_TOKEN_DATA } from '@/lib/dummy'
 import { UrlLinkSocialType } from '@/out/__generated__/graphql'
@@ -21,7 +21,9 @@ import MobileLayout from 'app/MobileLayout'
 export default function Profile() {
   const router = useRouter()
   const { address, status } = useAccount()
+  const { chain } = useNetwork()
   const { open } = useWeb3Modal()
+  const { signMessageAsync } = useSignMessage()
   const [profile, setProfile] = useState<ProfileType>({
     id: '',
     name: '',
@@ -37,6 +39,14 @@ export default function Profile() {
 
   const handleNavigate = (uri: string) => {
     router.push(uri)
+  }
+
+  const handleCreateMessage = async () => {
+    try {
+      await siweLogin({ address, chain, signMessageAsync })
+    } catch (error) {
+      console.error(error)
+    }
   }
 
   const handleSettingNavigate = () => {
@@ -127,7 +137,8 @@ export default function Profile() {
           key={id}
           clickHandler={async () => {
             if (data.type == UrlLinkSocialType.Base && (await checkConnected())) {
-              await scan()
+              // await scan()
+              await handleCreateMessage()
             } else if (data.type == UrlLinkSocialType.Base && !(await checkConnected())) {
               await open()
             } else {

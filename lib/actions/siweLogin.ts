@@ -2,7 +2,7 @@ import { SiweMessage } from 'siwe'
 
 import { SITE_NAME } from '@/lib/constants'
 
-export const siweLogin = async ({ address, chainId, signMessageAsync }: any) => {
+export const siweLogin = async ({ address, chain, signMessageAsync }: any) => {
   // 1. Get random nonce from API
   const nonceRes = await fetch('/api/account/nonce')
   const nonce = await nonceRes.text()
@@ -14,7 +14,7 @@ export const siweLogin = async ({ address, chainId, signMessageAsync }: any) => 
     statement: `Sign in with Ethereum to ${SITE_NAME}`,
     uri: window.location.origin,
     version: '1',
-    chainId: chainId,
+    chainId: chain.id,
     nonce: nonce,
   })
 

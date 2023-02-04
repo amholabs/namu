@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next'
-// import { SiweMessage } from 'siwe'
+import { SiweMessage } from 'siwe'
 
 import { withSessionRoute } from '@/src/utils/server'
 
@@ -8,13 +8,13 @@ export default withSessionRoute(async function handler(req: NextApiRequest, res:
 
   if (req.method === 'POST') {
     try {
-      // const { message, signature } = req.body
-      // const siweMessage = new SiweMessage(message)
-      // const fields = await siweMessage.validate(signature)
+      const { message, signature } = req.body
+      const siweMessage = new SiweMessage(message)
+      const fields = await siweMessage.validate(signature)
 
-      // if (fields.nonce !== req.session.nonce) return res.status(422).json({ message: 'Invalid nonce.' })
+      if (fields.nonce !== req.session.nonce) return res.status(422).json({ message: 'Invalid nonce.' })
 
-      // req.session.siwe = fields
+      req.session.siwe = fields
       await req.session.save()
       return res.json({ ok: true })
     } catch (ex) {
