@@ -6,13 +6,13 @@ import { UrlLink, UrlLinkInput } from '@/out/__generated__/graphql'
 // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 // Application
 // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-export const SITE_CANONICAL = 'https://turbo.district.dev'
-export const SITE_EMOJI = '⚡'
-export const SITE_NAME = 'TurboETH'
-export const SITE_TITLE = 'TurboETH - Web3 App Template'
-export const SITE_DESCRIPTION = 'Web3 App Template built using Next.js, TailwindCSS and RainbowKit.'
-export const SOCIAL_TWITTER = 'KamesGeraghty'
-export const SOCIAL_GITHUB = 'turbo-eth/template-web3-app'
+export const SITE_CANONICAL = 'https://amho.xyz'
+export const SITE_EMOJI = ''
+export const SITE_NAME = 'AMHO'
+export const SITE_TITLE = 'AMHO ATELIER'
+export const SITE_DESCRIPTION = 'Fashion house building crypto native luxury goods.'
+export const SOCIAL_TWITTER = 'AMHOLTD'
+export const SOCIAL_GITHUB = ''
 
 export const APP_CONFIG = {
   canonical: SITE_CANONICAL,

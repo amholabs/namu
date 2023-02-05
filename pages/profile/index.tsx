@@ -6,13 +6,13 @@ import { ExecutionResult } from 'graphql'
 import { useRouter } from 'next/router'
 import { useAccount, useNetwork, useSignMessage } from 'wagmi'
 
-import { CoreButton } from '@/components/shared'
-import WalletConnectCustom from '@/components/WalletConnectCustom'
 import { siweLogin, siweLoginWithChip } from '@/lib/actions/siweLogin'
 import { MUTATE_CREATE_PROFILE, QUERY_PROFILE_VIEWER } from '@/lib/constants'
 import { DUMMY_SOCIAL_LINKS, DUMMY_TOKEN_DATA } from '@/lib/dummy'
 import { UrlLinkSocialType } from '@/out/__generated__/graphql'
 import { Profile as ProfileType, Query } from '@/out/__generated__/graphql'
+import { CoreButton } from '@/src/components/shared'
+import WalletConnectCustom from '@/src/components/WalletConnectCustom'
 import { useStore } from '@/src/store'
 import { loadSession } from '@/src/utils/scan'
 import MobileLayout from 'app/MobileLayout'
@@ -130,23 +130,25 @@ export default function Profile() {
           </Tag>
         </VStack>
       </Center>
-      {DUMMY_SOCIAL_LINKS.map((data, id) => (
-        <CoreButton
-          size="sm"
-          key={id}
-          clickHandler={async () => {
-            if (data.type == UrlLinkSocialType.Base && (await checkConnected())) {
-              // await scan()
-              await handleCreateMessage()
-            } else if (data.type == UrlLinkSocialType.Base && !(await checkConnected())) {
-              await open()
-            } else {
-              handleNavigate(data.link)
-            }
-          }}>
-          {data.title}
-        </CoreButton>
-      ))}
+      <VStack spacing={3}>
+        {DUMMY_SOCIAL_LINKS.map((data, id) => (
+          <CoreButton
+            size="sm"
+            key={id}
+            clickHandler={async () => {
+              if (data.type == UrlLinkSocialType.Base && (await checkConnected())) {
+                // await scan()
+                await handleCreateMessage()
+              } else if (data.type == UrlLinkSocialType.Base && !(await checkConnected())) {
+                await open()
+              } else {
+                handleNavigate(data.link)
+              }
+            }}>
+            {data.title}
+          </CoreButton>
+        ))}
+      </VStack>
       <Center>
         <HStack spacing="5" marginTop="1.0rem" marginBottom="1.5rem">
           <WalletConnectCustom />

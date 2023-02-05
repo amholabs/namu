@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react'
 
-import { Avatar, Box, Card, CardBody, Flex, HStack, Heading, Image, Input, Text, VStack } from '@chakra-ui/react'
+import { Avatar, Box, Card, CardBody, Flex, HStack, Heading, Image, Input, Text, VStack, Center, Spacer } from '@chakra-ui/react'
 import { ExecutionResult } from 'graphql'
 import { useRouter } from 'next/router'
 
-import { CoreButton } from '@/components/shared'
 import { MUTATE_CREATE_PROFILE, QUERY_PROFILE_VIEWER } from '@/lib/constants'
+import { CoreButton } from '@/src/components/shared'
 import { useStore } from '@/src/store'
 import { loadSession } from '@/src/utils/scan'
 import MobileLayout from 'app/MobileLayout'
@@ -15,6 +15,7 @@ import { Query } from '../../out/__generated__/graphql'
 export default function Found() {
   const compose = useStore.getState().compose
   const router = useRouter()
+  const [no, setNo] = useState<boolean>(false)
   const [found, setFound] = useState<boolean>(false)
   const [name, setName] = useState<string>('')
   const [image, setImage] = useState<string>('')
@@ -82,25 +83,29 @@ export default function Found() {
 
   return (
     <MobileLayout>
-      <Flex>
-        <VStack>
+      <Center padding="3rem">
+        <Image boxSize="300px" objectFit="cover" src="/image/bagplaceholder.png" />
+      </Center>
+      <VStack marginTop="1em" flex="1" spacing="2" align="stretch">
+        <Flex>
           <Box>
-            <Heading marginBottom="0.5em" size="md">
-              BAG DETECTED
-            </Heading>
-            <Text fontSize="sm">COLLECTION</Text>
-            <Text fontSize="xs" fontWeight="bold">
-              AMHO ENIGMA F/W 2023
-            </Text>
+            <Text>Collection</Text>
           </Box>
-        </VStack>
-        <Box marginLeft={'1em'}>
-          <Image boxSize="120px" objectFit="cover" src="/image/bagplaceholder.png" />
-        </Box>
-      </Flex>
-      <Flex>
-        <VStack marginTop="1em" flex="1" spacing="2" align="stretch">
-          {found && (
+          <Spacer />
+          <Box>
+            <Text>AMHO F/W 2023</Text>
+          </Box>
+        </Flex>
+        <Flex>
+          <Box>
+            <Text>Previous Owner</Text>
+          </Box>
+          <Spacer />
+          <Box>
+            <Text>0xabc...dfg</Text>
+          </Box>
+        </Flex>
+        {/* {found && (
             <Card border="3px">
               <CardBody>
                 <HStack spacing="1.5rem">
@@ -109,24 +114,38 @@ export default function Found() {
                 </HStack>
               </CardBody>
             </Card>
-          )}
-          <Box>
-            {!found && (
-              <Input
-                onChange={(e) => setName(e.target.value)}
-                value={name}
-                border="2px"
-                size="lg"
-                focusBorderColor="brand.900"
-                placeholder="What is your name?"
-              />
-            )}
-          </Box>
-          <CoreButton isLoading={loading} size="xs" clickHandler={submitName}>
-            NEXT
-          </CoreButton>
-        </VStack>
-      </Flex>
+          )} */}
+      </VStack>
+      <Box marginTop="auto">
+        {no ? (
+          <VStack spacing={5} align="stretch">
+            <Input
+              onChange={(e) => setName(e.target.value)}
+              value={name}
+              border="3px"
+              size="lg"
+              focusBorderColor="brand.900"
+              placeholder="What is your name?"
+            />
+            <CoreButton isLoading={loading} size="xs" clickHandler={submitName}>
+              CONFIRM
+            </CoreButton>
+          </VStack>
+        ) : (
+          <Flex>
+            <Text>New owner detected is 0xabc... you?</Text>
+            <Spacer />
+            <HStack spacing={5}>
+              <Text onClick={submitName} _hover={{ textDecoration: 'underline' }}>
+                YES
+              </Text>
+              <Text onClick={() => setNo(true)} _hover={{ textDecoration: 'underline' }}>
+                NO
+              </Text>
+            </HStack>
+          </Flex>
+        )}
+      </Box>
     </MobileLayout>
   )
 }

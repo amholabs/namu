@@ -4,7 +4,7 @@ import { Box, Heading, Text, Toast, useToast } from '@chakra-ui/react'
 import { useRouter } from 'next/router'
 
 import MobileLayout from '@/app/MobileLayout'
-import { CoreButton } from '@/components/shared'
+import { CoreButton } from '@/src/components/shared'
 import { generateSession } from '@/src/utils/scan'
 
 // const genSession = async () => {
@@ -13,7 +13,7 @@ import { generateSession } from '@/src/utils/scan'
 //     setDID(data.id)
 //   })
 // }
-export default function Tap() {
+export default function Verify() {
   const toast = useToast()
   const router = useRouter()
   const [loading, setLoading] = useState(false)
@@ -35,14 +35,12 @@ export default function Tap() {
   }
   return (
     <MobileLayout>
-      <Box justifyContent="start">
-        {/* eslint-disable-next-line */}
-        <Heading paddingBottom="0.5rem" size="md">
-          FIRST, VERIFY YOUR BAG
-        </Heading>
-      </Box>
+      {/* eslint-disable-next-line */}
+      <Heading paddingBottom="1rem" size="2xl" lineHeight={'3rem'}>
+        FIRST, VERIFY YOUR BAG
+      </Heading>
       {/* eslint-disable-next-line react/no-unescaped-entities */}
-      <Text paddingBottom="1rem" fontSize="sm">
+      <Text paddingBottom="1rem" fontSize="sm" marginTop="auto">
         Click VERIFY then tap your bag. It will ask you to tap twice.
       </Text>
       <CoreButton isLoading={loading} size="xs" clickHandler={handleGenerateSession}>

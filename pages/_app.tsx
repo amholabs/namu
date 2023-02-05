@@ -9,7 +9,7 @@ import type { AppProps } from 'next/app'
 import * as wagmi from 'wagmi'
 import { mainnet, polygon } from 'wagmi/chains'
 
-import { Layout } from '@/components/layout'
+import { Layout } from '@/src/components/layout'
 import Fonts from '@/lib/Fonts'
 import { useIsMounted } from '@/src/hooks/useIsMounted'
 import { WalletConnectProvider } from '@/src/providers/WalletConnect'
