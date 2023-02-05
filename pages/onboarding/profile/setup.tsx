@@ -5,10 +5,10 @@ import { ExecutionResult } from 'graphql'
 import { useRouter } from 'next/router'
 import { SiBehance, SiDribbble, SiGithub, SiGumroad, SiInstagram, SiSubstack, SiTiktok, SiTwitter, SiYoutube } from 'react-icons/si'
 
-import UrlLink from '@/src/components/app/UrlLink'
-import { CoreButton } from '@/src/components/shared'
 import { MUTATE_CREATE_URLLINK, QUERY_URLLINK_VIEWER } from '@/lib/constants'
 import { Query, UrlLinkSocialType } from '@/out/__generated__/graphql'
+import UrlLink from '@/src/components/app/UrlLink'
+import { CoreButton } from '@/src/components/shared'
 import { useStore } from '@/src/store'
 import MobileLayout from 'app/MobileLayout'
 
