@@ -1,14 +1,18 @@
 {
-  "name": "hardhat-javascript-starter",
-  "scripts": {
-    "build": "npx thirdweb@latest detect",
-    "deploy": "npx thirdweb@latest deploy",
-    "release": "npx thirdweb@latest release"
-  },
-  "devDependencies": {
-    "hardhat": "^2.10.1"
-  },
-  "dependencies": {
-    "@thirdweb-dev/contracts": "^3"
-  }
+    "name": "@chiru-labs/pbt",
+    "version": "0.3.0",
+    "description": "Physically Backed Token Contracts in Solidity",
+    "main": "index.js",
+    "files": [
+        "/src/**/*.sol"
+    ],
+    "dependencies": {
+        "@openzeppelin/contracts": "^4.7.3"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git@github.com-cygaar:chiru-labs/PBT.git"
+    },
+    "author": "chiru-labs",
+    "license": "MIT"
 }
