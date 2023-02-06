@@ -8,7 +8,7 @@
     "paths": {
       "@/components/*": ["src/components/*"],
       "@/app/*": ["app/*"],
-      "@/lib/*": ["lib/*"],
+      "@/lib/*": ["src/lib/*"],
       "@/out/*": ["out/*"],
       "@/src/*": ["src/*"]
     },

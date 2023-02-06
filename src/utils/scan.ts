@@ -6,7 +6,7 @@ import { DIDSession } from 'did-session'
 // @ts-ignore
 import { ethSignMessage, listKeys } from 'halo-chip'
 
-import { AuthMethodParams } from '@/lib/types'
+import { AuthMethodParams } from '@/src/lib/types'
 import { useStore } from '@/src/store'
 
 export const scan = async () => {

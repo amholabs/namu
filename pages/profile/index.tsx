@@ -1,28 +1,36 @@
 import { useEffect, useState } from 'react'
 
-import { Center, HStack, Heading, Image, Input, Tag, Text, VStack } from '@chakra-ui/react'
+import { Center, HStack, Heading, Image, Input, Tag, Text, VStack, useToast } from '@chakra-ui/react'
+// import { hashMessage } from '@ethersproject/hash'
+// import { mainnet, polygon } from '@wagmi/chains'
+import ethereum from '@web3modal/ethereum'
 import { useWeb3Modal } from '@web3modal/react'
+import { ethers } from 'ethers'
 import { ExecutionResult } from 'graphql'
 import { useRouter } from 'next/router'
-import { useAccount, useNetwork, useSignMessage } from 'wagmi'
+import { useAccount, useBlockNumber, useNetwork, useSignMessage } from 'wagmi'
 
-import { siweLogin, siweLoginWithChip } from '@/lib/actions/siweLogin'
-import { MUTATE_CREATE_PROFILE, QUERY_PROFILE_VIEWER } from '@/lib/constants'
-import { DUMMY_SOCIAL_LINKS, DUMMY_TOKEN_DATA } from '@/lib/dummy'
 import { UrlLinkSocialType } from '@/out/__generated__/graphql'
 import { Profile as ProfileType, Query } from '@/out/__generated__/graphql'
 import { CoreButton } from '@/src/components/shared'
 import WalletConnectCustom from '@/src/components/WalletConnectCustom'
+import { siweLogin, siweLoginWithChip } from '@/src/lib/actions/siweLogin'
+import { MUTATE_CREATE_PROFILE, QUERY_PROFILE_VIEWER } from '@/src/lib/constants'
+import { DUMMY_SOCIAL_LINKS, DUMMY_TOKEN_DATA } from '@/src/lib/dummy'
 import { useStore } from '@/src/store'
 import { loadSession } from '@/src/utils/scan'
 import MobileLayout from 'app/MobileLayout'
 
 export default function Profile() {
   const router = useRouter()
+  const toast = useToast()
   const { address, status } = useAccount()
   const { chain } = useNetwork()
   const { open } = useWeb3Modal()
   const { signMessageAsync } = useSignMessage()
+  const { data } = useBlockNumber({
+    chainId: 1,
+  })
   const [profile, setProfile] = useState<ProfileType>({
     id: '',
     name: '',
@@ -34,6 +42,25 @@ export default function Profile() {
   const queryProfile = async (): Promise<ExecutionResult<Pick<Query, 'viewer'>>> => {
     const output = compose.executeQuery(QUERY_PROFILE_VIEWER)
     return output
+  }
+
+  const handleSettingClick = async () => {
+    // use ethers to get blockhash using alchemy rpc
+    // initialize ethers provider
+    const provider = new ethers.providers.JsonRpcProvider(`https://eth-mainnet.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_API_KEY}`)
+    const blockHash = await provider.getBlock('latest').then((block) => block.hash)
+    if (data && address) {
+      const success = await siweLoginWithChip(address, blockHash)
+      if (success) {
+        return
+      } else {
+        toast({
+          title: 'Scanning Failed. Try again.',
+          status: 'error',
+          isClosable: true,
+        })
+      }
+    }
   }
 
   const handleNavigate = (uri: string) => {
@@ -112,7 +139,7 @@ export default function Profile() {
           {DUMMY_TOKEN_DATA.name} #{DUMMY_TOKEN_DATA.id}
         </Text>
       </Center>
-      <Center marginTop="1rem" paddingBottom="1rem">
+      <Center paddingBottom="1rem">
         <VStack>
           <Heading>
             <Input
@@ -153,7 +180,7 @@ export default function Profile() {
         <HStack spacing="5" marginTop="1.0rem" marginBottom="1.5rem">
           <WalletConnectCustom />
           {/* <Text textAlign={'center'} onClick={handleSettingNavigate} as="sub"> */}
-          <Text textAlign={'center'} onClick={siweLoginWithChip} as="sub">
+          <Text textAlign={'center'} onClick={handleSettingClick} as="sub">
             SETTINGS
           </Text>
         </HStack>

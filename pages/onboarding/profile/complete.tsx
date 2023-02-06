@@ -17,13 +17,13 @@ export default function Complete() {
   return (
     <MobileLayout>
       <Heading size="2xl">Registration Complete!</Heading>
-      <VStack marginTop="auto" spacing={5}>
+      <VStack marginTop="auto" spacing={5} marginBottom={5}>
         <Text fontSize="sm">Save your profile by tapping your bag</Text>
         {/* eslint-disable-next-line react/no-unescaped-entities */}
-        <CoreButton size="sm" clickHandler={handleClick}>
-          SAVE
-        </CoreButton>
       </VStack>
+      <CoreButton size="sm" clickHandler={handleClick}>
+        SAVE
+      </CoreButton>
     </MobileLayout>
   )
 }

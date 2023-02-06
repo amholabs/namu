@@ -8,6 +8,8 @@ export default function WalletConnectCustom() {
   const { open } = useWeb3Modal()
   const { address, isConnecting, status } = useAccount()
 
+  // useEffect to wait for status to change to 'connected'
+
   async function onOpen() {
     await open()
   }

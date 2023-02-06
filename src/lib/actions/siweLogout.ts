@@ -1,6 +1,6 @@
 import axios, { AxiosError } from 'axios'
 
-import { SITE_NAME } from '@/lib/constants'
+import { SITE_NAME } from '@/src/lib/constants'
 
 export async function siweLogout(): Promise<boolean> {
   try {

@@ -4,7 +4,7 @@ import { Avatar, Box, Card, CardBody, Center, Flex, HStack, Heading, Image, Inpu
 import { ExecutionResult } from 'graphql'
 import { useRouter } from 'next/router'
 
-import { MUTATE_CREATE_PROFILE, QUERY_PROFILE_VIEWER } from '@/lib/constants'
+import { MUTATE_CREATE_PROFILE, QUERY_PROFILE_VIEWER } from '@/src/lib/constants'
 import { CoreButton } from '@/src/components/shared'
 import { useStore } from '@/src/store'
 import { loadSession } from '@/src/utils/scan'
@@ -84,7 +84,7 @@ export default function Found() {
   return (
     <MobileLayout>
       <Center padding="3rem">
-        <Image boxSize="300px" objectFit="cover" src="/image/bagplaceholder.png" />
+        <Image boxSize="200px" objectFit="cover" src="/image/bagplaceholder.png" />
       </Center>
       <VStack marginTop="1em" flex="1" spacing="2" align="stretch">
         <Flex>
@@ -132,8 +132,8 @@ export default function Found() {
             </CoreButton>
           </VStack>
         ) : (
-          <Flex>
-            <Text>New owner detected is 0xabc... you?</Text>
+          <Flex marginBottom='3rem'>
+            <Text fontSize="xs">New owner detected is 0xabc... you?</Text>
             <Spacer />
             <HStack spacing={5}>
               <Text onClick={submitName} _hover={{ textDecoration: 'underline' }}>

@@ -11,7 +11,7 @@ export const DUMMY_SOCIAL_LINKS: SocialLink[] = [
   {
     type: UrlLinkSocialType.Instagram,
     title: 'FOLLOW ON INSTAGRAM',
-    link: 'https://twitter.com/amhoatelier',
+    link: 'https://instagram.com/amhoatelier',
   },
   {
     type: UrlLinkSocialType.Twitter,

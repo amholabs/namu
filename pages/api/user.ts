@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next'
 
-import { withSessionRoute } from '../../lib/server'
+import { withSessionRoute } from '../../src/lib/server'
 
 export type User = {
   isLoggedIn: boolean

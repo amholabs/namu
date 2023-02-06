@@ -2,7 +2,7 @@ import React from 'react'
 
 import { default as NextHead } from 'next/head'
 
-import { SITE_DESCRIPTION, SITE_TITLE } from '../../../lib/constants'
+import { SITE_DESCRIPTION, SITE_TITLE } from '../../lib/constants'
 
 interface Props {
   title?: string
