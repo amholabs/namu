@@ -21,6 +21,24 @@ export const hashMessageEIP191SolidityKeccak = (address: string, hash: string) =
   return ethers.utils.solidityKeccak256(['string', 'bytes32'], [messagePrefix, ethers.utils.arrayify(message)])
 }
 
+export const siweLogout = async (): Promise<boolean> => {
+  try {
+    await fetch('/api/account/logout')
+    // @TODO: This is a hack to remove the cookie from the browser
+    //        This should be done with the cookieOptions.httpOnly = true
+    //        but that is not working. This is a workaround until
+    //        the issue is resolved. See:
+    //        /api/account/logout
+    document.cookie = `${SITE_NAME}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`
+    return true
+  } catch (error: any) {
+    // if (error instanceof AxiosError == true) {
+    //   return false
+    // }
+    throw new Error(`Unexpected Error`)
+  }
+}
+
 export const siweLogin = async ({ address, chain, signMessageAsync }: any) => {
   // 1. Get random nonce from API
   const nonceRes = await fetch('/api/account/nonce')
