@@ -1,5 +1,7 @@
-// import { hashMessage } from '@ethersproject/hash'
+// import { hashMessage } from '@ethersproject/hashter'
 // import { computeAddress, recoverAddress } from '@ethersproject/transactions'
+// eslint-disable-next-line import/order
+import { ethers } from 'ethers'
 // eslint-disable-next-line import/order
 import { getPublicKeysFromScan, getSignatureFromScan } from 'pbt-chip-client/kong'
 
@@ -8,8 +10,16 @@ import { getPublicKeysFromScan, getSignatureFromScan } from 'pbt-chip-client/kon
 import { SiweMessage } from 'siwe'
 
 import { SITE_NAME } from '@/src/lib/constants'
+
 // import { scan } from '@/src/utils/scan'
 // import { useAccount, useBlockNumber } from 'wagmi'
+export const hashMessageEIP191SolidityKeccak = (address: string, hash: string) => {
+  const messagePrefix = '\x19Ethereum Signed Message:\n32'
+  const message = address
+    ? ethers.utils.solidityKeccak256(['address', 'bytes32'], [address, hash])
+    : ethers.utils.solidityKeccak256(['bytes32'], [hash])
+  return ethers.utils.solidityKeccak256(['string', 'bytes32'], [messagePrefix, ethers.utils.arrayify(message)])
+}
 
 export const siweLogin = async ({ address, chain, signMessageAsync }: any) => {
   // 1. Get random nonce from API
@@ -58,7 +68,14 @@ export const siweLoginWithChip = async (address: string, blockNumberHash: string
         address,
         hash: blockNumberHash,
       }).then((sig) => {
-        console.log(sig)
+        if (sig) {
+          console.log('address:', ethers.utils.computeAddress('0x' + keys.primaryPublicKeyRaw))
+          const scanHash = hashMessageEIP191SolidityKeccak(address, blockNumberHash)
+          console.log('scanHash: ', scanHash)
+          console.log(sig)
+          const recoveredAddr = ethers.utils.recoverAddress(scanHash, sig)
+          console.log('recovered: ', recoveredAddr)
+        }
       })
       return keys
     } else {

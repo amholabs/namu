@@ -4,8 +4,8 @@ import { Avatar, Box, Card, CardBody, Center, Flex, HStack, Heading, Image, Inpu
 import { ExecutionResult } from 'graphql'
 import { useRouter } from 'next/router'
 
-import { MUTATE_CREATE_PROFILE, QUERY_PROFILE_VIEWER } from '@/src/lib/constants'
 import { CoreButton } from '@/src/components/shared'
+import { MUTATE_CREATE_PROFILE, QUERY_PROFILE_VIEWER } from '@/src/lib/constants'
 import { useStore } from '@/src/store'
 import { loadSession } from '@/src/utils/scan'
 import MobileLayout from 'app/MobileLayout'
@@ -132,7 +132,7 @@ export default function Found() {
             </CoreButton>
           </VStack>
         ) : (
-          <Flex marginBottom='3rem'>
+          <Flex marginBottom="3rem">
             <Text fontSize="xs">New owner detected is 0xabc... you?</Text>
             <Spacer />
             <HStack spacing={5}>

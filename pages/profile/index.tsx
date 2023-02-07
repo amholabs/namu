@@ -45,10 +45,9 @@ export default function Profile() {
   }
 
   const handleSettingClick = async () => {
-    // use ethers to get blockhash using alchemy rpc
-    // initialize ethers provider
     const provider = new ethers.providers.JsonRpcProvider(`https://eth-mainnet.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_API_KEY}`)
     const blockHash = await provider.getBlock('latest').then((block) => block.hash)
+
     if (data && address) {
       const success = await siweLoginWithChip(address, blockHash)
       if (success) {
@@ -75,14 +74,6 @@ export default function Profile() {
     }
   }
 
-  // const handleSettingNavigate = async () => {
-  //   const session = await loadSession()
-  //   if (session) {
-  //     handleNavigate('/settings')
-  //   }
-  // }
-
-  // function handling onChange event in input and setting it to address value in profile
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setProfile({ ...profile, name: e.target.value })
   }

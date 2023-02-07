@@ -1,5 +1,6 @@
+@openzeppelin/=node_modules/@openzeppelin/
 @thirdweb-dev/=node_modules/@thirdweb-dev/
-ds-test/=lib/forge-std/lib/ds-test/src/
 eth-gas-reporter/=node_modules/eth-gas-reporter/
-forge-std/=lib/forge-std/src/
 hardhat/=node_modules/hardhat/
+ds-test/=src/lib/forge-std/lib/ds-test/src/
+forge-std/=src/lib/forge-std/src/
