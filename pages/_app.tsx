@@ -4,9 +4,10 @@ import { ChakraProvider, extendTheme } from '@chakra-ui/react'
 import { ComposeClient } from '@composedb/client'
 import * as ethereum from '@web3modal/ethereum'
 import { Web3Modal } from '@web3modal/react'
+import { ethers } from 'ethers'
 import type { AppProps } from 'next/app'
 import * as wagmi from 'wagmi'
-import { mainnet, polygon } from 'wagmi/chains'
+import { goerli, localhost, mainnet, polygon } from 'wagmi/chains'
 
 import { Layout } from '@/src/components/layout'
 import { useIsMounted } from '@/src/hooks/useIsMounted'
@@ -143,7 +144,7 @@ export default function App({ Component, pageProps }: AppProps) {
     },
   })
 
-  const chains = [mainnet, polygon]
+  const chains = [mainnet, polygon, goerli, localhost]
   const { provider } = wagmi.configureChains(chains, [ethereum.walletConnectProvider({ projectId: process.env.NEXT_PUBLIC_WC_PROJECT_ID as string })])
   const wagmiClient = wagmi.createClient({
     autoConnect: true,
