@@ -20,7 +20,7 @@
     "ceramic:runtime": "composedb composite:compile ./ceramic/merged.json ./ceramic/runtime.json",
     "ceramic:runtime-js": "composedb composite:compile ./ceramic/merged.json ./out/__generated__/runtime.ts",
     "ceramic:generate": "yarn run ceramic:generate-profile && yarn run ceramic:generate-urllink && yarn run ceramic:merge && yarn run ceramic:runtime && yarn run ceramic:runtime-js",
-    "deploy:lt": "./lt.sh",
+    "deploy:pbt": "./deploy-goerli.sh",
     "deploy:tt": "./tunnelto.sh",
     "deploy:dev": "concurrently \"yarn run ceramic:daemon\" \"sleep 5 && yarn run ceramic:generate\" \"yarn run gql:server\"",
     "network:setup": "ts-node --esm ./scripts/utils/setip.ts",

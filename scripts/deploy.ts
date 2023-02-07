@@ -9,7 +9,7 @@ async function main() {
   const chipTable = await ChipTable.deploy(owner.address, '1')
 
   const PBTSimple = await ethers.getContractFactory('PBTSimple')
-  const pbtSimple = await PBTSimple.deploy()
+  const pbtSimple = await PBTSimple.deploy('ENIGMA FW 2023', 'ETIXFW2023')
 
   await chipTable.deployed()
   await pbtSimple.deployed()

@@ -20,6 +20,7 @@ contract PBTSimpleTest is Test {
     address public chipAddr3 = vm.addr(103);
     address public chipAddr4 = vm.addr(104);
     uint256 public blockNumber = 10;
+    string public uri = "ipfs://QmW8UpW1LfNh3NVZnmjgjTqQYN9i5ovLZ6RvCMjUSuF8he";
 
     function setUp() public {
         pbt = new PBTSimpleMock("PBTSimple", "PBTS");
@@ -28,6 +29,8 @@ contract PBTSimpleTest is Test {
     modifier mintedTokens() {
         pbt.mint(user1, tokenId1);
         pbt.mint(user2, tokenId2);
+        pbt.setTokenURI(tokenId1, uri);
+        pbt.setTokenURI(tokenId2, uri);
         _;
     }
 
