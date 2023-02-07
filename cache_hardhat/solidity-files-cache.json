@@ -1,10 +1,10 @@
 {
   "_format": "hh-sol-cache-2",
   "files": {
-    "/Users/nnn/Projects/namu/contracts-hardhat/ChipTable.sol": {
-      "lastModificationDate": 1675737702272,
-      "contentHash": "5469c441d7ad0c387a77daf16de7ee90",
-      "sourceName": "contracts-hardhat/ChipTable.sol",
+    "/Users/nnn/Projects/namu/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol": {
+      "lastModificationDate": 1675570396920,
+      "contentHash": "190f627b9302b9602d3a313e28205cc5",
+      "sourceName": "@openzeppelin/contracts/token/ERC721/ERC721.sol",
       "solcConfig": {
         "version": "0.8.17",
         "settings": {
@@ -26,11 +26,1039 @@
               ]
             }
           },
-          "libraries": {
-            "": {
-              "__CACHE_BREAKER__": "0x0000000000000031363735373337383832303134"
+          "remappings": [
+            "ds-test/=src/lib/forge-std/lib/ds-test/src/",
+            "forge-std/=src/lib/forge-std/src/"
+          ]
+        }
+      },
+      "imports": [
+        "./IERC721.sol",
+        "./IERC721Receiver.sol",
+        "./extensions/IERC721Metadata.sol",
+        "../../utils/Address.sol",
+        "../../utils/Context.sol",
+        "../../utils/Strings.sol",
+        "../../utils/introspection/ERC165.sol"
+      ],
+      "versionPragmas": [
+        "^0.8.0"
+      ],
+      "artifacts": [
+        "ERC721"
+      ]
+    },
+    "/Users/nnn/Projects/namu/node_modules/@openzeppelin/contracts/utils/Context.sol": {
+      "lastModificationDate": 1675570396908,
+      "contentHash": "5f2c5c4b6af2dd4551027144797bc8be",
+      "sourceName": "@openzeppelin/contracts/utils/Context.sol",
+      "solcConfig": {
+        "version": "0.8.17",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
             }
-          }
+          },
+          "remappings": [
+            "ds-test/=src/lib/forge-std/lib/ds-test/src/",
+            "forge-std/=src/lib/forge-std/src/"
+          ]
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "^0.8.0"
+      ],
+      "artifacts": [
+        "Context"
+      ]
+    },
+    "/Users/nnn/Projects/namu/node_modules/@openzeppelin/contracts/token/ERC721/extensions/IERC721Metadata.sol": {
+      "lastModificationDate": 1675570396927,
+      "contentHash": "efbc0d15b80a74e34dbe8da0f3e879bb",
+      "sourceName": "@openzeppelin/contracts/token/ERC721/extensions/IERC721Metadata.sol",
+      "solcConfig": {
+        "version": "0.8.17",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          },
+          "remappings": [
+            "ds-test/=src/lib/forge-std/lib/ds-test/src/",
+            "forge-std/=src/lib/forge-std/src/"
+          ]
+        }
+      },
+      "imports": [
+        "../IERC721.sol"
+      ],
+      "versionPragmas": [
+        "^0.8.0"
+      ],
+      "artifacts": [
+        "IERC721Metadata"
+      ]
+    },
+    "/Users/nnn/Projects/namu/node_modules/@openzeppelin/contracts/utils/introspection/ERC165.sol": {
+      "lastModificationDate": 1675570396927,
+      "contentHash": "0e7db055ce108f9da7bb6686a00287c0",
+      "sourceName": "@openzeppelin/contracts/utils/introspection/ERC165.sol",
+      "solcConfig": {
+        "version": "0.8.17",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          },
+          "remappings": [
+            "ds-test/=src/lib/forge-std/lib/ds-test/src/",
+            "forge-std/=src/lib/forge-std/src/"
+          ]
+        }
+      },
+      "imports": [
+        "./IERC165.sol"
+      ],
+      "versionPragmas": [
+        "^0.8.0"
+      ],
+      "artifacts": [
+        "ERC165"
+      ]
+    },
+    "/Users/nnn/Projects/namu/node_modules/@openzeppelin/contracts/utils/Address.sol": {
+      "lastModificationDate": 1675570396908,
+      "contentHash": "f31ad6fc4bbf9c06203987220156a6ba",
+      "sourceName": "@openzeppelin/contracts/utils/Address.sol",
+      "solcConfig": {
+        "version": "0.8.17",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          },
+          "remappings": [
+            "ds-test/=src/lib/forge-std/lib/ds-test/src/",
+            "forge-std/=src/lib/forge-std/src/"
+          ]
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "^0.8.1"
+      ],
+      "artifacts": [
+        "Address"
+      ]
+    },
+    "/Users/nnn/Projects/namu/node_modules/@openzeppelin/contracts/token/ERC721/IERC721.sol": {
+      "lastModificationDate": 1675570396920,
+      "contentHash": "eb7e61db29f31d88b3c1cef1b063d338",
+      "sourceName": "@openzeppelin/contracts/token/ERC721/IERC721.sol",
+      "solcConfig": {
+        "version": "0.8.17",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          },
+          "remappings": [
+            "ds-test/=src/lib/forge-std/lib/ds-test/src/",
+            "forge-std/=src/lib/forge-std/src/"
+          ]
+        }
+      },
+      "imports": [
+        "../../utils/introspection/IERC165.sol"
+      ],
+      "versionPragmas": [
+        "^0.8.0"
+      ],
+      "artifacts": [
+        "IERC721"
+      ]
+    },
+    "/Users/nnn/Projects/namu/node_modules/@openzeppelin/contracts/utils/Strings.sol": {
+      "lastModificationDate": 1675570396908,
+      "contentHash": "396031251978f8febfd90cb62cb240ec",
+      "sourceName": "@openzeppelin/contracts/utils/Strings.sol",
+      "solcConfig": {
+        "version": "0.8.17",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          },
+          "remappings": [
+            "ds-test/=src/lib/forge-std/lib/ds-test/src/",
+            "forge-std/=src/lib/forge-std/src/"
+          ]
+        }
+      },
+      "imports": [
+        "./math/Math.sol"
+      ],
+      "versionPragmas": [
+        "^0.8.0"
+      ],
+      "artifacts": [
+        "Strings"
+      ]
+    },
+    "/Users/nnn/Projects/namu/node_modules/@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol": {
+      "lastModificationDate": 1675570396920,
+      "contentHash": "c22d4395e33763de693fd440c6fd10e1",
+      "sourceName": "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol",
+      "solcConfig": {
+        "version": "0.8.17",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          },
+          "remappings": [
+            "ds-test/=src/lib/forge-std/lib/ds-test/src/",
+            "forge-std/=src/lib/forge-std/src/"
+          ]
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "^0.8.0"
+      ],
+      "artifacts": [
+        "IERC721Receiver"
+      ]
+    },
+    "/Users/nnn/Projects/namu/node_modules/@openzeppelin/contracts/utils/introspection/IERC165.sol": {
+      "lastModificationDate": 1675570396927,
+      "contentHash": "03e6768535ac4da0e9756f1d8a4a018a",
+      "sourceName": "@openzeppelin/contracts/utils/introspection/IERC165.sol",
+      "solcConfig": {
+        "version": "0.8.17",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          },
+          "remappings": [
+            "ds-test/=src/lib/forge-std/lib/ds-test/src/",
+            "forge-std/=src/lib/forge-std/src/"
+          ]
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "^0.8.0"
+      ],
+      "artifacts": [
+        "IERC165"
+      ]
+    },
+    "/Users/nnn/Projects/namu/node_modules/@openzeppelin/contracts/utils/math/Math.sol": {
+      "lastModificationDate": 1675570396927,
+      "contentHash": "b9c58920ce74d6dc819161786112e7ee",
+      "sourceName": "@openzeppelin/contracts/utils/math/Math.sol",
+      "solcConfig": {
+        "version": "0.8.17",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          },
+          "remappings": [
+            "ds-test/=src/lib/forge-std/lib/ds-test/src/",
+            "forge-std/=src/lib/forge-std/src/"
+          ]
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "^0.8.0"
+      ],
+      "artifacts": [
+        "Math"
+      ]
+    },
+    "/Users/nnn/Projects/namu/src/lib/forge-std/src/Test.sol": {
+      "lastModificationDate": 1672971592359,
+      "contentHash": "9ca73393dbc2f8cde2aa628f8d05c5d5",
+      "sourceName": "src/lib/forge-std/src/Test.sol",
+      "solcConfig": {
+        "version": "0.8.17",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          },
+          "remappings": [
+            "ds-test/=src/lib/forge-std/lib/ds-test/src/",
+            "forge-std/=src/lib/forge-std/src/"
+          ]
+        }
+      },
+      "imports": [
+        "./console.sol",
+        "./console2.sol",
+        "./StdAssertions.sol",
+        "./StdChains.sol",
+        "./StdCheats.sol",
+        "./StdError.sol",
+        "./StdJson.sol",
+        "./StdMath.sol",
+        "./StdStorage.sol",
+        "./StdUtils.sol",
+        "./Vm.sol",
+        "./Base.sol",
+        "ds-test/test.sol"
+      ],
+      "versionPragmas": [
+        ">=0.6.2 <0.9.0"
+      ],
+      "artifacts": [
+        "Test"
+      ]
+    },
+    "/Users/nnn/Projects/namu/src/lib/forge-std/src/console.sol": {
+      "lastModificationDate": 1672971592360,
+      "contentHash": "100b8a33b917da1147740d7ab8b0ded3",
+      "sourceName": "src/lib/forge-std/src/console.sol",
+      "solcConfig": {
+        "version": "0.8.17",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          },
+          "remappings": [
+            "ds-test/=src/lib/forge-std/lib/ds-test/src/",
+            "forge-std/=src/lib/forge-std/src/"
+          ]
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        ">=0.4.22 <0.9.0"
+      ],
+      "artifacts": [
+        "console"
+      ]
+    },
+    "/Users/nnn/Projects/namu/src/lib/forge-std/src/StdCheats.sol": {
+      "lastModificationDate": 1672971592358,
+      "contentHash": "979104d2f33c34c269636f70cfc84a02",
+      "sourceName": "src/lib/forge-std/src/StdCheats.sol",
+      "solcConfig": {
+        "version": "0.8.17",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          },
+          "remappings": [
+            "ds-test/=src/lib/forge-std/lib/ds-test/src/",
+            "forge-std/=src/lib/forge-std/src/"
+          ]
+        }
+      },
+      "imports": [
+        "./StdStorage.sol",
+        "./Vm.sol"
+      ],
+      "versionPragmas": [
+        ">=0.6.2 <0.9.0"
+      ],
+      "artifacts": [
+        "StdCheats",
+        "StdCheatsSafe"
+      ]
+    },
+    "/Users/nnn/Projects/namu/src/lib/forge-std/src/StdStorage.sol": {
+      "lastModificationDate": 1672971592358,
+      "contentHash": "3cb9868082df39a53927db09dbc21f23",
+      "sourceName": "src/lib/forge-std/src/StdStorage.sol",
+      "solcConfig": {
+        "version": "0.8.17",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          },
+          "remappings": [
+            "ds-test/=src/lib/forge-std/lib/ds-test/src/",
+            "forge-std/=src/lib/forge-std/src/"
+          ]
+        }
+      },
+      "imports": [
+        "./Vm.sol"
+      ],
+      "versionPragmas": [
+        ">=0.6.2 <0.9.0"
+      ],
+      "artifacts": [
+        "stdStorage",
+        "stdStorageSafe"
+      ]
+    },
+    "/Users/nnn/Projects/namu/src/lib/forge-std/src/console2.sol": {
+      "lastModificationDate": 1672971592358,
+      "contentHash": "2096b4e5f252c5df9909cccbe3d2da2e",
+      "sourceName": "src/lib/forge-std/src/console2.sol",
+      "solcConfig": {
+        "version": "0.8.17",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          },
+          "remappings": [
+            "ds-test/=src/lib/forge-std/lib/ds-test/src/",
+            "forge-std/=src/lib/forge-std/src/"
+          ]
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        ">=0.4.22 <0.9.0"
+      ],
+      "artifacts": [
+        "console2"
+      ]
+    },
+    "/Users/nnn/Projects/namu/src/lib/forge-std/src/StdUtils.sol": {
+      "lastModificationDate": 1672971592359,
+      "contentHash": "ec75addbeee075c61fa5aff2faee0465",
+      "sourceName": "src/lib/forge-std/src/StdUtils.sol",
+      "solcConfig": {
+        "version": "0.8.17",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          },
+          "remappings": [
+            "ds-test/=src/lib/forge-std/lib/ds-test/src/",
+            "forge-std/=src/lib/forge-std/src/"
+          ]
+        }
+      },
+      "imports": [
+        "./Vm.sol"
+      ],
+      "versionPragmas": [
+        ">=0.6.2 <0.9.0"
+      ],
+      "artifacts": [
+        "StdUtils"
+      ]
+    },
+    "/Users/nnn/Projects/namu/src/lib/forge-std/src/StdAssertions.sol": {
+      "lastModificationDate": 1672971592359,
+      "contentHash": "93fa608efd4df1e671b043437fddd457",
+      "sourceName": "src/lib/forge-std/src/StdAssertions.sol",
+      "solcConfig": {
+        "version": "0.8.17",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          },
+          "remappings": [
+            "ds-test/=src/lib/forge-std/lib/ds-test/src/",
+            "forge-std/=src/lib/forge-std/src/"
+          ]
+        }
+      },
+      "imports": [
+        "ds-test/test.sol",
+        "./StdMath.sol"
+      ],
+      "versionPragmas": [
+        ">=0.6.2 <0.9.0"
+      ],
+      "artifacts": [
+        "StdAssertions"
+      ]
+    },
+    "/Users/nnn/Projects/namu/src/lib/forge-std/src/StdChains.sol": {
+      "lastModificationDate": 1672971592360,
+      "contentHash": "80138bc1765b08a6db58237c26985fd9",
+      "sourceName": "src/lib/forge-std/src/StdChains.sol",
+      "solcConfig": {
+        "version": "0.8.17",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          },
+          "remappings": [
+            "ds-test/=src/lib/forge-std/lib/ds-test/src/",
+            "forge-std/=src/lib/forge-std/src/"
+          ]
+        }
+      },
+      "imports": [
+        "./Vm.sol"
+      ],
+      "versionPragmas": [
+        ">=0.6.2 <0.9.0"
+      ],
+      "artifacts": [
+        "StdChains"
+      ]
+    },
+    "/Users/nnn/Projects/namu/src/lib/forge-std/src/StdJson.sol": {
+      "lastModificationDate": 1672971592358,
+      "contentHash": "016de2d7ee55960094cc97ec792025bb",
+      "sourceName": "src/lib/forge-std/src/StdJson.sol",
+      "solcConfig": {
+        "version": "0.8.17",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          },
+          "remappings": [
+            "ds-test/=src/lib/forge-std/lib/ds-test/src/",
+            "forge-std/=src/lib/forge-std/src/"
+          ]
+        }
+      },
+      "imports": [
+        "./Vm.sol"
+      ],
+      "versionPragmas": [
+        ">=0.6.0 <0.9.0"
+      ],
+      "artifacts": [
+        "stdJson"
+      ]
+    },
+    "/Users/nnn/Projects/namu/src/lib/forge-std/src/Base.sol": {
+      "lastModificationDate": 1672971592359,
+      "contentHash": "8f04bbbb2c16f79e14fdc321695a8ec2",
+      "sourceName": "src/lib/forge-std/src/Base.sol",
+      "solcConfig": {
+        "version": "0.8.17",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          },
+          "remappings": [
+            "ds-test/=src/lib/forge-std/lib/ds-test/src/",
+            "forge-std/=src/lib/forge-std/src/"
+          ]
+        }
+      },
+      "imports": [
+        "./StdStorage.sol",
+        "./Vm.sol"
+      ],
+      "versionPragmas": [
+        ">=0.6.2 <0.9.0"
+      ],
+      "artifacts": [
+        "CommonBase",
+        "ScriptBase",
+        "TestBase"
+      ]
+    },
+    "/Users/nnn/Projects/namu/src/lib/forge-std/src/StdMath.sol": {
+      "lastModificationDate": 1672971592359,
+      "contentHash": "9da8f453eba6bb98f3d75bc6822bfb29",
+      "sourceName": "src/lib/forge-std/src/StdMath.sol",
+      "solcConfig": {
+        "version": "0.8.17",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          },
+          "remappings": [
+            "ds-test/=src/lib/forge-std/lib/ds-test/src/",
+            "forge-std/=src/lib/forge-std/src/"
+          ]
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        ">=0.6.2 <0.9.0"
+      ],
+      "artifacts": [
+        "stdMath"
+      ]
+    },
+    "/Users/nnn/Projects/namu/src/lib/forge-std/src/StdError.sol": {
+      "lastModificationDate": 1672971592360,
+      "contentHash": "64c896e1276a291776e5ea5aecb3870a",
+      "sourceName": "src/lib/forge-std/src/StdError.sol",
+      "solcConfig": {
+        "version": "0.8.17",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          },
+          "remappings": [
+            "ds-test/=src/lib/forge-std/lib/ds-test/src/",
+            "forge-std/=src/lib/forge-std/src/"
+          ]
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        ">=0.6.2 <0.9.0"
+      ],
+      "artifacts": [
+        "stdError"
+      ]
+    },
+    "/Users/nnn/Projects/namu/src/lib/forge-std/src/Vm.sol": {
+      "lastModificationDate": 1672971592358,
+      "contentHash": "9e6cb90f4c6f4f00605959af21cbc67b",
+      "sourceName": "src/lib/forge-std/src/Vm.sol",
+      "solcConfig": {
+        "version": "0.8.17",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          },
+          "remappings": [
+            "ds-test/=src/lib/forge-std/lib/ds-test/src/",
+            "forge-std/=src/lib/forge-std/src/"
+          ]
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        ">=0.6.2 <0.9.0"
+      ],
+      "artifacts": [
+        "Vm",
+        "VmSafe"
+      ]
+    },
+    "/Users/nnn/Projects/namu/src/lib/forge-std/lib/ds-test/src/test.sol": {
+      "lastModificationDate": 1672971592356,
+      "contentHash": "962996f0e05d5218857a538a62d7c47e",
+      "sourceName": "src/lib/forge-std/lib/ds-test/src/test.sol",
+      "solcConfig": {
+        "version": "0.8.17",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          },
+          "remappings": [
+            "ds-test/=src/lib/forge-std/lib/ds-test/src/",
+            "forge-std/=src/lib/forge-std/src/"
+          ]
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        ">=0.5.0"
+      ],
+      "artifacts": [
+        "DSTest"
+      ]
+    },
+    "/Users/nnn/Projects/namu/node_modules/@openzeppelin/contracts/utils/cryptography/ECDSA.sol": {
+      "lastModificationDate": 1675570396926,
+      "contentHash": "fe1190dbb6431c2464246925713f0f7f",
+      "sourceName": "@openzeppelin/contracts/utils/cryptography/ECDSA.sol",
+      "solcConfig": {
+        "version": "0.8.17",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          },
+          "remappings": [
+            "ds-test/=src/lib/forge-std/lib/ds-test/src/",
+            "forge-std/=src/lib/forge-std/src/"
+          ]
+        }
+      },
+      "imports": [
+        "../Strings.sol"
+      ],
+      "versionPragmas": [
+        "^0.8.0"
+      ],
+      "artifacts": [
+        "ECDSA"
+      ]
+    },
+    "/Users/nnn/Projects/namu/contracts/src/ChipTable.sol": {
+      "lastModificationDate": 1675801193128,
+      "contentHash": "5469c441d7ad0c387a77daf16de7ee90",
+      "sourceName": "contracts/src/ChipTable.sol",
+      "solcConfig": {
+        "version": "0.8.17",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          },
+          "remappings": [
+            "ds-test/=src/lib/forge-std/lib/ds-test/src/",
+            "forge-std/=src/lib/forge-std/src/"
+          ]
         }
       },
       "imports": [],
@@ -43,6 +1071,430 @@
         "IChipTable",
         "IERC165",
         "Ownable"
+      ]
+    },
+    "/Users/nnn/Projects/namu/contracts/src/ERC721ReadOnly.sol": {
+      "lastModificationDate": 1675570125379,
+      "contentHash": "2935aac6eadcda39e8b8e0dbaeda078c",
+      "sourceName": "contracts/src/ERC721ReadOnly.sol",
+      "solcConfig": {
+        "version": "0.8.17",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          },
+          "remappings": [
+            "ds-test/=src/lib/forge-std/lib/ds-test/src/",
+            "forge-std/=src/lib/forge-std/src/"
+          ]
+        }
+      },
+      "imports": [
+        "@openzeppelin/contracts/token/ERC721/ERC721.sol"
+      ],
+      "versionPragmas": [
+        "^0.8.13"
+      ],
+      "artifacts": [
+        "ERC721ReadOnly"
+      ]
+    },
+    "/Users/nnn/Projects/namu/contracts/src/mocks/ERC721ReadOnlyMock.sol": {
+      "lastModificationDate": 1675570125380,
+      "contentHash": "08b9b89860238379e3f9554122bd616d",
+      "sourceName": "contracts/src/mocks/ERC721ReadOnlyMock.sol",
+      "solcConfig": {
+        "version": "0.8.17",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          },
+          "remappings": [
+            "ds-test/=src/lib/forge-std/lib/ds-test/src/",
+            "forge-std/=src/lib/forge-std/src/"
+          ]
+        }
+      },
+      "imports": [
+        "forge-std/Test.sol",
+        "../ERC721ReadOnly.sol"
+      ],
+      "versionPragmas": [
+        "^0.8.13"
+      ],
+      "artifacts": [
+        "ERC721ReadOnlyMock"
+      ]
+    },
+    "/Users/nnn/Projects/namu/contracts/test/ERC721ReadOnlyTest.sol": {
+      "lastModificationDate": 1675570224393,
+      "contentHash": "1d9d594c042a3653c7f736fcee09473e",
+      "sourceName": "contracts/test/ERC721ReadOnlyTest.sol",
+      "solcConfig": {
+        "version": "0.8.17",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          },
+          "remappings": [
+            "ds-test/=src/lib/forge-std/lib/ds-test/src/",
+            "forge-std/=src/lib/forge-std/src/"
+          ]
+        }
+      },
+      "imports": [
+        "forge-std/Test.sol",
+        "../src/mocks/ERC721ReadOnlyMock.sol"
+      ],
+      "versionPragmas": [
+        "^0.8.13"
+      ],
+      "artifacts": [
+        "ERC721ReadOnlyTest"
+      ]
+    },
+    "/Users/nnn/Projects/namu/contracts/test/PBTSimpleTest.sol": {
+      "lastModificationDate": 1675570224394,
+      "contentHash": "a06f4ad9bdfe5ec9af1353710cfbe895",
+      "sourceName": "contracts/test/PBTSimpleTest.sol",
+      "solcConfig": {
+        "version": "0.8.17",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          },
+          "remappings": [
+            "ds-test/=src/lib/forge-std/lib/ds-test/src/",
+            "forge-std/=src/lib/forge-std/src/"
+          ]
+        }
+      },
+      "imports": [
+        "forge-std/Test.sol",
+        "../src/mocks/PBTSimpleMock.sol"
+      ],
+      "versionPragmas": [
+        "^0.8.13"
+      ],
+      "artifacts": [
+        "PBTSimpleTest"
+      ]
+    },
+    "/Users/nnn/Projects/namu/contracts/src/mocks/PBTSimpleMock.sol": {
+      "lastModificationDate": 1675570125380,
+      "contentHash": "30150a254272b77b4cc78eddab0d93eb",
+      "sourceName": "contracts/src/mocks/PBTSimpleMock.sol",
+      "solcConfig": {
+        "version": "0.8.17",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          },
+          "remappings": [
+            "ds-test/=src/lib/forge-std/lib/ds-test/src/",
+            "forge-std/=src/lib/forge-std/src/"
+          ]
+        }
+      },
+      "imports": [
+        "../PBTSimple.sol"
+      ],
+      "versionPragmas": [
+        "^0.8.13"
+      ],
+      "artifacts": [
+        "PBTSimpleMock"
+      ]
+    },
+    "/Users/nnn/Projects/namu/contracts/src/PBTSimple.sol": {
+      "lastModificationDate": 1675570125380,
+      "contentHash": "3d091599acbf7c7af9e1376ce711c5e1",
+      "sourceName": "contracts/src/PBTSimple.sol",
+      "solcConfig": {
+        "version": "0.8.17",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          },
+          "remappings": [
+            "ds-test/=src/lib/forge-std/lib/ds-test/src/",
+            "forge-std/=src/lib/forge-std/src/"
+          ]
+        }
+      },
+      "imports": [
+        "./IPBT.sol",
+        "./ERC721ReadOnly.sol",
+        "@openzeppelin/contracts/utils/cryptography/ECDSA.sol"
+      ],
+      "versionPragmas": [
+        "^0.8.13"
+      ],
+      "artifacts": [
+        "PBTSimple"
+      ]
+    },
+    "/Users/nnn/Projects/namu/contracts/src/IPBT.sol": {
+      "lastModificationDate": 1675570125379,
+      "contentHash": "c8ab20d2f6ed7c7c0c41e91f7664ae0a",
+      "sourceName": "contracts/src/IPBT.sol",
+      "solcConfig": {
+        "version": "0.8.17",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          },
+          "remappings": [
+            "ds-test/=src/lib/forge-std/lib/ds-test/src/",
+            "forge-std/=src/lib/forge-std/src/"
+          ]
+        }
+      },
+      "imports": [
+        "@openzeppelin/contracts/token/ERC721/IERC721.sol",
+        "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol",
+        "@openzeppelin/contracts/token/ERC721/extensions/IERC721Metadata.sol",
+        "@openzeppelin/contracts/utils/Address.sol",
+        "@openzeppelin/contracts/utils/Context.sol",
+        "@openzeppelin/contracts/utils/Strings.sol"
+      ],
+      "versionPragmas": [
+        "^0.8.13"
+      ],
+      "artifacts": [
+        "IPBT"
+      ]
+    },
+    "/Users/nnn/Projects/namu/contracts/test/PBTRandomTest.sol": {
+      "lastModificationDate": 1675570224393,
+      "contentHash": "2e1d2ea5598d8099631eb47282a5f233",
+      "sourceName": "contracts/test/PBTRandomTest.sol",
+      "solcConfig": {
+        "version": "0.8.17",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          },
+          "remappings": [
+            "ds-test/=src/lib/forge-std/lib/ds-test/src/",
+            "forge-std/=src/lib/forge-std/src/"
+          ]
+        }
+      },
+      "imports": [
+        "forge-std/Test.sol",
+        "../src/IPBT.sol",
+        "../src/mocks/PBTRandomMock.sol"
+      ],
+      "versionPragmas": [
+        "^0.8.13"
+      ],
+      "artifacts": [
+        "PBTRandomTest"
+      ]
+    },
+    "/Users/nnn/Projects/namu/contracts/src/mocks/PBTRandomMock.sol": {
+      "lastModificationDate": 1675570125380,
+      "contentHash": "01c3de3c4e0eb8aae1451ceea3b3a771",
+      "sourceName": "contracts/src/mocks/PBTRandomMock.sol",
+      "solcConfig": {
+        "version": "0.8.17",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          },
+          "remappings": [
+            "ds-test/=src/lib/forge-std/lib/ds-test/src/",
+            "forge-std/=src/lib/forge-std/src/"
+          ]
+        }
+      },
+      "imports": [
+        "../PBTRandom.sol"
+      ],
+      "versionPragmas": [
+        "^0.8.13"
+      ],
+      "artifacts": [
+        "PBTRandomMock"
+      ]
+    },
+    "/Users/nnn/Projects/namu/contracts/src/PBTRandom.sol": {
+      "lastModificationDate": 1675570125380,
+      "contentHash": "78206d7493dd4cd4923c4445cb525349",
+      "sourceName": "contracts/src/PBTRandom.sol",
+      "solcConfig": {
+        "version": "0.8.17",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          },
+          "remappings": [
+            "ds-test/=src/lib/forge-std/lib/ds-test/src/",
+            "forge-std/=src/lib/forge-std/src/"
+          ]
+        }
+      },
+      "imports": [
+        "./IPBT.sol",
+        "./ERC721ReadOnly.sol",
+        "@openzeppelin/contracts/utils/cryptography/ECDSA.sol"
+      ],
+      "versionPragmas": [
+        "^0.8.13"
+      ],
+      "artifacts": [
+        "PBTRandom"
       ]
     }
   }

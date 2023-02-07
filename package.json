@@ -110,6 +110,7 @@
     "@composedb/types": "^0.3.1",
     "@graphql-codegen/cli": "^2.16.4",
     "@graphql-codegen/client-preset": "^1.2.6",
+    "@nomicfoundation/hardhat-foundry": "^1.0.0",
     "@storybook/addon-actions": "^6.5.15",
     "@storybook/addon-essentials": "^6.5.15",
     "@storybook/addon-interactions": "^6.5.15",
