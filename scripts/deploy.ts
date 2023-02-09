@@ -18,7 +18,7 @@ async function main() {
   console.log(`PBTSimpleMock address deployed to ${pbtSimple.address}`)
 
   updateEnvVar('PBT_ADDRESS', pbtSimple.address, './.env.local')
-  fs.writeFileSync('./config.js', `export const PBT_ADDRESS = '${pbtSimple.address}'`)
+  fs.writeFileSync('./config.ts', `export const PBT_ADDRESS = '${pbtSimple.address}'`)
 }
 
 // We recommend this pattern to be able to use async/await everywhere
