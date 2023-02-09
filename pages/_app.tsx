@@ -8,6 +8,7 @@ import { ethers } from 'ethers'
 import type { AppProps } from 'next/app'
 import * as wagmi from 'wagmi'
 import { goerli, localhost, mainnet, polygon } from 'wagmi/chains'
+import { alchemyProvider } from 'wagmi/providers/alchemy'
 
 import { Layout } from '@/src/components/layout'
 import { useIsMounted } from '@/src/hooks/useIsMounted'
@@ -145,7 +146,10 @@ export default function App({ Component, pageProps }: AppProps) {
   })
 
   const chains = [mainnet, polygon, goerli, localhost]
-  const { provider } = wagmi.configureChains(chains, [ethereum.walletConnectProvider({ projectId: process.env.NEXT_PUBLIC_WC_PROJECT_ID as string })])
+  const { provider } = wagmi.configureChains(chains, [
+    ethereum.walletConnectProvider({ projectId: process.env.NEXT_PUBLIC_WC_PROJECT_ID as string }),
+    alchemyProvider({ apiKey: process.env.NEXT_PUBLIC_ALCHEMY_API_KEY_goeETH as string }),
+  ])
   const wagmiClient = wagmi.createClient({
     autoConnect: true,
     connectors: ethereum.modalConnectors({ appName: 'AMHO', chains }),

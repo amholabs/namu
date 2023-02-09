@@ -11,8 +11,10 @@ import { useStore } from '@/src/store'
 
 export const scan = async () => {
   const keys = await listKeys()
-  const { address, slot } = keys[0]
-  return { address, slot }
+  // const { address, slot } = keys[0]
+  // return { address, slot }
+  console.log(keys)
+  return keys
 }
 
 export const loadAuthMethod = async (address: string, slot: string): Promise<AuthMethod> => {
@@ -72,7 +74,11 @@ export const loadSession = async (): Promise<DIDSession> => {
 export const generateSession = async () => {
   const compose = useStore.getState().compose
   try {
-    const { address, slot } = await scan()
+    const keys = await scan()
+    const keysAddresses = keys.map((key) => Object.values(key)[2])
+    const hashedKeysAddresses = keys.map((key) => Object.values(key)[0])
+    useStore.setState({ chipAddresses: keysAddresses, chipHashedAddresses: hashedKeysAddresses })
+    const { address, slot } = keys[0]
     useStore.setState({ address, slot })
     const resources = compose.resources
     const authMethod = await loadAuthMethod(address, slot)

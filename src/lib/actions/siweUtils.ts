@@ -1,9 +1,9 @@
 // import { hashMessage } from '@ethersproject/hashter'
 // import { computeAddress, recoverAddress } from '@ethersproject/transactions'
 // eslint-disable-next-line import/order
-import { ethers } from 'ethers'
+// import { ethers } from 'ethers'
 // eslint-disable-next-line import/order
-import { getPublicKeysFromScan, getSignatureFromScan } from 'pbt-chip-client/kong'
+// import { getPublicKeysFromScan, getSignatureFromScan } from 'pbt-chip-client/kong'
 
 // @ts-ignore
 // import { ethSignMessage, listKeys } from 'halo-chip'
@@ -13,13 +13,6 @@ import { SITE_NAME } from '@/src/lib/constants'
 
 // import { scan } from '@/src/utils/scan'
 // import { useAccount, useBlockNumber } from 'wagmi'
-export const hashMessageEIP191SolidityKeccak = (address: string, hash: string) => {
-  const messagePrefix = '\x19Ethereum Signed Message:\n32'
-  const message = address
-    ? ethers.utils.solidityKeccak256(['address', 'bytes32'], [address, hash])
-    : ethers.utils.solidityKeccak256(['bytes32'], [hash])
-  return ethers.utils.solidityKeccak256(['string', 'bytes32'], [messagePrefix, ethers.utils.arrayify(message)])
-}
 
 export const siweLogout = async (): Promise<boolean> => {
   try {
@@ -77,52 +70,52 @@ export const siweLogin = async ({ address, chain, signMessageAsync }: any) => {
   }
 }
 
-export const siweLoginWithChip = async (address: string, blockNumberHash: string) => {
-  try {
-    const keys = await getPublicKeysFromScan()
-    if (keys) {
-      getSignatureFromScan({
-        chipPublicKey: keys.primaryPublicKeyRaw,
-        address,
-        hash: blockNumberHash,
-      }).then((sig) => {
-        if (sig) {
-          console.log('address:', ethers.utils.computeAddress('0x' + keys.primaryPublicKeyRaw))
-          const scanHash = hashMessageEIP191SolidityKeccak(address, blockNumberHash)
-          console.log('scanHash: ', scanHash)
-          console.log(sig)
-          const recoveredAddr = ethers.utils.recoverAddress(scanHash, sig)
-          console.log('recovered: ', recoveredAddr)
-        }
-      })
-      return keys
-    } else {
-      return null
-    }
+// export const siweLoginWithChip = async (address: string, blockNumberHash: string) => {
+//   try {
+//     const keys = await getPublicKeysFromScan()
+//     if (keys) {
+//       getSignatureFromScan({
+//         chipPublicKey: keys.primaryPublicKeyRaw,
+//         address,
+//         hash: blockNumberHash,
+//       }).then((sig) => {
+//         if (sig) {
+//           return sig
+//           // console.log('address:', ethers.utils.computeAddress('0x' + keys.primaryPublicKeyRaw))
+//           // const scanHash = hashMessageEIP191SolidityKeccak(address, blockNumberHash)
+//           // console.log('scanHash: ', scanHash)
+//           // console.log(sig)
+//           // const recoveredAddr = ethers.utils.recoverAddress(scanHash, sig)
+//           // console.log('recovered: ', recoveredAddr)
+//         }
+//       })
+//     } else {
+//       return null
+//     }
 
-    // getSignatureFromScan({
-    //   chipPublicKey:
-    // })
-    // const nonceRes = await fetch('/api/account/nonce')
-    // const nonce = await nonceRes.text()
-    // const { address, slot } = await scan()
+//     // getSignatureFromScan({
+//     //   chipPublicKey:
+//     // })
+//     // const nonceRes = await fetch('/api/account/nonce')
+//     // const nonce = await nonceRes.text()
+//     // const { address, slot } = await scan()
 
-    // const message = new SiweMessage({
-    //   domain: window.location.host,
-    //   address,
-    //   statement: `Sign in with Ethereum to ${SITE_NAME}`,
-    //   uri: window.location.origin,
-    //   version: '1',
-    //   chainId: 1,
-    //   nonce: nonce,
-    // })
-    // const preparedMessage = message.prepareMessage()
-    // // const preparedMessage = 'test'
-    // const sig = await ethSignMessage(preparedMessage, slot, address)
-    // const recoveredAddress = recoverAddress(hashMessage(preparedMessage), sig)
-    // console.log('original:', address)
-    // console.log('recovered:', recoveredAddress)
-  } catch (err) {
-    return null
-  }
-}
+//     // const message = new SiweMessage({
+//     //   domain: window.location.host,
+//     //   address,
+//     //   statement: `Sign in with Ethereum to ${SITE_NAME}`,
+//     //   uri: window.location.origin,
+//     //   version: '1',
+//     //   chainId: 1,
+//     //   nonce: nonce,
+//     // })
+//     // const preparedMessage = message.prepareMessage()
+//     // // const preparedMessage = 'test'
+//     // const sig = await ethSignMessage(preparedMessage, slot, address)
+//     // const recoveredAddress = recoverAddress(hashMessage(preparedMessage), sig)
+//     // console.log('original:', address)
+//     // console.log('recovered:', recoveredAddress)
+//   } catch (err) {
+//     return null
+//   }
+// }

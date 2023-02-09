@@ -1,20 +1,26 @@
 import { useEffect, useState } from 'react'
 
+// eslint-disable-next-line import/order
 import { Center, HStack, Heading, Image, Input, Tag, Text, VStack, useToast } from '@chakra-ui/react'
+
 // import { hashMessage } from '@ethersproject/hash'
 // import { mainnet, polygon } from '@wagmi/chains'
+
 import ethereum from '@web3modal/ethereum'
 import { useWeb3Modal } from '@web3modal/react'
 import { ethers } from 'ethers'
 import { ExecutionResult } from 'graphql'
 import { useRouter } from 'next/router'
-import { useAccount, useBlockNumber, useNetwork, useSignMessage } from 'wagmi'
+import { useDebounce } from 'usehooks-ts'
+import { useAccount, useBlockNumber, useContractWrite, useNetwork, usePrepareContractWrite, useSignMessage } from 'wagmi'
 
+import { getMintWithChipSig } from '@/lib/actions/chip'
+import { siweLogin } from '@/lib/actions/siweUtils'
 import { UrlLinkSocialType } from '@/out/__generated__/graphql'
 import { Profile as ProfileType, Query } from '@/out/__generated__/graphql'
+import { abi } from '@/out/PBTSimpleMock.sol/PBTSimpleMock.json'
 import { CoreButton } from '@/src/components/shared'
 import WalletConnectCustom from '@/src/components/WalletConnectCustom'
-import { siweLogin, siweLoginWithChip } from '@/lib/actions/siweUtils'
 import { MUTATE_CREATE_PROFILE, QUERY_PROFILE_VIEWER } from '@/src/lib/constants'
 import { DUMMY_SOCIAL_LINKS, DUMMY_TOKEN_DATA } from '@/src/lib/dummy'
 import { useStore } from '@/src/store'
@@ -25,12 +31,24 @@ export default function Profile() {
   const router = useRouter()
   const toast = useToast()
   const { address, status } = useAccount()
+  const [sig, setSig] = useState<string | null>(null)
+  const [blockNumber, setBlockNumber] = useState<number>(0)
+
+  const debounceSig = useDebounce(sig, 1000)
+  const debounceBlockNum = useDebounce(blockNumber, 1000)
+
   const { chain } = useNetwork()
   const { open } = useWeb3Modal()
   const { signMessageAsync } = useSignMessage()
-  const { data } = useBlockNumber({
-    chainId: 1,
+  const { config } = usePrepareContractWrite({
+    address: '0xE8a1883eD8F54B4b08CCfebd46adCeD2AcB96028',
+    abi,
+    functionName: 'mintTokenWithChip',
+    args: [debounceSig, debounceBlockNum],
+    enabled: !!debounceSig && !!debounceBlockNum,
+    chainId: chain?.id,
   })
+  const { write } = useContractWrite(config)
   const [profile, setProfile] = useState<ProfileType>({
     id: '',
     name: '',
@@ -44,14 +62,19 @@ export default function Profile() {
     return output
   }
 
+  // eslint-disable-next-line unused-imports/no-unused-vars
   const handleSettingClick = async () => {
-    const provider = new ethers.providers.JsonRpcProvider(`https://eth-mainnet.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_API_KEY}`)
+    // const provider = new ethers.providers.JsonRpcProvider(`https://eth-mainnet.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_API_KEY}`)
+    const provider = new ethers.providers.JsonRpcProvider(`https://eth-goerli.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_API_KEY_goeETH}`)
+    const blockNum = await provider.getBlock('latest').then((block) => block.number)
     const blockHash = await provider.getBlock('latest').then((block) => block.hash)
-
-    if (data && address) {
-      const success = await siweLoginWithChip(address, blockHash)
-      if (success) {
-        return
+    setBlockNumber(blockNum)
+    if (address) {
+      // WHY
+      const newSig = await getMintWithChipSig(address, blockHash)
+      // encode the newSig to be passed into a smart contract contract expecting the format "bytes calldata"
+      if (newSig) {
+        setSig(newSig)
       } else {
         toast({
           title: 'Scanning Failed. Try again.',
@@ -66,6 +89,7 @@ export default function Profile() {
     router.push(uri)
   }
 
+  // eslint-disable-next-line unused-imports/no-unused-vars
   const handleCreateMessage = async () => {
     try {
       await siweLogin({ address, chain, signMessageAsync })
@@ -156,7 +180,8 @@ export default function Profile() {
             clickHandler={async () => {
               if (data.type == UrlLinkSocialType.Base && (await checkConnected())) {
                 // await scan()
-                await handleCreateMessage()
+                // await handleCreateMessage()
+                write?.()
               } else if (data.type == UrlLinkSocialType.Base && !(await checkConnected())) {
                 await open()
               } else {
@@ -171,7 +196,7 @@ export default function Profile() {
         <HStack spacing="5" marginTop="1.0rem" marginBottom="1.5rem">
           <WalletConnectCustom />
           {/* <Text textAlign={'center'} onClick={handleSettingNavigate} as="sub"> */}
-          <Text textAlign={'center'} onClick={handleSettingClick} as="sub">
+          <Text textAlign={'center'} onClick={() => handleNavigate('/settings')} as="sub">
             SETTINGS
           </Text>
         </HStack>

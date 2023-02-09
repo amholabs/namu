@@ -11,6 +11,8 @@ export const useStore = create(() => ({
   ensName: '',
   authenticatedUser: '',
   urlLinks: [''],
+  chipHashedAddresses: [''],
+  chipAddresses: [''],
   twitter: {
     value: '',
     loading: false,
