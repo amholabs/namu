@@ -1,18 +1,12 @@
 import { useState } from 'react'
 
-import { Box, Heading, Text, Toast, useToast } from '@chakra-ui/react'
+import { Heading, Text, Toast, useToast } from '@chakra-ui/react'
 import { useRouter } from 'next/router'
 
 import MobileLayout from '@/app/MobileLayout'
 import { CoreButton } from '@/src/components/shared'
 import { generateSession } from '@/src/utils/scan'
 
-// const genSession = async () => {
-//   await generateSession().then((data) => {
-//     queryProfiles()
-//     setDID(data.id)
-//   })
-// }
 export default function Verify() {
   const toast = useToast()
   const router = useRouter()

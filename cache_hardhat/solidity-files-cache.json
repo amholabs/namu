@@ -1537,6 +1537,45 @@
       "artifacts": [
         "ERC721URIStorage"
       ]
+    },
+    "/Users/nnn/Projects/namu/contracts/src/SetNumber.sol": {
+      "lastModificationDate": 1675821257735,
+      "contentHash": "5a2d20921ab7ee2f67fc0e3c776c8437",
+      "sourceName": "contracts/src/SetNumber.sol",
+      "solcConfig": {
+        "version": "0.8.17",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          },
+          "remappings": [
+            "ds-test/=src/lib/forge-std/lib/ds-test/src/",
+            "forge-std/=src/lib/forge-std/src/"
+          ]
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "^0.8.9"
+      ],
+      "artifacts": [
+        "SetNumber"
+      ]
     }
   }
 }

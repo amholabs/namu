@@ -3,16 +3,12 @@ import { useEffect, useState } from 'react'
 // eslint-disable-next-line import/order
 import { Center, HStack, Heading, Image, Input, Tag, Text, VStack, useToast } from '@chakra-ui/react'
 
-// import { hashMessage } from '@ethersproject/hash'
-// import { mainnet, polygon } from '@wagmi/chains'
-
-import ethereum from '@web3modal/ethereum'
 import { useWeb3Modal } from '@web3modal/react'
 import { ethers } from 'ethers'
 import { ExecutionResult } from 'graphql'
 import { useRouter } from 'next/router'
 import { useDebounce } from 'usehooks-ts'
-import { useAccount, useBlockNumber, useContractWrite, useNetwork, usePrepareContractWrite, useSignMessage } from 'wagmi'
+import { useAccount, useContractWrite, useNetwork, usePrepareContractWrite, useSignMessage } from 'wagmi'
 
 import { getMintWithChipSig } from '@/lib/actions/chip'
 import { siweLogin } from '@/lib/actions/siweUtils'

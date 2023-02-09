@@ -1,4 +1,3 @@
-import { ComposeClient } from '@composedb/client'
 import type { AuthMethod } from '@didtools/cacao'
 import { EthereumWebAuth } from '@didtools/pkh-ethereum'
 import { AccountId, AccountIdParams, ChainId, ChainIdParams } from 'caip'

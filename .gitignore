@@ -2,6 +2,7 @@
 cache/
 out/
 *.sh
+./config.js
 
 # dependencies
 /node_modules
