@@ -2,7 +2,7 @@
 cache/
 out/
 *.sh
-./config.js
+/config.js
 
 # dependencies
 /node_modules
