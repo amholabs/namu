@@ -10,15 +10,14 @@ async function main() {
   // const ChipTable = await ethers.getContractFactory('ChipTable')
   // const chipTable = await ChipTable.deploy(owner.address, '1')
 
-  const PBTSimpleMock = await ethers.getContractFactory('PBTSimpleMock')
-  const pbtSimple = await PBTSimpleMock.deploy('ENIGMA FW 2023', 'ETIXFW2023')
-  // await chipTable.deployed()
-  await pbtSimple.deployed()
+  const AmhoPBT = await ethers.getContractFactory('AmhoPBTMock')
+  const amhoPBT = await AmhoPBT.deploy('ENIGMA FW 2023', 'ETIXFW2023', 1000)
+  await amhoPBT.deployed()
 
-  console.log(`PBTSimpleMock address deployed to ${pbtSimple.address}`)
+  console.log(`AmhoPBT address deployed to ${amhoPBT.address}`)
 
-  updateEnvVar('PBT_ADDRESS', pbtSimple.address, './.env.local')
-  fs.writeFileSync('./config.ts', `export const PBT_ADDRESS = '${pbtSimple.address}'`)
+  updateEnvVar('PBT_ADDRESS', amhoPBT.address, './.env.local')
+  fs.writeFileSync('./config.ts', `export const PBT_ADDRESS = '${amhoPBT.address}'`)
 }
 
 // We recommend this pattern to be able to use async/await everywhere

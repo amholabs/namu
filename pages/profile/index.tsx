@@ -14,7 +14,6 @@ import { getMintWithChipSig } from '@/lib/actions/chip'
 import { siweLogin } from '@/lib/actions/siweUtils'
 import { UrlLinkSocialType } from '@/out/__generated__/graphql'
 import { Profile as ProfileType, Query } from '@/out/__generated__/graphql'
-import { abi } from '@/out/PBTSimpleMock.sol/PBTSimpleMock.json'
 import { CoreButton } from '@/src/components/shared'
 import WalletConnectCustom from '@/src/components/WalletConnectCustom'
 import { MUTATE_CREATE_PROFILE, QUERY_PROFILE_VIEWER } from '@/src/lib/constants'
@@ -22,6 +21,9 @@ import { DUMMY_SOCIAL_LINKS, DUMMY_TOKEN_DATA } from '@/src/lib/dummy'
 import { useStore } from '@/src/store'
 import { loadSession } from '@/src/utils/scan'
 import MobileLayout from 'app/MobileLayout'
+import { PBT_ADDRESS } from 'config'
+
+import { abi } from '@/out/AmhoPBTMock.sol/AmhoPBTMock.json'
 
 export default function Profile() {
   const router = useRouter()
@@ -37,7 +39,7 @@ export default function Profile() {
   const { open } = useWeb3Modal()
   const { signMessageAsync } = useSignMessage()
   const { config } = usePrepareContractWrite({
-    address: '0xE8a1883eD8F54B4b08CCfebd46adCeD2AcB96028',
+    address: PBT_ADDRESS,
     abi,
     functionName: 'mintTokenWithChip',
     args: [debounceSig, debounceBlockNum],
@@ -60,7 +62,6 @@ export default function Profile() {
 
   // eslint-disable-next-line unused-imports/no-unused-vars
   const handleSettingClick = async () => {
-    // const provider = new ethers.providers.JsonRpcProvider(`https://eth-mainnet.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_API_KEY}`)
     const provider = new ethers.providers.JsonRpcProvider(`https://eth-goerli.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_API_KEY_goeETH}`)
     const blockNum = await provider.getBlock('latest').then((block) => block.number)
     const blockHash = await provider.getBlock('latest').then((block) => block.hash)
@@ -175,8 +176,6 @@ export default function Profile() {
             key={id}
             clickHandler={async () => {
               if (data.type == UrlLinkSocialType.Base && (await checkConnected())) {
-                // await scan()
-                // await handleCreateMessage()
                 write?.()
               } else if (data.type == UrlLinkSocialType.Base && !(await checkConnected())) {
                 await open()

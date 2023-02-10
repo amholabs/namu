@@ -16,7 +16,7 @@ const dotenvConfigPath: string = process.env.DOTENV_CONFIG_PATH || './.env.local
 dotenvConfig({ path: resolve(__dirname, dotenvConfigPath) })
 
 const config: HardhatUserConfig = {
-  solidity: '0.8.17',
+  solidity: '0.8.13',
   defaultNetwork: 'goerli',
   networks: {
     localhost: {

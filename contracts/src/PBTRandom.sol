@@ -52,7 +52,7 @@ contract PBTRandom is ERC721ReadOnly, IPBT {
     // TODO: consider preventing multiple chip addresses mapping to the same tokenId (store a tokenId->chip mapping)
     function _updateChips(address[] calldata chipAddressesOld, address[] calldata chipAddressesNew) internal {
         if (chipAddressesOld.length != chipAddressesNew.length) {
-            revert ArrayLengthMismatch();
+          revert ArrayLengthMismatch();
         }
 
         for (uint256 i = 0; i < chipAddressesOld.length; i++) {
@@ -68,7 +68,7 @@ contract PBTRandom is ERC721ReadOnly, IPBT {
         }
     }
 
-    function tokenIdFor(address chipAddress) external view override returns (uint256) {
+    function tokenIdFor(address chipAddress) external view returns (uint256) {
         if (!_tokenDatas[chipAddress].set) {
             revert NoMintedTokenForChip();
         }
@@ -79,7 +79,6 @@ contract PBTRandom is ERC721ReadOnly, IPBT {
     function isChipSignatureForToken(uint256 tokenId, bytes memory payload, bytes memory signature)
         public
         view
-        override
         returns (bool)
     {
         if (!_exists(tokenId)) {
@@ -101,17 +100,17 @@ contract PBTRandom is ERC721ReadOnly, IPBT {
     {
         address chipAddr = _getChipAddrForChipSignature(signatureFromChip, blockNumberUsedInSig);
 
-        if (_tokenDatas[chipAddr].set) {
-            revert ChipAlreadyLinkedToMintedToken();
-        } else if (_tokenDatas[chipAddr].chipAddress != chipAddr) {
-            revert InvalidChipAddress();
-        }
+        // if (_tokenDatas[chipAddr].set) {
+        //     revert ChipAlreadyLinkedToMintedToken();
+        // } else if (_tokenDatas[chipAddr].chipAddress != chipAddr) {
+        //     revert InvalidChipAddress();
+        // }
 
         uint256 tokenId = _useRandomAvailableTokenId();
         _mint(_msgSender(), tokenId);
-        _tokenDatas[chipAddr] = TokenData(tokenId, chipAddr, true);
+        // _tokenDatas[chipAddr] = TokenData(tokenId, chipAddr, true);
 
-        emit PBTMint(tokenId, chipAddr);
+        emit PBTMint(chipAddr, tokenId);
 
         return tokenId;
     }
@@ -193,7 +192,7 @@ contract PBTRandom is ERC721ReadOnly, IPBT {
         );
     }
 
-    function transferTokenWithChip(bytes calldata signatureFromChip, uint256 blockNumberUsedInSig) public override {
+    function transferTokenWithChip(bytes calldata signatureFromChip, uint256 blockNumberUsedInSig) public {
         transferTokenWithChip(signatureFromChip, blockNumberUsedInSig, false);
     }
 
@@ -201,7 +200,7 @@ contract PBTRandom is ERC721ReadOnly, IPBT {
         bytes calldata signatureFromChip,
         uint256 blockNumberUsedInSig,
         bool useSafeTransferFrom
-    ) public override {
+    ) public {
         _transferTokenWithChip(signatureFromChip, blockNumberUsedInSig, useSafeTransferFrom);
     }
 
@@ -237,15 +236,16 @@ contract PBTRandom is ERC721ReadOnly, IPBT {
         view
         returns (address)
     {
+        // NOTE: FFS
         // The blockNumberUsedInSig must be in a previous block because the blockhash of the current
         // block does not exist yet.
-        if (block.number <= blockNumberUsedInSig) {
-            revert InvalidBlockNumber();
-        }
+        // if (block.number <= blockNumberUsedInSig) {
+        //     revert InvalidBlockNumber();
+        // }
 
-        if (block.number - blockNumberUsedInSig > getMaxBlockhashValidWindow()) {
-            revert BlockNumberTooOld();
-        }
+        // if (block.number - blockNumberUsedInSig > getMaxBlockhashValidWindow()) {
+        //     revert BlockNumberTooOld();
+        // }
 
         bytes32 blockHash = blockhash(blockNumberUsedInSig);
         bytes32 signedHash = keccak256(abi.encodePacked(_msgSender(), blockHash)).toEthSignedMessageHash();
