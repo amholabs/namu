@@ -1,12 +1,11 @@
 import { useEffect, useState } from 'react'
 
-import { Center, HStack, Heading, Image, Tag, Text, VStack, useToast } from '@chakra-ui/react'
+import { Center, HStack, Heading, VStack, useToast } from '@chakra-ui/react'
 import { ethers } from 'ethers'
 import { getSignatureFromScan } from 'pbt-chip-client/kong'
 import { useDebounce } from 'usehooks-ts'
-import { useAccount, useBlockNumber, useContractWrite, useNetwork, usePrepareContractWrite } from 'wagmi'
+import { useAccount, useBlockNumber, useContractWrite, useNetwork, usePrepareContractWrite, useWaitForTransaction } from 'wagmi'
 
-import { getMintWithChipSig } from '@/lib/actions/chip'
 import { CoreButton } from '@/src/components/shared'
 import WalletConnectCustom from '@/src/components/WalletConnectCustom'
 import { useStore } from '@/src/store'
@@ -14,7 +13,7 @@ import { generateSession, loadSession } from '@/src/utils/scan'
 import MobileLayout from 'app/MobileLayout'
 import { PBT_ADDRESS } from 'config'
 
-import { abi } from '@/out/AmhoPBTMock.sol/AmhoPBTMock.json'
+import { abi } from '../../artifacts/contracts/src/mocks/AmhoPBTMock.sol/AmhoPBTMock.json'
 
 export default function Setttings() {
   // const addrs = useStore.getState().chipAddresses
@@ -23,80 +22,94 @@ export default function Setttings() {
   const toast = useToast()
   const { address } = useAccount()
   const [sig, setSig] = useState<string | null>(null)
-  const [blockNumber, setBlockNumber] = useState<number>(0)
-  const [blockHash, setBlockHash] = useState<string>('')
 
   const debounceSig = useDebounce(sig)
-  const debounceBlockNum = useDebounce(blockNumber)
-  // const debounceAddrs = useDebounce(addrs)
+  const blockNum = useStore.getState().blockNumber
+
+  const { config: mintTokenConfig } = usePrepareContractWrite({
+    address: PBT_ADDRESS,
+    abi,
+    functionName: 'mintTokenWithChip',
+    args: [debounceSig, blockNum, { gasLimit: 130000 }],
+    enabled: !!debounceSig && !!blockNum,
+    chainId: chain?.id,
+  })
 
   const { config: whitelistChipConfig } = usePrepareContractWrite({
     address: PBT_ADDRESS,
     abi,
     functionName: 'addChipToWhitelist',
-    args: [debounceSig, debounceBlockNum],
-    enabled: !!debounceSig && !!debounceBlockNum,
+    args: [debounceSig, blockNum],
     chainId: chain?.id,
   })
 
-  const { config: mintTokenConfig, error: mintError } = usePrepareContractWrite({
-    address: PBT_ADDRESS,
-    abi,
-    functionName: 'mintTokenWithChip',
-    args: [debounceSig, debounceBlockNum],
-    enabled: !!debounceSig && !!debounceBlockNum,
-    chainId: chain?.id,
+  const { write: mintWrite, data: mintData } = useContractWrite(mintTokenConfig)
+  const { write: whitelistWrite, data: whitelistData } = useContractWrite(whitelistChipConfig)
+
+  const { isLoading: isLoadingWhitelist } = useWaitForTransaction({
+    hash: whitelistData?.hash,
+    onSuccess() {
+      toast({
+        title: 'Whitelist Success',
+        description: 'Seed Success',
+        status: 'success',
+        duration: 5000,
+        isClosable: true,
+      })
+      mintWrite?.()
+    },
   })
 
-  const { isSuccess: whitelistIsSuccess, write: seedWrite } = useContractWrite(whitelistChipConfig)
-  const { isSuccess: mintIsSuccess, write: mintWrite } = useContractWrite(mintTokenConfig)
+  const { isLoading: isLoadingMint } = useWaitForTransaction({
+    hash: mintData?.hash,
+    onSuccess() {
+      toast({
+        title: 'Mint Success',
+        description: 'Seed Success',
+        status: 'success',
+        duration: 5000,
+        isClosable: true,
+      })
+    },
+  })
+  // useEffect(() => {
+  //   ;(async () => {
+  //     if (isSuccessWhitelist) {
+  //       toast({
+  //         title: 'Whitelist Success',
+  //         description: 'Seed Success',
+  //         status: 'success',
+  //         duration: 5000,
+  //         isClosable: true,
+  //       })
+  //     }
+  //   })()
+  // }, [isSuccessWhitelist])
 
-  useEffect(() => {
-    ;(async () => {
-      if (whitelistIsSuccess) {
-        toast({
-          title: 'Seed Success',
-          description: 'Seed Success',
-          status: 'success',
-          duration: 5000,
-          isClosable: true,
-        })
-      }
-      if (mintIsSuccess) {
-        toast({
-          title: 'Mint Success',
-          description: 'Mint Success',
-          status: 'success',
-          duration: 5000,
-          isClosable: true,
-        })
-      }
-    })()
-  }, [whitelistIsSuccess])
-
-  useEffect(() => {
-    ;(async () => {
-      if (mintIsSuccess) {
-        toast({
-          title: 'Mint Success',
-          description: 'Mint Success',
-          status: 'success',
-          duration: 5000,
-          isClosable: true,
-        })
-      }
-    })()
-  }, [mintIsSuccess])
+  // useEffect(() => {
+  //   ;(async () => {
+  //     if (isSuccessMint) {
+  //       toast({
+  //         title: 'Mint Success',
+  //         description: 'Mint Success',
+  //         status: 'success',
+  //         duration: 5000,
+  //         isClosable: true,
+  //       })
+  //     }
+  //   })()
+  // }, [])
 
   const handleMintPrepare = async () => {
     // const provider = new ethers.providers.JsonRpcProvider(`https://eth-mainnet.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_API_KEY}`)
-    const provider = new ethers.providers.JsonRpcProvider(`https://eth-goerli.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_API_KEY_goeETH}`)
-    await provider.getBlock('latest').then((block) => {
-      setBlockNumber(block.number)
-      setBlockHash(block.hash)
-    })
+    // const provider = new ethers.providers.JsonRpcProvider(`https://eth-goerli.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_API_KEY_goeETH}`)
+    // await provider.getBlock('latest').then((block) => {
+    //   setBlockNumber(block.number)
+    //   setBlockHash(block.hash)
+    // })
+    const blockHash = useStore.getState().blockHash
     const keyRaw = useStore.getState().chipHashedAddresses[0].slice(2)
-    if (keyRaw && address) {
+    if (address && keyRaw.length > 0) {
       await getSignatureFromScan({
         chipPublicKey: keyRaw,
         address: address,
@@ -118,12 +131,13 @@ export default function Setttings() {
   }
 
   const handleSeedTokens = async () => {
-    seedWrite?.()
+    console.log(whitelistChipConfig)
+    whitelistWrite?.()
   }
 
   const handleMintTokens = async () => {
-    console.log(mintError)
     console.log(mintTokenConfig)
+    console.log(address)
     mintWrite?.()
   }
 
@@ -138,13 +152,13 @@ export default function Setttings() {
         <CoreButton size="sm" clickHandler={generateSession}>
           Generate Session
         </CoreButton>
-        <CoreButton size="sm" clickHandler={handleSeedTokens}>
-          Seed Chips
-        </CoreButton>
         <CoreButton size="sm" clickHandler={handleMintPrepare}>
           Prepare Chips
         </CoreButton>
-        <CoreButton size="sm" clickHandler={handleMintTokens}>
+        <CoreButton isLoading={isLoadingWhitelist} size="sm" clickHandler={handleSeedTokens}>
+          Whitelist Chips
+        </CoreButton>
+        <CoreButton isLoading={isLoadingMint} size="sm" clickHandler={handleMintTokens}>
           Mint Chips
         </CoreButton>
       </VStack>

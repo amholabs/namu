@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.13;
 
+import 'forge-std/console.sol';
 import './IPBT.sol';
 import './ERC721ReadOnly.sol';
 import '@openzeppelin/contracts/utils/cryptography/ECDSA.sol';
@@ -33,6 +34,7 @@ contract AmhoPBT is ERC721ReadOnly, IPBT {
    */
 
   mapping(address => bool) _chipWhitelist;
+  mapping(uint256 => address) _chipToAddress;
 
   constructor(
     string memory name_,
@@ -49,9 +51,14 @@ contract AmhoPBT is ERC721ReadOnly, IPBT {
   // function _seedChipToTokenMapping(address[] memory chipAddresses, uint256[] memory tokenIds) internal {
   //   _seedChipToTokenMapping(chipAddresses, tokenIds, true);
   // }
+  function _getChipAddress(uint256 index) public view returns (address) {
+    return _chipToAddress[index];
+  }
 
   function _addChipToWhitelist(bytes memory signature, uint256 blockNumberUsedInSig) internal {
     address chipAddress = recoverChipAddress(signature, blockNumberUsedInSig);
+    console.log('Chip added to whitelist: ', chipAddress);
+    _chipToAddress[currentTokenId.current()] = chipAddress;
     _chipWhitelist[chipAddress] = true;
   }
 
@@ -116,8 +123,10 @@ contract AmhoPBT is ERC721ReadOnly, IPBT {
   // Returns true if the signer of the signature of the payload is the chip for the token id
   function recoverChipAddress(bytes memory signature, uint256 blockNumberUsedInSig) public view returns (address) {
     bytes32 blockHash = blockhash(blockNumberUsedInSig);
-    bytes32 signedHash = keccak256(abi.encodePacked(_msgSender(), blockHash)).toEthSignedMessageHash();
-    return signedHash.recover(signature);
+    bytes32 payloadHash = keccak256(abi.encodePacked(_msgSender(), blockHash));
+    bytes32 signedHash = payloadHash.toEthSignedMessageHash();
+    address recoveredAddr = signedHash.recover(signature);
+    return recoveredAddr;
   }
 
   // function isChipSignatureValid(
@@ -151,7 +160,6 @@ contract AmhoPBT is ERC721ReadOnly, IPBT {
     emit PBTMint(recipient, tokenId);
     return tokenId;
   }
-
   // function transferTokenWithChip(bytes calldata signatureFromChip, uint256 blockNumberUsedInSig) public override {
   //   transferTokenWithChip(signatureFromChip, blockNumberUsedInSig, false);
   // }

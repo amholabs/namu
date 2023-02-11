@@ -7,6 +7,7 @@ import { ethSignMessage, listKeys } from 'halo-chip'
 
 import { AuthMethodParams } from '@/src/lib/types'
 import { useStore } from '@/src/store'
+import { ethers } from 'ethers'
 
 export const scan = async () => {
   const keys = await listKeys()
@@ -72,6 +73,10 @@ export const loadSession = async (): Promise<DIDSession> => {
 
 export const generateSession = async () => {
   const compose = useStore.getState().compose
+  const provider = new ethers.providers.JsonRpcProvider(`https://eth-goerli.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_API_KEY_goeETH}`)
+  await provider.getBlock('latest').then((block) => {
+    useStore.setState({ blockNumber: block.number, blockHash: block.hash })
+  })
   try {
     const keys = await scan()
     const keysAddresses = keys.map((key) => Object.values(key)[2])

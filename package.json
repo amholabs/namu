@@ -66,7 +66,7 @@
     "@typechain/ethers-v5": "^10.2.0",
     "@typechain/hardhat": "^6.1.5",
     "@vercel/og": "^0.0.27",
-    "@wagmi/chains": "^0.1.7",
+    "@wagmi/chains": "^0.2.8",
     "@walletconnect/jsonrpc-types": "^1.0.2",
     "@walletconnect/types": "^2.3.2",
     "@web3modal/ethereum": "^2.1.1",
@@ -98,7 +98,7 @@
     "thirdweb": "^0.9.16",
     "typechain": "^8.1.1",
     "usehooks-ts": "^2.9.1",
-    "wagmi": "^0.11.3",
+    "wagmi": "^0.11.5",
     "zod": "^3.20.2",
     "zustand": "^4.3.2"
   },

@@ -2,8 +2,8 @@
   "_format": "hh-sol-cache-2",
   "files": {
     "/Users/nnn/Projects/namu/contracts/src/AmhoPBT.sol": {
-      "lastModificationDate": 1676057494236,
-      "contentHash": "26fe2cfe1530d65601dee8f4e5b6abe8",
+      "lastModificationDate": 1676070475453,
+      "contentHash": "894b9d5f65ff6e2af21035349df5d6bd",
       "sourceName": "contracts/src/AmhoPBT.sol",
       "solcConfig": {
         "version": "0.8.13",
@@ -33,6 +33,7 @@
         }
       },
       "imports": [
+        "forge-std/console.sol",
         "./IPBT.sol",
         "./ERC721ReadOnly.sol",
         "@openzeppelin/contracts/utils/cryptography/ECDSA.sol",
@@ -701,8 +702,8 @@
       ]
     },
     "/Users/nnn/Projects/namu/contracts/test/PBTSimpleTest.sol": {
-      "lastModificationDate": 1676057118749,
-      "contentHash": "a368a29130ba8fca8e7bc0aa159679d9",
+      "lastModificationDate": 1676069604030,
+      "contentHash": "7ab88f0fa825afa8e39cf265131664e5",
       "sourceName": "contracts/test/PBTSimpleTest.sol",
       "solcConfig": {
         "version": "0.8.13",
@@ -1324,49 +1325,6 @@
         "DSTest"
       ]
     },
-    "/Users/nnn/Projects/namu/contracts/test/PBTRandomTest.sol": {
-      "lastModificationDate": 1675570224393,
-      "contentHash": "2e1d2ea5598d8099631eb47282a5f233",
-      "sourceName": "contracts/test/PBTRandomTest.sol",
-      "solcConfig": {
-        "version": "0.8.13",
-        "settings": {
-          "optimizer": {
-            "enabled": false,
-            "runs": 200
-          },
-          "outputSelection": {
-            "*": {
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata"
-              ],
-              "": [
-                "ast"
-              ]
-            }
-          },
-          "remappings": [
-            "ds-test/=src/lib/forge-std/lib/ds-test/src/",
-            "forge-std/=src/lib/forge-std/src/"
-          ]
-        }
-      },
-      "imports": [
-        "forge-std/Test.sol",
-        "../src/IPBT.sol",
-        "../src/mocks/PBTRandomMock.sol"
-      ],
-      "versionPragmas": [
-        "^0.8.13"
-      ],
-      "artifacts": [
-        "PBTRandomTest"
-      ]
-    },
     "/Users/nnn/Projects/namu/contracts/src/mocks/PBTRandomMock.sol": {
       "lastModificationDate": 1675570125380,
       "contentHash": "01c3de3c4e0eb8aae1451ceea3b3a771",
@@ -1491,48 +1449,6 @@
       ],
       "artifacts": [
         "ERC721ReadOnlyMock"
-      ]
-    },
-    "/Users/nnn/Projects/namu/contracts/test/ERC721ReadOnlyTest.sol": {
-      "lastModificationDate": 1675570224393,
-      "contentHash": "1d9d594c042a3653c7f736fcee09473e",
-      "sourceName": "contracts/test/ERC721ReadOnlyTest.sol",
-      "solcConfig": {
-        "version": "0.8.13",
-        "settings": {
-          "optimizer": {
-            "enabled": false,
-            "runs": 200
-          },
-          "outputSelection": {
-            "*": {
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata"
-              ],
-              "": [
-                "ast"
-              ]
-            }
-          },
-          "remappings": [
-            "ds-test/=src/lib/forge-std/lib/ds-test/src/",
-            "forge-std/=src/lib/forge-std/src/"
-          ]
-        }
-      },
-      "imports": [
-        "forge-std/Test.sol",
-        "../src/mocks/ERC721ReadOnlyMock.sol"
-      ],
-      "versionPragmas": [
-        "^0.8.13"
-      ],
-      "artifacts": [
-        "ERC721ReadOnlyTest"
       ]
     },
     "/Users/nnn/Projects/namu/contracts/src/ChipTable.sol": {
