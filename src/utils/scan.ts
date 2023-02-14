@@ -3,11 +3,11 @@ import { EthereumWebAuth } from '@didtools/pkh-ethereum'
 import { AccountId, AccountIdParams, ChainId, ChainIdParams } from 'caip'
 import { DIDSession } from 'did-session'
 // @ts-ignore
+import { ethers } from 'ethers'
 import { ethSignMessage, listKeys } from 'halo-chip'
 
 import { AuthMethodParams } from '@/src/lib/types'
 import { useStore } from '@/src/store'
-import { ethers } from 'ethers'
 
 export const scan = async () => {
   const keys = await listKeys()
@@ -15,6 +15,18 @@ export const scan = async () => {
   // return { address, slot }
   console.log(keys)
   return keys
+}
+
+export const setScanVariables = async () => {
+  try {
+    const keys = await scan()
+    const { address, slot } = keys[0]
+    const keysAddresses = keys.map((key) => Object.values(key)[2])
+    const hashedKeysAddresses = keys.map((key) => Object.values(key)[0])
+    useStore.setState({ address, slot })
+    useStore.setState({ chipAddresses: keysAddresses, chipHashedAddresses: hashedKeysAddresses })
+    return keys
+  } catch (err) {}
 }
 
 export const loadAuthMethod = async (address: string, slot: string): Promise<AuthMethod> => {
@@ -73,17 +85,9 @@ export const loadSession = async (): Promise<DIDSession> => {
 
 export const generateSession = async () => {
   const compose = useStore.getState().compose
-  const provider = new ethers.providers.JsonRpcProvider(`https://eth-goerli.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_API_KEY_goeETH}`)
-  await provider.getBlock('latest').then((block) => {
-    useStore.setState({ blockNumber: block.number, blockHash: block.hash })
-  })
   try {
-    const keys = await scan()
-    const keysAddresses = keys.map((key) => Object.values(key)[2])
-    const hashedKeysAddresses = keys.map((key) => Object.values(key)[0])
-    useStore.setState({ chipAddresses: keysAddresses, chipHashedAddresses: hashedKeysAddresses })
+    const keys = await setScanVariables()
     const { address, slot } = keys[0]
-    useStore.setState({ address, slot })
     const resources = compose.resources
     const authMethod = await loadAuthMethod(address, slot)
     const session = await DIDSession.authorize(authMethod, { resources })

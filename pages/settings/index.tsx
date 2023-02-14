@@ -9,7 +9,7 @@ import { useAccount, useBlockNumber, useContractWrite, useNetwork, usePrepareCon
 import { CoreButton } from '@/src/components/shared'
 import WalletConnectCustom from '@/src/components/WalletConnectCustom'
 import { useStore } from '@/src/store'
-import { generateSession, loadSession } from '@/src/utils/scan'
+import { generateSession, loadSession, scan, setScanVariables } from '@/src/utils/scan'
 import MobileLayout from 'app/MobileLayout'
 import { PBT_ADDRESS } from 'config'
 
@@ -23,23 +23,23 @@ export default function Setttings() {
   const { address } = useAccount()
   const [sig, setSig] = useState<string | null>(null)
 
-  const debounceSig = useDebounce(sig)
-  const blockNum = useStore.getState().blockNumber
-
-  const { config: mintTokenConfig } = usePrepareContractWrite({
-    address: PBT_ADDRESS,
-    abi,
-    functionName: 'mintTokenWithChip',
-    args: [debounceSig, blockNum, { gasLimit: 130000 }],
-    enabled: !!debounceSig && !!blockNum,
-    chainId: chain?.id,
-  })
+  const [blockNum, setBlockNumber] = useState<number>(0)
 
   const { config: whitelistChipConfig } = usePrepareContractWrite({
     address: PBT_ADDRESS,
     abi,
     functionName: 'addChipToWhitelist',
-    args: [debounceSig, blockNum],
+    args: [sig, blockNum],
+    enabled: !!sig && !!blockNum,
+    chainId: chain?.id,
+  })
+
+  const { config: mintTokenConfig } = usePrepareContractWrite({
+    address: PBT_ADDRESS,
+    abi,
+    functionName: 'mintTokenWithChip',
+    args: [sig, blockNum, { gasLimit: 150000 }],
+    enabled: !!sig && !!blockNum,
     chainId: chain?.id,
   })
 
@@ -51,12 +51,11 @@ export default function Setttings() {
     onSuccess() {
       toast({
         title: 'Whitelist Success',
-        description: 'Seed Success',
         status: 'success',
         duration: 5000,
         isClosable: true,
       })
-      mintWrite?.()
+      handleMintTokens()
     },
   })
 
@@ -65,26 +64,19 @@ export default function Setttings() {
     onSuccess() {
       toast({
         title: 'Mint Success',
-        description: 'Seed Success',
         status: 'success',
         duration: 5000,
         isClosable: true,
       })
     },
   })
+
   // useEffect(() => {
   //   ;(async () => {
-  //     if (isSuccessWhitelist) {
-  //       toast({
-  //         title: 'Whitelist Success',
-  //         description: 'Seed Success',
-  //         status: 'success',
-  //         duration: 5000,
-  //         isClosable: true,
-  //       })
+  //     if (sig) {
   //     }
   //   })()
-  // }, [isSuccessWhitelist])
+  // }, [sig])
 
   // useEffect(() => {
   //   ;(async () => {
@@ -107,26 +99,35 @@ export default function Setttings() {
     //   setBlockNumber(block.number)
     //   setBlockHash(block.hash)
     // })
-    const blockHash = useStore.getState().blockHash
-    const keyRaw = useStore.getState().chipHashedAddresses[0].slice(2)
-    if (address && keyRaw.length > 0) {
-      await getSignatureFromScan({
-        chipPublicKey: keyRaw,
-        address: address,
-        hash: blockHash,
-      }).then((data) => {
-        if (data) {
-          setSig(data)
+    let keyRaw = ''
+    const provider = new ethers.providers.JsonRpcProvider(`https://eth-goerli.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_API_KEY_goeETH}`)
+    await provider.getBlock('latest').then(async (block) => {
+      setBlockNumber(block.number)
+      await setScanVariables().then((keys) => {
+        const hashedKeysAddresses = keys.map((key) => Object.values(key)[0])
+        keyRaw = hashedKeysAddresses[0].slice(2)
+        if (address) {
+          const cpKeyRaw = keyRaw
+          getSignatureFromScan({
+            chipPublicKey: cpKeyRaw,
+            address: address,
+            hash: block.hash,
+          }).then((data) => {
+            if (data) {
+              setSig(data)
+              handleSeedTokens()
+            }
+          })
+        } else {
+          toast({
+            title: 'Error',
+            description: 'Address not set',
+            status: 'error',
+            isClosable: true,
+          })
         }
       })
-    } else {
-      toast({
-        title: 'Error',
-        description: 'Address not set',
-        status: 'error',
-        isClosable: true,
-      })
-    }
+    })
     // encode the newSig to be passed into a smart contract contract expecting the format "bytes calldata"
   }
 

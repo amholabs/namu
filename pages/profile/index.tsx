@@ -14,6 +14,7 @@ import { getMintWithChipSig } from '@/lib/actions/chip'
 import { siweLogin } from '@/lib/actions/siweUtils'
 import { UrlLinkSocialType } from '@/out/__generated__/graphql'
 import { Profile as ProfileType, Query } from '@/out/__generated__/graphql'
+import { abi } from '@/out/AmhoPBTMock.sol/AmhoPBTMock.json'
 import { CoreButton } from '@/src/components/shared'
 import WalletConnectCustom from '@/src/components/WalletConnectCustom'
 import { MUTATE_CREATE_PROFILE, QUERY_PROFILE_VIEWER } from '@/src/lib/constants'
@@ -22,8 +23,6 @@ import { useStore } from '@/src/store'
 import { loadSession } from '@/src/utils/scan'
 import MobileLayout from 'app/MobileLayout'
 import { PBT_ADDRESS } from 'config'
-
-import { abi } from '@/out/AmhoPBTMock.sol/AmhoPBTMock.json'
 
 export default function Profile() {
   const router = useRouter()
