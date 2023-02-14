@@ -57,8 +57,6 @@ contract AmhoPBT is ERC721ReadOnly, IPBT {
 
   function _addChipToWhitelist(bytes memory signature, uint256 blockNumberUsedInSig) internal {
     address chipAddress = recoverChipAddress(signature, blockNumberUsedInSig);
-    console.log('Chip added to whitelist: ', chipAddress);
-    _chipToAddress[currentTokenId.current()] = chipAddress;
     _chipWhitelist[chipAddress] = true;
   }
 
@@ -160,6 +158,7 @@ contract AmhoPBT is ERC721ReadOnly, IPBT {
     emit PBTMint(recipient, tokenId);
     return tokenId;
   }
+
   // function transferTokenWithChip(bytes calldata signatureFromChip, uint256 blockNumberUsedInSig) public override {
   //   transferTokenWithChip(signatureFromChip, blockNumberUsedInSig, false);
   // }
