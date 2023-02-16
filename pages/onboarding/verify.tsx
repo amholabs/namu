@@ -37,6 +37,7 @@ export default function Verify() {
       <Text paddingBottom="1rem" fontSize="sm" marginTop="auto">
         Click VERIFY then tap your bag. It will ask you to tap twice.
       </Text>
+      {/* <CoreButton isLoading={loading} size="xs" clickHandler={handleGenerateSession}> */}
       <CoreButton isLoading={loading} size="xs" clickHandler={handleGenerateSession}>
         VERIFY
       </CoreButton>

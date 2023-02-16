@@ -1,0 +1,3 @@
+#!/bin/bash
+
+/Users/nnn/Projects/js-composedb/packages/cli/bin/run.js graphql:server --graphiql --port=5000 ./ceramic/runtime.json --did-private-key $(cat ./ceramic/priv.key)

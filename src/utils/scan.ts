@@ -1,5 +1,5 @@
 import type { AuthMethod } from '@didtools/cacao'
-import { EthereumWebAuth } from '@didtools/pkh-ethereum'
+import { EthereumWebAuth, getAccountId } from '@didtools/pkh-ethereum'
 import { AccountId, AccountIdParams, ChainId, ChainIdParams } from 'caip'
 import { DIDSession } from 'did-session'
 // @ts-ignore
@@ -11,9 +11,6 @@ import { useStore } from '@/src/store'
 
 export const scan = async () => {
   const keys = await listKeys()
-  // const { address, slot } = keys[0]
-  // return { address, slot }
-  console.log(keys)
   return keys
 }
 
@@ -54,7 +51,7 @@ export const loadAuthMethod = async (address: string, slot: string): Promise<Aut
   }
   const authMethod = await EthereumWebAuth.getAuthMethod(
     {
-      request: async ({ params }: AuthMethodParams) => ethSignMessage(params[0], slot, params[1]),
+      request: async ({ params }: AuthMethodParams) => slot && ethSignMessage(params[0], slot, params[1]),
     },
     accountId
   )
@@ -76,11 +73,11 @@ export const loadSession = async (): Promise<DIDSession> => {
   if (!session || (session.hasSession && session.isExpired)) {
     const authMethod = await loadAuthMethod(address, slot)
     session = await DIDSession.authorize(authMethod, { resources })
-    localStorage.setItem('didsession', session.serialize())
+    // localStorage.setItem('didsession', session.serialize())
   }
 
-  compose.setDID(session.did)
-  return session
+  // compose.setDID(session.did)
+  // return session
 }
 
 export const generateSession = async () => {

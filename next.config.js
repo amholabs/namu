@@ -1,4 +1,5 @@
 /** @type {import('next').NextConfig} */
+const withTM = require('next-transpile-modules')(['halo-chip'])
 const withPWA = require('next-pwa')({
   dest: 'public',
   cacheOnFrontEndNav: false,
@@ -28,7 +29,7 @@ const nextConfig = {
   },
 }
 
-module.exports = withPWA({
+const pwa = withPWA({
   nextConfig,
   experimental: {
     // Required:
@@ -44,3 +45,5 @@ module.exports = withPWA({
     ]
   },
 })
+
+module.exports = withTM({ ...pwa })

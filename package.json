@@ -22,7 +22,7 @@
     "ceramic:generate": "yarn run ceramic:generate-profile && yarn run ceramic:generate-urllink && yarn run ceramic:merge && yarn run ceramic:runtime && yarn run ceramic:runtime-js",
     "deploy:pbt": "./deploy-goerli.sh",
     "deploy:tt": "./tunnelto.sh",
-    "deploy:dev": "concurrently \"yarn run ceramic:daemon\" \"sleep 5 && yarn run ceramic:generate\" \"yarn run gql:server\"",
+    "deploy:dev": "concurrently \"yarn run ceramic:daemon\" \"sleep 10 && yarn run ceramic:generate\" \"yarn run gql:server\"",
     "network:setup": "ts-node --esm ./scripts/utils/setip.ts",
     "storybook": "start-storybook -p 6006",
     "build-storybook": "build-storybook"
@@ -45,6 +45,7 @@
   "packageManager": "pnpm@7.1.8",
   "dependencies": {
     "@apollo/client": "^3.7.3",
+    "@ceramicnetwork/cli": "^2.20.0",
     "@ceramicnetwork/http-client": "^2.13.0",
     "@chakra-ui/icons": "^2.0.17",
     "@chakra-ui/react": "^2.4.9",
@@ -86,6 +87,7 @@
     "iron-session": "^6.3.1",
     "next": "13.1.6",
     "next-pwa": "^5.6.0",
+    "next-transpile-modules": "^10.0.0",
     "pbt-chip-client": "^0.0.4",
     "react": "18.2.0",
     "react-dom": "18.2.0",

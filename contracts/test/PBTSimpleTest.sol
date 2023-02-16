@@ -21,6 +21,8 @@ contract PBTSimpleTest is Test {
   address public chipAddr4 = vm.addr(104);
   uint256 public blockNumber = 10;
   string public uri = 'ipfs://QmW8UpW1LfNh3NVZnmjgjTqQYN9i5ovLZ6RvCMjUSuF8he';
+  string public nonce1 = 'nonce1';
+  string public nonce2 = 'nonce2';
 
   function setUp() public {
     pbt = new AmhoPBTMock('PBTSimple', 'PBTS', 100);
@@ -225,8 +227,16 @@ contract PBTSimpleTest is Test {
     bytes memory chipSignature2 = _createSignature(payload);
 
     vm.prank(user1);
-    uint256 tokenId = pbt.mintTokenWithChip(chipSignature2, blockNumber);
+    uint256 tokenId = pbt.mintTokenWithChip(chipSignature2, blockNumber, nonce1);
     assertEq(pbt.balanceOf(user1), 1);
+
+    vm.prank(user1);
+    vm.expectRevert('Nonce has already been used');
+    uint256 newTokenId = pbt.mintTokenWithChip(chipSignature2, blockNumber, nonce1);
+
+    vm.prank(user1);
+    uint256 newTokenId1 = pbt.mintTokenWithChip(chipSignature2, blockNumber, nonce2);
+    // assertEq(pbt.balanceOf(user1), 1);
   }
 
   // function testTransferTokenWithChip(bool useSafeTranfer) public setChipTokenMapping mintedTokens {

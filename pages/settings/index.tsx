@@ -18,11 +18,13 @@ import { abi } from '../../artifacts/contracts/src/mocks/AmhoPBTMock.sol/AmhoPBT
 export default function Setttings() {
   // const addrs = useStore.getState().chipAddresses
   // instantiate a new const by taking the addrs variable which is an array of objects in the format of [{ key1: '0x123', ...rest}, {key2: '0x123', ...rest}] and for each item take the values of key1 and key2 and put it in a new array [key1, key2]
-  const { chain } = useNetwork()
   const toast = useToast()
+  const { chain } = useNetwork()
+  // eslint-disable-next-line
   const { address } = useAccount()
+  // eslint-disable-next-line
   const [sig, setSig] = useState<string | null>(null)
-
+  // eslint-disable-next-line
   const [blockNum, setBlockNumber] = useState<number>(0)
 
   const { config: whitelistChipConfig } = usePrepareContractWrite({
@@ -34,17 +36,13 @@ export default function Setttings() {
     chainId: chain?.id,
   })
 
-  const { config: mintTokenConfig } = usePrepareContractWrite({
-    address: PBT_ADDRESS,
-    abi,
-    functionName: 'mintTokenWithChip',
-    args: [sig, blockNum, { gasLimit: 150000 }],
-    enabled: !!sig && !!blockNum,
-    chainId: chain?.id,
-  })
-
-  const { write: mintWrite, data: mintData } = useContractWrite(mintTokenConfig)
+  // eslint-disable-next-line
   const { write: whitelistWrite, data: whitelistData } = useContractWrite(whitelistChipConfig)
+
+  const debounceReq = useDebounce(whitelistChipConfig.request)
+  useEffect(() => {
+    whitelistWrite?.()
+  }, [debounceReq])
 
   const { isLoading: isLoadingWhitelist } = useWaitForTransaction({
     hash: whitelistData?.hash,
@@ -55,19 +53,7 @@ export default function Setttings() {
         duration: 5000,
         isClosable: true,
       })
-      handleMintTokens()
-    },
-  })
-
-  const { isLoading: isLoadingMint } = useWaitForTransaction({
-    hash: mintData?.hash,
-    onSuccess() {
-      toast({
-        title: 'Mint Success',
-        status: 'success',
-        duration: 5000,
-        isClosable: true,
-      })
+      // handleMintTokens()
     },
   })
 
@@ -91,14 +77,9 @@ export default function Setttings() {
   //     }
   //   })()
   // }, [])
-
-  const handleMintPrepare = async () => {
-    // const provider = new ethers.providers.JsonRpcProvider(`https://eth-mainnet.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_API_KEY}`)
-    // const provider = new ethers.providers.JsonRpcProvider(`https://eth-goerli.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_API_KEY_goeETH}`)
-    // await provider.getBlock('latest').then((block) => {
-    //   setBlockNumber(block.number)
-    //   setBlockHash(block.hash)
-    // })
+  const handleWhitelistToken = async () => {
+    // console.log(whitelistChipConfig)
+    // whitelistWrite?.()
     let keyRaw = ''
     const provider = new ethers.providers.JsonRpcProvider(`https://eth-goerli.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_API_KEY_goeETH}`)
     await provider.getBlock('latest').then(async (block) => {
@@ -115,31 +96,19 @@ export default function Setttings() {
           }).then((data) => {
             if (data) {
               setSig(data)
-              handleSeedTokens()
             }
           })
         } else {
           toast({
-            title: 'Error',
-            description: 'Address not set',
+            title: 'Please connect wallet',
+            description: 'Please connect wallet',
             status: 'error',
+            duration: 5000,
             isClosable: true,
           })
         }
       })
     })
-    // encode the newSig to be passed into a smart contract contract expecting the format "bytes calldata"
-  }
-
-  const handleSeedTokens = async () => {
-    console.log(whitelistChipConfig)
-    whitelistWrite?.()
-  }
-
-  const handleMintTokens = async () => {
-    console.log(mintTokenConfig)
-    console.log(address)
-    mintWrite?.()
   }
 
   return (
@@ -150,17 +119,8 @@ export default function Setttings() {
         </Heading>
       </Center>
       <VStack spacing={3}>
-        <CoreButton size="sm" clickHandler={generateSession}>
-          Generate Session
-        </CoreButton>
-        <CoreButton size="sm" clickHandler={handleMintPrepare}>
-          Prepare Chips
-        </CoreButton>
-        <CoreButton isLoading={isLoadingWhitelist} size="sm" clickHandler={handleSeedTokens}>
+        <CoreButton isLoading={isLoadingWhitelist} size="sm" clickHandler={handleWhitelistToken}>
           Whitelist Chips
-        </CoreButton>
-        <CoreButton isLoading={isLoadingMint} size="sm" clickHandler={handleMintTokens}>
-          Mint Chips
         </CoreButton>
       </VStack>
       <Center>

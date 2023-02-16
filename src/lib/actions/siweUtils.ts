@@ -32,6 +32,12 @@ export const siweLogout = async (): Promise<boolean> => {
   }
 }
 
+export const generateNonce = async (): Promise<string> => {
+  const nonceRes = await fetch('/api/account/nonce')
+  const nonce = await nonceRes.text()
+  return nonce
+}
+
 export const siweLogin = async ({ address, chain, signMessageAsync }: any) => {
   // 1. Get random nonce from API
   const nonceRes = await fetch('/api/account/nonce')

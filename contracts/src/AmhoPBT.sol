@@ -35,6 +35,7 @@ contract AmhoPBT is ERC721ReadOnly, IPBT {
 
   mapping(address => bool) _chipWhitelist;
   mapping(uint256 => address) _chipToAddress;
+  mapping(address => string) _nonces;
 
   constructor(
     string memory name_,
@@ -145,15 +146,21 @@ contract AmhoPBT is ERC721ReadOnly, IPBT {
   //    signatureFromChip: signature(receivingAddress + recentBlockhash), signed by an approved chip
   //
   // Contract should check that (1) recentBlockhash is a recent blockhash, (2) receivingAddress === to, and (3) the signing chip is allowlisted.
-  function _mintTokenWithChip(bytes calldata signatureFromChip, uint256 blockNumberUsedInSig)
+  function _mintTokenWithChip(
+    bytes calldata signatureFromChip,
+    uint256 blockNumberUsedInSig,
+    string memory nonce
+  )
     internal
     isChipWhitelisted(signatureFromChip, blockNumberUsedInSig)
+    isNonceUsed(signatureFromChip, blockNumberUsedInSig, nonce)
     returns (uint256)
   {
     uint256 tokenId = currentTokenId.current();
     address recipient = _msgSender();
     currentTokenId.increment();
     _numAvailableRemainingTokens--;
+
     _mint(recipient, tokenId);
     emit PBTMint(recipient, tokenId);
     return tokenId;
@@ -222,6 +229,17 @@ contract AmhoPBT is ERC721ReadOnly, IPBT {
   modifier isChipWhitelisted(bytes calldata signatureFromChip, uint256 blockNumberUsedInSig) {
     address chipAddress = recoverChipAddress(signatureFromChip, blockNumberUsedInSig);
     require(_chipWhitelist[chipAddress], 'Chip is not whitelisted');
+    _;
+  }
+
+  modifier isNonceUsed(
+    bytes calldata signatureFromChip,
+    uint256 blockNumberUsedInSig,
+    string memory nonce
+  ) {
+    address chipAddress = recoverChipAddress(signatureFromChip, blockNumberUsedInSig);
+    require(keccak256(bytes(_nonces[chipAddress])) != keccak256(bytes(nonce)), 'Nonce has already been used');
+    _nonces[chipAddress] = nonce;
     _;
   }
 }
