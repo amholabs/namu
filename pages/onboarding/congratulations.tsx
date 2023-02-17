@@ -42,7 +42,7 @@ export default function Congratulations() {
           <Text fontSize="sm">Click NEXT to continue.</Text>
         </Box> */}
         {/* <CoreButton isLoading={loading} size="xs" clickHandler={handleClick} color={'white'}> */}
-        <TextButton color="white" size="sm" clickHandler={handleClick}>
+        <TextButton color="white" size="sm" clickHandler={handleClick }>
           Get Started
         </TextButton>
         {/* </CoreButton> */}

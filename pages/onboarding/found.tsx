@@ -83,38 +83,46 @@ export default function Found() {
 
   return (
     <MobileLayout>
-      <Center padding="3rem">
+      <Heading>Enigma Bag</Heading>
+      <Text fontWeight="bold">1/41</Text>
+      <Center>
         <Image boxSize="200px" objectFit="cover" src="/image/bagplaceholder.png" />
       </Center>
-      <VStack marginTop="1em" flex="1" spacing="2" align="stretch">
-        <Flex>
-          <Box>
-            <Text>Collection</Text>
-          </Box>
-          <Spacer />
-          <Box>
-            <Text>AMHO F/W 2023</Text>
-          </Box>
-        </Flex>
-        <Flex>
-          <Box>
-            <Text>Previous Owner</Text>
-          </Box>
-          <Spacer />
-          <Box>
-            <Text>0xabc...dfg</Text>
-          </Box>
-        </Flex>
-        {/* {found && (
-            <Card border="3px">
-              <CardBody>
-                <HStack spacing="1.5rem">
-                  <Avatar bg="gray.900" />
-                  <Text>{name}</Text>
-                </HStack>
-              </CardBody>
-            </Card>
-          )} */}
+      <VStack marginTop="1em" flex="1" align="stretch">
+        <HStack display="flex" spacing={16}>
+          <VStack flex="1" alignItems="start">
+            <Text as="sub">Collection</Text>
+            <Text fontSize="sm">ENIGMA F/W 2023</Text>
+          </VStack>
+          <VStack flex="1" alignItems="start">
+            <Text as="sub">Color</Text>
+            <Text fontSize="sm">Dark Black</Text>
+          </VStack>
+        </HStack>
+      </VStack>
+      <VStack flex="1" align="stretch">
+        <HStack display="flex" spacing={16}>
+          <VStack flex="1" alignItems="start">
+            <Text as="sub">Models</Text>
+            <Text fontSize="sm">@chinachipling</Text>
+          </VStack>
+          <VStack flex="1" alignItems="start">
+            <Text as="sub">Manufacturer</Text>
+            <Text fontSize="sm">DLFCTRY</Text>
+          </VStack>
+        </HStack>
+      </VStack>
+      <VStack flex="1" align="stretch">
+        <HStack display="flex" spacing={16}>
+          <VStack flex="1" alignItems="start">
+            <Text as="sub">Token Id</Text>
+            <Text fontSize="sm">1</Text>
+          </VStack>
+          <VStack flex="1" alignItems="start">
+            <Text as="sub">Owner</Text>
+            <Text fontSize="sm">You</Text>
+          </VStack>
+        </HStack>
       </VStack>
       <Box marginTop="auto">
         {no ? (
@@ -132,14 +140,14 @@ export default function Found() {
             </CoreButton>
           </VStack>
         ) : (
-          <Flex marginBottom="3rem">
+          <Flex alignItems="center" marginBottom="3rem">
             <Text fontSize="xs">New owner detected is 0xabc... you?</Text>
             <Spacer />
             <HStack spacing={5}>
-              <Text onClick={submitName} _hover={{ textDecoration: 'underline' }}>
+              <Text fontSize="sm" onClick={submitName} _hover={{ textDecoration: 'underline' }}>
                 YES
               </Text>
-              <Text onClick={() => setNo(true)} _hover={{ textDecoration: 'underline' }}>
+              <Text fontSize="sm" onClick={() => setNo(true)} _hover={{ textDecoration: 'underline' }}>
                 NO
               </Text>
             </HStack>
