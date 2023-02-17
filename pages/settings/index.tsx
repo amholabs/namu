@@ -6,7 +6,7 @@ import { getSignatureFromScan } from 'pbt-chip-client/kong'
 import { useDebounce } from 'usehooks-ts'
 import { useAccount, useBlockNumber, useContractWrite, useNetwork, usePrepareContractWrite, useWaitForTransaction } from 'wagmi'
 
-import { CoreButton } from '@/src/components/shared'
+import { CoreButton } from '@/components/shared/CoreButton'
 import WalletConnectCustom from '@/src/components/WalletConnectCustom'
 import { useStore } from '@/src/store'
 import { generateSession, loadSession, scan, setScanVariables } from '@/src/utils/scan'

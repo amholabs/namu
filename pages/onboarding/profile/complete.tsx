@@ -2,7 +2,7 @@ import { Box, Heading, Text, VStack } from '@chakra-ui/react'
 import { ExecutionResult } from 'graphql'
 import { useRouter } from 'next/router'
 
-import { CoreButton } from '@/src/components/shared'
+import { CoreButton } from '@/components/shared/CoreButton'
 import MobileLayout from 'app/MobileLayout'
 
 export default function Complete() {

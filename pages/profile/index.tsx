@@ -9,6 +9,7 @@ import {
   Input,
   Modal,
   ModalBody,
+  ModalCloseButton,
   ModalContent,
   ModalOverlay,
   Spinner,
@@ -20,18 +21,18 @@ import {
 } from '@chakra-ui/react'
 import { useWeb3Modal } from '@web3modal/react'
 import { ethers } from 'ethers'
-import { ExecutionResult } from 'graphql'
+// import { ExecutionResult } from 'graphql'
 import { useRouter } from 'next/router'
 import { getSignatureFromScan } from 'pbt-chip-client/kong'
 import { useDebounce } from 'usehooks-ts'
 import { useAccount, useContractWrite, useNetwork, usePrepareContractWrite, useSignMessage, useWaitForTransaction } from 'wagmi'
 
-import { getMintWithChipSig } from '@/lib/actions/chip'
-import { generateNonce, siweLogin } from '@/lib/actions/siweUtils'
+// import { getMintWithChipSig } from '@/lib/actions/chip'
+// import { generateNonce, siweLogin } from '@/lib/actions/siweUtils'
+import { CoreButton } from '@/components/shared/CoreButton'
 import { UrlLinkSocialType } from '@/out/__generated__/graphql'
 import { Profile as ProfileType, Query } from '@/out/__generated__/graphql'
 import { abi } from '@/out/AmhoPBTMock.sol/AmhoPBTMock.json'
-import { CoreButton } from '@/src/components/shared'
 import WalletConnectCustom from '@/src/components/WalletConnectCustom'
 import { MUTATE_CREATE_PROFILE, QUERY_PROFILE_VIEWER } from '@/src/lib/constants'
 import { DUMMY_SOCIAL_LINKS, DUMMY_TOKEN_DATA } from '@/src/lib/dummy'
@@ -57,7 +58,7 @@ export default function Profile() {
     address: PBT_ADDRESS,
     abi,
     functionName: 'mintTokenWithChip',
-    args: [debounceSig, debounceBlockNum, { gasLimit: 150000 }],
+    args: [sig, blockNum, { gasLimit: 200000 }],
     enabled: !!debounceSig && !!debounceBlockNum,
     chainId: chain?.id,
   })
@@ -66,6 +67,12 @@ export default function Profile() {
   // const { writeAsync: whitelistWrite, data: whitelistData } = useContractWrite(whitelistChipConfig)
 
   const debounceReq = useDebounce(mintTokenConfig.request, 2000)
+
+  // useEffect(() => {
+  //   if (status === 'connected') {
+  //     resetVariables()
+  //   }
+  // }, [status])
 
   useEffect(() => {
     if (sig && blockNum !== 0) {
@@ -111,6 +118,7 @@ export default function Profile() {
             }
           })
         } else {
+          console.log(mintTokenConfig)
           resetVariables()
           toast({
             title: 'Error',
@@ -266,7 +274,7 @@ export default function Profile() {
       <Modal onClose={onClose} size={'full'} isOpen={isOpen}>
         <ModalOverlay />
         <ModalContent h="100%">
-          {/* <ModalCloseButton /> */}
+          <ModalCloseButton />
           <ModalBody>
             <Center h="100%">
               <VStack>

@@ -2,6 +2,7 @@
 cache/
 out/
 *.sh
+*.bak
 /config.ts
 
 # dependencies

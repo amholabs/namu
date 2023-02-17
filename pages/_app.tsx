@@ -1,5 +1,6 @@
 import './app.css'
 
+import '@fontsource/inter/700.css'
 import { ChakraProvider, extendTheme } from '@chakra-ui/react'
 import { ComposeClient } from '@composedb/client'
 import * as ethereum from '@web3modal/ethereum'
@@ -52,7 +53,26 @@ export default function App({ Component, pageProps }: AppProps) {
     config: { initialColorMode: 'light' },
     breakpoints,
     fonts: {
-      heading: `Helvetica Neue Bold, sans-serif`,
+      heading: `Inter, sans-serif`,
+      // heading: `Helvetica Neue Bold, sans-serif`,
+      body: `Helvetica Neue, sans-serif`,
+    },
+    textStyles: {
+      '3xl': {
+        fontWeight: 'black',
+      },
+    },
+    fontSizes: {
+      xs: '12px',
+      sm: '14px',
+      md: '16px',
+      lg: '18px',
+      xl: '25px',
+      '2xl': '32px',
+      '3xl': '40px',
+      '4xl': '40px',
+      '5xl': '48px',
+      '6xl': '64px',
     },
     borders: {
       none: 0,

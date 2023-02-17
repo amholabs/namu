@@ -4,7 +4,7 @@ import { Avatar, Box, Card, CardBody, Center, Flex, HStack, Heading, Image, Inpu
 import { ExecutionResult } from 'graphql'
 import { useRouter } from 'next/router'
 
-import { CoreButton } from '@/src/components/shared'
+import { CoreButton } from '@/components/shared/CoreButton'
 import { MUTATE_CREATE_PROFILE, QUERY_PROFILE_VIEWER } from '@/src/lib/constants'
 import { useStore } from '@/src/store'
 import { loadSession } from '@/src/utils/scan'

@@ -2,7 +2,7 @@ import { Text } from '@chakra-ui/react'
 import { useWeb3Modal } from '@web3modal/react'
 import { useAccount } from 'wagmi'
 
-import { truncateAddress } from './shared'
+import { truncateAddress } from './shared/CoreButton'
 
 export default function WalletConnectCustom() {
   const { open } = useWeb3Modal()
