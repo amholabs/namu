@@ -40,8 +40,9 @@ contract AmhoPBT is ERC721ReadOnly, IPBT {
   constructor(
     string memory name_,
     string memory symbol_,
-    uint256 maxSupply_
-  ) ERC721ReadOnly(name_, symbol_) {
+    uint256 maxSupply_,
+    address _trustedForwarder
+  ) ERC721ReadOnly(name_, symbol_, _trustedForwarder) {
     maxSupply = maxSupply_;
     _numAvailableRemainingTokens = maxSupply_;
   }
@@ -52,6 +53,7 @@ contract AmhoPBT is ERC721ReadOnly, IPBT {
   // function _seedChipToTokenMapping(address[] memory chipAddresses, uint256[] memory tokenIds) internal {
   //   _seedChipToTokenMapping(chipAddresses, tokenIds, true);
   // }
+
   function _getChipAddress(uint256 index) public view returns (address) {
     return _chipToAddress[index];
   }

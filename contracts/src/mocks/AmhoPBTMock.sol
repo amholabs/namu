@@ -7,8 +7,9 @@ contract AmhoPBTMock is AmhoPBT {
   constructor(
     string memory name_,
     string memory symbol_,
-    uint256 totalSupply
-  ) AmhoPBT(name_, symbol_, totalSupply) {}
+    uint256 totalSupply,
+    address _trustedForwarder
+  ) AmhoPBT(name_, symbol_, totalSupply, _trustedForwarder) {}
 
   function mint(address to, uint256 tokenId) public {
     _mint(to, tokenId);

@@ -39,7 +39,7 @@ const pwa = withPWA({
     return [
       {
         source: '/',
-        destination: '/onboarding/congratulations',
+        destination: '/onboarding/welcome',
         permanent: true,
       },
     ]

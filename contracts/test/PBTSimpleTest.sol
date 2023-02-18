@@ -25,7 +25,7 @@ contract PBTSimpleTest is Test {
   string public nonce2 = 'nonce2';
 
   function setUp() public {
-    pbt = new AmhoPBTMock('PBTSimple', 'PBTS', 100);
+    pbt = new AmhoPBTMock('PBTSimple', 'PBTS', 100, user3);
   }
 
   // modifier mintedTokens() {

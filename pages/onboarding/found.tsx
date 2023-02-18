@@ -27,14 +27,14 @@ export default function Found() {
     setLoading(true)
     if (found) {
       setLoading(false)
-      router.push('/onboarding/profile/complete')
+      router.push('/onboarding/profile/benefits')
     }
     await createProfile(name, desc, image, walletAddresses[0]).then((result: any) => {
       if (result.data?.createProfile?.document?.name) {
         const loadedName = result.data.createProfile?.document?.name
         useStore.setState({ name: loadedName })
         setLoading(false)
-        router.push('/onboarding/profile/complete')
+        router.push('/onboarding/profile/benefits')
       }
       console.log('results: ', result)
     })
@@ -92,11 +92,11 @@ export default function Found() {
         <HStack display="flex" spacing={16}>
           <VStack flex="1" alignItems="start">
             <Text as="sub">Collection</Text>
-            <Text fontSize="sm">ENIGMA F/W 2023</Text>
+            <Text fontSize="xs">ENIGMA F/W 2023</Text>
           </VStack>
           <VStack flex="1" alignItems="start">
             <Text as="sub">Color</Text>
-            <Text fontSize="sm">Dark Black</Text>
+            <Text fontSize="xs">Dark Black</Text>
           </VStack>
         </HStack>
       </VStack>
@@ -104,11 +104,11 @@ export default function Found() {
         <HStack display="flex" spacing={16}>
           <VStack flex="1" alignItems="start">
             <Text as="sub">Models</Text>
-            <Text fontSize="sm">@chinachipling</Text>
+            <Text fontSize="xs">@chinachipling</Text>
           </VStack>
           <VStack flex="1" alignItems="start">
             <Text as="sub">Manufacturer</Text>
-            <Text fontSize="sm">DLFCTRY</Text>
+            <Text fontSize="xs">DLFCTRY</Text>
           </VStack>
         </HStack>
       </VStack>
@@ -116,11 +116,11 @@ export default function Found() {
         <HStack display="flex" spacing={16}>
           <VStack flex="1" alignItems="start">
             <Text as="sub">Token Id</Text>
-            <Text fontSize="sm">1</Text>
+            <Text fontSize="xs">1</Text>
           </VStack>
           <VStack flex="1" alignItems="start">
             <Text as="sub">Owner</Text>
-            <Text fontSize="sm">You</Text>
+            <Text fontSize="xs">You</Text>
           </VStack>
         </HStack>
       </VStack>
@@ -141,7 +141,7 @@ export default function Found() {
           </VStack>
         ) : (
           <Flex alignItems="center" marginBottom="3rem">
-            <Text fontSize="xs">New owner detected is 0xabc... you?</Text>
+            <Text fontSize="xs">Owner detected is 0xabc... you?</Text>
             <Spacer />
             <HStack spacing={5}>
               <Text fontSize="sm" onClick={submitName} _hover={{ textDecoration: 'underline' }}>

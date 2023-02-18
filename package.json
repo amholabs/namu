@@ -45,6 +45,7 @@
   "packageManager": "pnpm@7.1.8",
   "dependencies": {
     "@apollo/client": "^3.7.3",
+    "@biconomy/mexa": "^3.0.5",
     "@ceramicnetwork/cli": "^2.20.0",
     "@ceramicnetwork/http-client": "^2.13.0",
     "@chakra-ui/icons": "^2.0.17",

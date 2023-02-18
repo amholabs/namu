@@ -5,7 +5,7 @@ type ButtonProps = {
   clickHandler: () => void
   size?: 'xs' | 'sm' | 'md' | 'lg'
   isLoading?: boolean
-  color: string
+  color?: string
 }
 export const TextButton = (props: PropsWithChildren<ButtonProps>) => {
   const { clickHandler, size, color, children } = props

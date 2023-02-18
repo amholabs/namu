@@ -121,6 +121,15 @@ export default function App({ Component, pageProps }: AppProps) {
               bg: 'white',
             },
           },
+          flushed: {
+            field: {
+              borderColor: 'black',
+              focusBorderColor: 'black',
+            },
+            defaultProps: {
+              focusBorderColor: 'black',
+            },
+          },
         },
         sizes: {
           lg: {
@@ -141,9 +150,9 @@ export default function App({ Component, pageProps }: AppProps) {
         },
         baseStyle: {
           field: {
-            borderColor: 'brand.900',
+            borderColor: 'black',
           },
-          focusBorderColor: 'brand.900',
+          focusBorderColor: 'black',
         },
       },
       PinInput: {
