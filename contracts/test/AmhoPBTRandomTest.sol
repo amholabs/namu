@@ -93,6 +93,28 @@ contract AmhoPBTRandomTest is Test {
     // pbt.mintTokenWithChip(signature, blockNumber);
   }
 
+  function testTokenDataUpdate() public {
+    vm.roll(blockNumber + 1);
+
+    bytes memory payload = abi.encodePacked(user1, blockhash(blockNumber));
+    bytes memory signature = _createSignature(payload, 101);
+
+    vm.startPrank(user1);
+    vm.roll(blockNumber + 2);
+    uint256 expectedTokenId = 3;
+
+    // Seed chip addresses
+    address[] memory chipAddresses = new address[](1);
+    chipAddresses[0] = chipAddr1;
+    pbt.seedChipAddresses(chipAddresses, 10);
+
+    emit PBTMint(expectedTokenId, chipAddr1);
+    pbt.mintTokenWithChip(signature, blockNumber);
+
+    AmhoPBT.TokenData memory tokenData = pbt.getTokenData(chipAddresses[0]);
+    assertEq(tokenData.floatSupply, 9);
+  }
+
   modifier withSeededChips() {
     address[] memory chipAddresses = new address[](3);
     chipAddresses[0] = chipAddr1;

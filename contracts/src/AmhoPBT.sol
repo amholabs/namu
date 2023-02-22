@@ -120,7 +120,7 @@ contract AmhoPBT is ERC721ReadOnly, IPBT {
 
     uint256 tokenId = _useRandomAvailableTokenId();
     uint256 oldFloatSupply = _tokenDatas[chipAddr].floatSupply;
-    uint256 newFloatSupply = oldFloatSupply--;
+    uint256 newFloatSupply = oldFloatSupply - 1;
 
     _mint(_msgSender(), tokenId);
     _tokenDatas[chipAddr] = TokenData(tokenId, newFloatSupply, chipAddr, true);
