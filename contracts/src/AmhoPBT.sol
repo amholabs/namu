@@ -120,7 +120,7 @@ contract AmhoPBT is ERC721ReadOnly, IPBT {
     uint256 blockNumberUsedInSig,
     uint256 nonce
   ) internal returns (uint256) {
-    if (nonce > lastNonce) {
+    if (nonce < lastNonce) {
       revert InvalidNonce();
     }
 
@@ -136,7 +136,6 @@ contract AmhoPBT is ERC721ReadOnly, IPBT {
     uint256 tokenId = _useRandomAvailableTokenId();
     uint256 oldFloatSupply = _tokenDatas[chipAddr].floatSupply;
     uint256 newFloatSupply = oldFloatSupply - 1;
-    lastNonce = nonce;
     _mint(_msgSender(), tokenId);
     _tokenDatas[chipAddr] = TokenData(tokenId, newFloatSupply, chipAddr, true);
 
@@ -260,6 +259,9 @@ contract AmhoPBT is ERC721ReadOnly, IPBT {
     uint256 blockNumberUsedInSig,
     uint256 nonce
   ) internal returns (TokenData memory) {
+    if (nonce < lastNonce) {
+      revert InvalidNonce();
+    }
     address chipAddr = _getChipAddrForChipSignature(signatureFromChip, blockNumberUsedInSig);
     TokenData memory tokenData = _tokenDatas[chipAddr];
     if (tokenData.set) {

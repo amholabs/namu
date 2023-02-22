@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.13;
 
+import 'forge-std/console.sol';
 import 'forge-std/Test.sol';
 import '../src/IPBT.sol';
 import '../src/mocks/AmhoPBTMock.sol';
@@ -71,6 +72,10 @@ contract AmhoPBTRandomTest is Test {
     // pbt.mintTokenWithChip(signature, blockNumber);
   }
 
+  // function testNonceIncrement() public {
+
+  // }
+
   function testSeedingMaxPerChip() public {
     // Change block number to the next block to set blockHash(blockNumber)
     vm.roll(blockNumber + 1);
@@ -133,7 +138,9 @@ contract AmhoPBTRandomTest is Test {
 
     vm.startPrank(user1);
     vm.roll(blockNumber + 2);
+    console.log('nonce before', pbt.getNonce());
     uint256 tokenId = pbt.mintTokenWithChip(signature, blockNumber, nonce);
+    console.log('nonce after', pbt.getNonce());
     assertEq(pbt.isChipSignatureForToken(tokenId, payload, signature), true);
 
     vm.expectRevert(NoMintedTokenForChip.selector);
@@ -166,7 +173,7 @@ contract AmhoPBTRandomTest is Test {
     payload = abi.encodePacked(user2, blockhash(blockNumber));
     signature = _createSignature(payload, 102);
     vm.prank(user2);
-    uint256 tokenId2 = pbt.mintTokenWithChip(signature, blockNumber, nonce);
+    uint256 tokenId2 = pbt.mintTokenWithChip(signature, blockNumber, nonce+1);
 
     // updateChips should now succeed
     vm.expectEmit(true, true, true, true);
@@ -227,7 +234,7 @@ contract AmhoPBTRandomTest is Test {
     payload = abi.encodePacked(user2, blockhash(blockNumber + 9));
     signature = _createSignature(payload, 101);
     vm.prank(user2);
-    pbt.transferTokenWithChip(signature, blockNumber + 9, useSafeTransfer, nonce);
+    pbt.transferTokenWithChip(signature, blockNumber + 9, useSafeTransfer, nonce + 1);
     assertEq(pbt.ownerOf(tokenId), user2);
   }
 
