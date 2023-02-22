@@ -23,6 +23,7 @@ contract AmhoPBT is ERC721ReadOnly, IPBT {
 
   struct TokenData {
     uint256 tokenId;
+    uint256 floatSupply;
     address chipAddress;
     bool set;
   }
@@ -50,7 +51,7 @@ contract AmhoPBT is ERC721ReadOnly, IPBT {
   function _seedChipAddresses(address[] memory chipAddresses) internal {
     for (uint256 i = 0; i < chipAddresses.length; ++i) {
       address chipAddress = chipAddresses[i];
-      _tokenDatas[chipAddress] = TokenData(0, chipAddress, false);
+      _tokenDatas[chipAddress] = TokenData(0, 100, chipAddress, false);
     }
   }
 
@@ -62,12 +63,13 @@ contract AmhoPBT is ERC721ReadOnly, IPBT {
 
     for (uint256 i = 0; i < chipAddressesOld.length; i++) {
       address oldChipAddress = chipAddressesOld[i];
+      uint256 oldFloatSupply = _tokenDatas[oldChipAddress].floatSupply;
       if (!_tokenDatas[oldChipAddress].set) {
         revert UpdatingChipForUnsetChipMapping();
       }
       address newChipAddress = chipAddressesNew[i];
       uint256 tokenId = _tokenDatas[oldChipAddress].tokenId;
-      _tokenDatas[newChipAddress] = TokenData(tokenId, newChipAddress, true);
+      _tokenDatas[newChipAddress] = TokenData(tokenId, oldFloatSupply, newChipAddress, true);
       emit PBTChipRemapping(tokenId, oldChipAddress, newChipAddress);
       delete _tokenDatas[oldChipAddress];
     }
@@ -109,8 +111,11 @@ contract AmhoPBT is ERC721ReadOnly, IPBT {
     }
 
     uint256 tokenId = _useRandomAvailableTokenId();
+    uint256 oldFloatSupply = _tokenDatas[chipAddr].floatSupply;
+    uint256 newFloatSupply = oldFloatSupply--;
+
     _mint(_msgSender(), tokenId);
-    _tokenDatas[chipAddr] = TokenData(tokenId, chipAddr, true);
+    _tokenDatas[chipAddr] = TokenData(tokenId, newFloatSupply, chipAddr, true);
 
     emit PBTMint(chipAddr, tokenId);
 
