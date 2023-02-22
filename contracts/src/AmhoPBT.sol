@@ -7,6 +7,7 @@ import '@openzeppelin/contracts/utils/cryptography/ECDSA.sol';
 
 error InvalidSignature();
 error InvalidChipAddress();
+error InvalidNonce();
 error NoMintedTokenForChip();
 error ArrayLengthMismatch();
 error ChipAlreadyLinkedToMintedToken();
@@ -36,6 +37,7 @@ contract AmhoPBT is ERC721ReadOnly, IPBT {
   uint256 public immutable maxSupply;
   uint256 private _numAvailableRemainingTokens;
   uint256 private _numAvailableRemainingSlots;
+  uint256 public lastNonce;
 
   // Data structure used for Fisher Yates shuffle
   mapping(uint256 => uint256) internal _availableRemainingTokens;
@@ -49,6 +51,7 @@ contract AmhoPBT is ERC721ReadOnly, IPBT {
     maxSupply = maxSupply_;
     _numAvailableRemainingTokens = maxSupply_;
     _numAvailableRemainingSlots = maxSupply_;
+    lastNonce = 0;
   }
 
   function _seedChipAddresses(address[] memory chipAddresses, uint256 floatSupply) internal {
@@ -82,6 +85,10 @@ contract AmhoPBT is ERC721ReadOnly, IPBT {
     }
   }
 
+  function getNonce() external view returns (uint256) {
+    return lastNonce;
+  }
+
   function tokenIdFor(address chipAddress) external view returns (uint256) {
     if (!_tokenDatas[chipAddress].set) {
       revert NoMintedTokenForChip();
@@ -108,12 +115,20 @@ contract AmhoPBT is ERC721ReadOnly, IPBT {
   //    signatureFromChip: signature(receivingAddress + recentBlockhash), signed by an approved chip
   //
   // Contract should check that (1) recentBlockhash is a recent blockhash, (2) receivingAddress === to, and (3) the signing chip is allowlisted.
-  function _mintTokenWithChip(bytes memory signatureFromChip, uint256 blockNumberUsedInSig) internal returns (uint256) {
-    address chipAddr = _getChipAddrForChipSignature(signatureFromChip, blockNumberUsedInSig);
+  function _mintTokenWithChip(
+    bytes memory signatureFromChip,
+    uint256 blockNumberUsedInSig,
+    uint256 nonce
+  ) internal returns (uint256) {
+    if (nonce > lastNonce) {
+      revert InvalidNonce();
+    }
 
+    address chipAddr = _getChipAddrForChipSignature(signatureFromChip, blockNumberUsedInSig);
     // if (_tokenDatas[chipAddr].set) {
     // revert ChipAlreadyLinkedToMintedToken();
     // } else if (_tokenDatas[chipAddr].chipAddress != chipAddr) {
+
     if (_tokenDatas[chipAddr].chipAddress != chipAddr) {
       revert InvalidChipAddress();
     }
@@ -121,7 +136,7 @@ contract AmhoPBT is ERC721ReadOnly, IPBT {
     uint256 tokenId = _useRandomAvailableTokenId();
     uint256 oldFloatSupply = _tokenDatas[chipAddr].floatSupply;
     uint256 newFloatSupply = oldFloatSupply - 1;
-
+    lastNonce = nonce;
     _mint(_msgSender(), tokenId);
     _tokenDatas[chipAddr] = TokenData(tokenId, newFloatSupply, chipAddr, true);
 
@@ -208,24 +223,30 @@ contract AmhoPBT is ERC721ReadOnly, IPBT {
       );
   }
 
-  function transferTokenWithChip(bytes calldata signatureFromChip, uint256 blockNumberUsedInSig) public {
-    transferTokenWithChip(signatureFromChip, blockNumberUsedInSig, false);
+  function transferTokenWithChip(
+    bytes calldata signatureFromChip,
+    uint256 blockNumberUsedInSig,
+    uint256 nonce
+  ) public {
+    _transferTokenWithChip(signatureFromChip, blockNumberUsedInSig, false, nonce);
   }
 
   function transferTokenWithChip(
     bytes calldata signatureFromChip,
     uint256 blockNumberUsedInSig,
-    bool useSafeTransferFrom
+    bool useSafeTransferFrom,
+    uint256 nonce
   ) public {
-    _transferTokenWithChip(signatureFromChip, blockNumberUsedInSig, useSafeTransferFrom);
+    _transferTokenWithChip(signatureFromChip, blockNumberUsedInSig, useSafeTransferFrom, nonce);
   }
 
   function _transferTokenWithChip(
     bytes calldata signatureFromChip,
     uint256 blockNumberUsedInSig,
-    bool useSafeTransferFrom
+    bool useSafeTransferFrom,
+    uint256 nonce
   ) internal virtual {
-    TokenData memory tokenData = _getTokenDataForChipSignature(signatureFromChip, blockNumberUsedInSig);
+    TokenData memory tokenData = _getTokenDataForChipSignature(signatureFromChip, blockNumberUsedInSig, nonce);
     uint256 tokenId = tokenData.tokenId;
     if (useSafeTransferFrom) {
       _safeTransfer(ownerOf(tokenId), _msgSender(), tokenId, '');
@@ -234,7 +255,11 @@ contract AmhoPBT is ERC721ReadOnly, IPBT {
     }
   }
 
-  function _getTokenDataForChipSignature(bytes calldata signatureFromChip, uint256 blockNumberUsedInSig) internal view returns (TokenData memory) {
+  function _getTokenDataForChipSignature(
+    bytes calldata signatureFromChip,
+    uint256 blockNumberUsedInSig,
+    uint256 nonce
+  ) internal returns (TokenData memory) {
     address chipAddr = _getChipAddrForChipSignature(signatureFromChip, blockNumberUsedInSig);
     TokenData memory tokenData = _tokenDatas[chipAddr];
     if (tokenData.set) {
@@ -243,7 +268,7 @@ contract AmhoPBT is ERC721ReadOnly, IPBT {
     revert InvalidSignature();
   }
 
-  function _getChipAddrForChipSignature(bytes memory signatureFromChip, uint256 blockNumberUsedInSig) internal view returns (address) {
+  function _getChipAddrForChipSignature(bytes memory signatureFromChip, uint256 blockNumberUsedInSig) internal returns (address) {
     // The blockNumberUsedInSig must be in a previous block because the blockhash of the current
     // block does not exist yet.
     if (block.number <= blockNumberUsedInSig) {
@@ -256,6 +281,7 @@ contract AmhoPBT is ERC721ReadOnly, IPBT {
 
     bytes32 blockHash = blockhash(blockNumberUsedInSig);
     bytes32 signedHash = keccak256(abi.encodePacked(_msgSender(), blockHash)).toEthSignedMessageHash();
+    lastNonce++;
     return signedHash.recover(signatureFromChip);
   }
 

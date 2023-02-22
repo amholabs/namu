@@ -27,12 +27,20 @@ contract AmhoPBTMock is AmhoPBT {
     _seedChipAddresses(chipAddresses, floatSupply);
   }
 
-  function mintTokenWithChip(bytes calldata signatureFromChip, uint256 blockNumberUsedInSig) public returns (uint256) {
-    return _mintTokenWithChip(signatureFromChip, blockNumberUsedInSig);
+  function mintTokenWithChip(
+    bytes calldata signatureFromChip,
+    uint256 blockNumberUsedInSig,
+    uint256 nonce
+  ) public returns (uint256) {
+    return _mintTokenWithChip(signatureFromChip, blockNumberUsedInSig, nonce);
   }
 
-  function getTokenDataForChipSignature(bytes calldata signatureFromChip, uint256 blockNumberUsedInSig) public view returns (TokenData memory) {
-    return _getTokenDataForChipSignature(signatureFromChip, blockNumberUsedInSig);
+  function getTokenDataForChipSignature(
+    bytes calldata signatureFromChip,
+    uint256 blockNumberUsedInSig,
+    uint256 nonce
+  ) public returns (TokenData memory) {
+    return _getTokenDataForChipSignature(signatureFromChip, blockNumberUsedInSig, nonce);
   }
 
   function getAvailableRemainingTokens(uint256 index) public view returns (uint256) {
