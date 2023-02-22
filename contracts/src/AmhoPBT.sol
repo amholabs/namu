@@ -108,9 +108,10 @@ contract AmhoPBT is ERC721ReadOnly, IPBT {
   function _mintTokenWithChip(bytes memory signatureFromChip, uint256 blockNumberUsedInSig) internal returns (uint256) {
     address chipAddr = _getChipAddrForChipSignature(signatureFromChip, blockNumberUsedInSig);
 
-    if (_tokenDatas[chipAddr].set) {
-      revert ChipAlreadyLinkedToMintedToken();
-    } else if (_tokenDatas[chipAddr].chipAddress != chipAddr) {
+    // if (_tokenDatas[chipAddr].set) {
+    // revert ChipAlreadyLinkedToMintedToken();
+    // } else if (_tokenDatas[chipAddr].chipAddress != chipAddr) {
+    if (_tokenDatas[chipAddr].chipAddress != chipAddr) {
       revert InvalidChipAddress();
     }
 
