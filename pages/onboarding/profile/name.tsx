@@ -12,7 +12,7 @@ export default function Name() {
   return (
     <>
       <MobileLayout>
-          {/* eslint-disable-next-line */}
+        {/* eslint-disable-next-line */}
         <Heading marginTop="auto">What's your name?</Heading>
         <Input focusBorderColor="black" variant="flushed" />
         <TextButton clickHandler={() => nextPage('/onboarding/profile/instagram')}>Next</TextButton>

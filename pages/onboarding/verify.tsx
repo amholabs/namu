@@ -4,7 +4,6 @@ import { Center, Heading, Image, Text, Toast, useToast } from '@chakra-ui/react'
 import { useRouter } from 'next/router'
 
 import MobileLayout from '@/app/MobileLayout'
-import { CoreButton } from '@/components/shared/CoreButton'
 import { TextButton } from '@/components/shared/TextButton'
 import { generateSession } from '@/src/utils/scan'
 
@@ -17,6 +16,7 @@ export default function Verify() {
     setLoading(true)
     try {
       const session = await generateSession()
+      console.log(session)
       if (session) {
         router.push('/onboarding/found')
       } else {

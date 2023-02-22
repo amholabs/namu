@@ -24,7 +24,7 @@ export default function Congratulations() {
       {/* <Box padding="2rem" height="100vh" width="100%" display="flex" flexDirection="column" flex={1}> */}
       <MobileLayout
         backgroundStyles="linear-gradient(to bottom, rgba(0, 0, 0, 0.69) 0%, rgba(0, 0, 0, 0.5) 100%),"
-        backgroundImageUrl="/image/congratulations.png">
+        backgroundImageUrl="/image/welcome.jpg">
         <Heading color="white" paddingTop="2rem" paddingBottom="1rem" size="3xl" lineHeight={'3rem'}>
           {/* eslint-disable-next-line react/no-unescaped-entities */}
           Welcome.

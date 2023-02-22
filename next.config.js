@@ -1,5 +1,5 @@
 /** @type {import('next').NextConfig} */
-const withTM = require('next-transpile-modules')(['halo-chip'])
+// const withTM = require('next-transpile-modules')(['halo-chip', 'fs'])
 const withPWA = require('next-pwa')({
   dest: 'public',
   cacheOnFrontEndNav: false,
@@ -7,11 +7,30 @@ const withPWA = require('next-pwa')({
 
 const nextConfig = {
   reactStrictMode: true,
+  transpilePackages: ['halo-chip', 'fs'],
+  future: {
+    webpack5: true,
+  },
+  swcMinify: true,
+  future: {
+    webpack5: true,
+  },
   env: {
     mode: process.env.NODE_ENV,
     NEXT_PUBLIC_MODE: true,
   },
   webpack: (config, { buildId, dev, isServer, defaultLoaders, nextRuntime, webpack }) => {
+    if (!isServer) {
+      config.resolve.fallback = {
+        ...config.resolve.fallback,
+        fs: false,
+        bufferutil: require.resolve('bufferutil'),
+        net: require.resolve('net'),
+        request: require.resolve('request'),
+        tls: require.resolve('tls'),
+        'utf-8-validate': require.resolve('utf-8-validate'),
+      }
+    }
     config.module.rules.push({
       test: /\.svg$/i,
       issuer: /\.[jt]sx?$/,
@@ -30,20 +49,25 @@ const nextConfig = {
 }
 
 const pwa = withPWA({
-  nextConfig,
+  ...nextConfig,
   experimental: {
-    // Required:
     appDir: true,
   },
   async redirects() {
     return [
       {
         source: '/',
-        destination: '/onboarding/welcome',
+        destination: '/profile',
         permanent: true,
       },
     ]
   },
 })
 
-module.exports = withTM({ ...pwa })
+module.exports = pwa
+// module.exports = withPWA({
+//   nextConfig,
+//   experimental: {
+//     appDir: true,
+//   },
+// })

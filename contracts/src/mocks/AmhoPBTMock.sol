@@ -7,38 +7,39 @@ contract AmhoPBTMock is AmhoPBT {
   constructor(
     string memory name_,
     string memory symbol_,
-    uint256 totalSupply,
-    address _trustedForwarder
-  ) AmhoPBT(name_, symbol_, totalSupply, _trustedForwarder) {}
+    uint256 supply_,
+    address trustedForwarder_
+  ) AmhoPBT(name_, symbol_, supply_, trustedForwarder_) {}
 
   function mint(address to, uint256 tokenId) public {
     _mint(to, tokenId);
   }
 
-  // function seedChipToTokenMapping(
-  //   address[] memory chipAddresses,
-  //   uint256[] memory tokenIds,
-  //   bool throwIfTokenAlreadyMinted
-  // ) public {
-  //   _seedChipToTokenMapping(chipAddresses, tokenIds, throwIfTokenAlreadyMinted);
-  // }
-  function addChipToWhitelist(bytes calldata signatureFromChip, uint256 blockNumberUsedInSig) public {
-    _addChipToWhitelist(signatureFromChip, blockNumberUsedInSig);
+  function getTokenData(address addr) public view returns (TokenData memory) {
+    return _tokenDatas[addr];
   }
 
-  // function getTokenData(address addr) public view returns (TokenData memory) {
-  //   return _tokenDatas[addr];
-  // }
-
-  // function updateChips(address[] calldata chipAddressesOld, address[] calldata chipAddressesNew) public {
-  //   _updateChips(chipAddressesOld, chipAddressesNew);
-  // }
-
-  function mintTokenWithChip(bytes calldata signatureFromChip, uint256 blockNumberUsedInSig, string memory nonce) public returns (uint256) {
-    return _mintTokenWithChip(signatureFromChip, blockNumberUsedInSig, nonce);
+  function updateChips(address[] calldata chipAddressesOld, address[] calldata chipAddressesNew) public {
+    _updateChips(chipAddressesOld, chipAddressesNew);
   }
 
-  // function getTokenDataForChipSignature(bytes calldata signatureFromChip, uint256 blockNumberUsedInSig) public returns (TokenData memory) {
-  //   return _getTokenDataForChipSignature(signatureFromChip, blockNumberUsedInSig);
-  // }
+  function seedChipAddresses(address[] calldata chipAddresses) public {
+    _seedChipAddresses(chipAddresses);
+  }
+
+  function mintTokenWithChip(bytes calldata signatureFromChip, uint256 blockNumberUsedInSig) public returns (uint256) {
+    return _mintTokenWithChip(signatureFromChip, blockNumberUsedInSig);
+  }
+
+  function getTokenDataForChipSignature(bytes calldata signatureFromChip, uint256 blockNumberUsedInSig) public view returns (TokenData memory) {
+    return _getTokenDataForChipSignature(signatureFromChip, blockNumberUsedInSig);
+  }
+
+  function getAvailableRemainingTokens(uint256 index) public view returns (uint256) {
+    return _availableRemainingTokens[index];
+  }
+
+  function useRandomAvailableTokenId() public returns (uint256) {
+    return _useRandomAvailableTokenId();
+  }
 }

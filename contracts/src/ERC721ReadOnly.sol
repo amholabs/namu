@@ -3,12 +3,14 @@ pragma solidity ^0.8.13;
 
 import '@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol';
 import '@openzeppelin/contracts/metatx/ERC2771Context.sol';
+import "@openzeppelin/contracts/access/Ownable.sol";
+
 
 /**
  * An implementation of 721 that's publicly readonly (no approvals or transfers exposed).
  */
 
-contract ERC721ReadOnly is ERC721URIStorage, ERC2771Context {
+contract ERC721ReadOnly is ERC721URIStorage, ERC2771Context, Ownable {
   constructor(string memory name_, string memory symbol_, address _trustedForwarder) ERC721(name_, symbol_) ERC2771Context(_trustedForwarder) {}
 
   function _msgData() internal view virtual override(Context, ERC2771Context) returns (bytes calldata) {

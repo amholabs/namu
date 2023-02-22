@@ -234,13 +234,13 @@ contract PBTRandom is ERC721ReadOnly, IPBT {
     // NOTE: FFS
     // The blockNumberUsedInSig must be in a previous block because the blockhash of the current
     // block does not exist yet.
-    // if (block.number <= blockNumberUsedInSig) {
-    //     revert InvalidBlockNumber();
-    // }
+    if (block.number <= blockNumberUsedInSig) {
+        revert InvalidBlockNumber();
+    }
 
-    // if (block.number - blockNumberUsedInSig > getMaxBlockhashValidWindow()) {
-    //     revert BlockNumberTooOld();
-    // }
+    if (block.number - blockNumberUsedInSig > getMaxBlockhashValidWindow()) {
+        revert BlockNumberTooOld();
+    }
 
     bytes32 blockHash = blockhash(blockNumberUsedInSig);
     bytes32 signedHash = keccak256(abi.encodePacked(_msgSender(), blockHash)).toEthSignedMessageHash();

@@ -1,11 +1,15 @@
 import './app.css'
 
 import '@fontsource/inter/700.css'
+
+import { useEffect } from 'react'
+
+import { Biconomy } from '@biconomy/mexa'
 import { ChakraProvider, extendTheme } from '@chakra-ui/react'
 import { ComposeClient } from '@composedb/client'
+import { ExternalProvider } from '@ethersproject/providers'
 import * as ethereum from '@web3modal/ethereum'
 import { Web3Modal } from '@web3modal/react'
-import { ethers } from 'ethers'
 import type { AppProps } from 'next/app'
 import * as wagmi from 'wagmi'
 import { goerli, localhost, mainnet, polygon } from 'wagmi/chains'
@@ -40,6 +44,7 @@ export default function App({ Component, pageProps }: AppProps) {
 
   useStore.setState({
     compose: new ComposeClient({ ceramic: process.env.NEXT_PUBLIC_CERAMIC_URL || ceramicUrl, definition }),
+    // compose: new ComposeClient({ ceramic: process.env.NEXT_PUBLIC_CERAMIC_URL || ceramicUrl, definition }),
   })
 
   const breakpoints = {
@@ -179,6 +184,18 @@ export default function App({ Component, pageProps }: AppProps) {
     ethereum.walletConnectProvider({ projectId: process.env.NEXT_PUBLIC_WC_PROJECT_ID as string }),
     alchemyProvider({ apiKey: process.env.NEXT_PUBLIC_ALCHEMY_API_KEY_goeETH as string }),
   ])
+
+  useEffect(() => {
+    ;(async () => {
+      const biconomy = new Biconomy(provider as ExternalProvider, {
+        apiKey: process.env.NEXT_PUBLIC_BICONOMY_API_KEY as string,
+        debug: true,
+        contractAddresses: ['0x793edd160b7a0c4b0ab6ef7e3b3f5fef6c78e49d'], // list of contract address you want to enable gasless on
+      })
+      await biconomy.init()
+    })()
+  }, [])
+
   const wagmiClient = wagmi.createClient({
     autoConnect: true,
     connectors: ethereum.modalConnectors({ appName: 'AMHO', chains }),
@@ -186,7 +203,6 @@ export default function App({ Component, pageProps }: AppProps) {
   })
   const projectId = process.env.NEXT_PUBLIC_WC_PROJECT_ID as string
   const ethereumClient = new ethereum.EthereumClient(wagmiClient, chains)
-
   return (
     <>
       {isMounted && (

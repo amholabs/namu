@@ -30,7 +30,6 @@ import { useAccount, useContractWrite, useNetwork, usePrepareContractWrite, useS
 // import { getMintWithChipSig } from '@/lib/actions/chip'
 // import { generateNonce, siweLogin } from '@/lib/actions/siweUtils'
 import { CoreButton } from '@/components/shared/CoreButton'
-import { generateNonce } from '@/lib/actions/siweUtils'
 import { UrlLinkSocialType } from '@/out/__generated__/graphql'
 import { Profile as ProfileType, Query } from '@/out/__generated__/graphql'
 import { abi } from '@/out/AmhoPBTMock.sol/AmhoPBTMock.json'
@@ -51,9 +50,7 @@ export default function Profile() {
   const { address, status } = useAccount()
   const [sig, setSig] = useState<string | null>(null)
   const [blockNum, setBlockNumber] = useState<number>(0)
-  const [nonce, setNonce] = useState<string>('')
 
-  const debounceNonce = useDebounce(nonce)
   const debounceSig = useDebounce(sig)
   const debounceBlockNum = useDebounce(blockNum)
 
@@ -61,8 +58,8 @@ export default function Profile() {
     address: PBT_ADDRESS,
     abi,
     functionName: 'mintTokenWithChip',
-    args: [sig, blockNum, nonce, { gasLimit: 200000 }],
-    enabled: !!debounceSig && !!debounceBlockNum && !!debounceNonce,
+    args: [sig, blockNum, { gasLimit: 200000 }],
+    enabled: !!debounceSig && !!debounceBlockNum,
     chainId: chain?.id,
   })
 
@@ -102,11 +99,9 @@ export default function Profile() {
   }
   const handleMintPrepare = async () => {
     let keyRaw = ''
-    const _nonce = await generateNonce()
     const provider = new ethers.providers.JsonRpcProvider(`https://eth-goerli.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_API_KEY_goeETH}`)
     await provider.getBlock('latest').then(async (block) => {
       setBlockNumber(block.number)
-      setNonce(_nonce)
       await setScanVariables().then((keys) => {
         if (address && keys) {
           const hashedKeysAddresses = keys.map((key) => Object.values(key)[0])
@@ -118,6 +113,7 @@ export default function Profile() {
             hash: block.hash,
           }).then((data) => {
             if (data) {
+              console.log(data)
               setSig(data)
               onOpen()
             }

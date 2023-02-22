@@ -1,221 +1,250 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.13;
 
-import 'forge-std/console.sol';
 import './IPBT.sol';
 import './ERC721ReadOnly.sol';
 import '@openzeppelin/contracts/utils/cryptography/ECDSA.sol';
-import '@openzeppelin/contracts/utils/Counters.sol';
 
 error InvalidSignature();
+error InvalidChipAddress();
 error NoMintedTokenForChip();
-error NoMappedTokenForChip();
 error ArrayLengthMismatch();
-error SeedingChipDataForExistingToken();
+error ChipAlreadyLinkedToMintedToken();
 error UpdatingChipForUnsetChipMapping();
+error NoMoreTokenIds();
 error InvalidBlockNumber();
 error BlockNumberTooOld();
 
 /**
- * Implementation of PBT where all chipAddress->tokenIds are preset in the contract by the contract owner.
+ * Implementation of PBT where all tokenIds are randomly chosen at mint time.
  */
 contract AmhoPBT is ERC721ReadOnly, IPBT {
   using ECDSA for bytes32;
-  using Counters for Counters.Counter;
 
+  struct TokenData {
+    uint256 tokenId;
+    address chipAddress;
+    bool set;
+  }
+
+  // Mapping from chipAddress to TokenData
+  mapping(address => TokenData) _tokenDatas;
+
+  // Max token supply
   uint256 public immutable maxSupply;
   uint256 private _numAvailableRemainingTokens;
 
-  Counters.Counter private currentTokenId;
-  // use counters to keep track of the number of tokens that have been minted
-
-  /**
-   * Mapping from chipAddress to TokenData
-   */
-
-  mapping(address => bool) _chipWhitelist;
-  mapping(uint256 => address) _chipToAddress;
-  mapping(address => string) _nonces;
+  // Data structure used for Fisher Yates shuffle
+  mapping(uint256 => uint256) internal _availableRemainingTokens;
 
   constructor(
     string memory name_,
     string memory symbol_,
     uint256 maxSupply_,
-    address _trustedForwarder
-  ) ERC721ReadOnly(name_, symbol_, _trustedForwarder) {
+    address trustedForwarder_
+  ) ERC721ReadOnly(name_, symbol_, trustedForwarder_) {
     maxSupply = maxSupply_;
     _numAvailableRemainingTokens = maxSupply_;
   }
 
-  // Should only be called for tokenIds that have not yet been minted
-  // If the tokenId has already been minted, use _updateChips instead
-  // TODO: consider preventing multiple chip addresses mapping to the same tokenId (store a tokenId->chip mapping)
-  // function _seedChipToTokenMapping(address[] memory chipAddresses, uint256[] memory tokenIds) internal {
-  //   _seedChipToTokenMapping(chipAddresses, tokenIds, true);
-  // }
-
-  function _getChipAddress(uint256 index) public view returns (address) {
-    return _chipToAddress[index];
+  function _seedChipAddresses(address[] memory chipAddresses) internal {
+    for (uint256 i = 0; i < chipAddresses.length; ++i) {
+      address chipAddress = chipAddresses[i];
+      _tokenDatas[chipAddress] = TokenData(0, chipAddress, false);
+    }
   }
 
-  function _addChipToWhitelist(bytes memory signature, uint256 blockNumberUsedInSig) internal {
-    address chipAddress = recoverChipAddress(signature, blockNumberUsedInSig);
-    _chipWhitelist[chipAddress] = true;
+  // TODO: consider preventing multiple chip addresses mapping to the same tokenId (store a tokenId->chip mapping)
+  function _updateChips(address[] calldata chipAddressesOld, address[] calldata chipAddressesNew) internal {
+    if (chipAddressesOld.length != chipAddressesNew.length) {
+      revert ArrayLengthMismatch();
+    }
+
+    for (uint256 i = 0; i < chipAddressesOld.length; i++) {
+      address oldChipAddress = chipAddressesOld[i];
+      if (!_tokenDatas[oldChipAddress].set) {
+        revert UpdatingChipForUnsetChipMapping();
+      }
+      address newChipAddress = chipAddressesNew[i];
+      uint256 tokenId = _tokenDatas[oldChipAddress].tokenId;
+      _tokenDatas[newChipAddress] = TokenData(tokenId, newChipAddress, true);
+      emit PBTChipRemapping(tokenId, oldChipAddress, newChipAddress);
+      delete _tokenDatas[oldChipAddress];
+    }
   }
 
-  // function _seedChipToTokenMapping(
-  //     address[] memory chipAddresses,
-  //     uint256[] memory tokenIds,
-  //     bool throwIfTokenAlreadyMinted
-  // ) internal {
-  //     uint256 tokenIdsLength = tokenIds.length;
-  //     if (tokenIdsLength != chipAddresses.length) {
-  //         revert ArrayLengthMismatch();
-  //     }
-  //     for (uint256 i = 0; i < tokenIdsLength; ++i) {
-  //         address chipAddress = chipAddresses[i];
-  //         uint256 tokenId = tokenIds[i];
-  //         if (throwIfTokenAlreadyMinted && _exists(tokenId)) {
-  //             revert SeedingChipDataForExistingToken();
-  //         }
-  //         _tokenDatas[chipAddress] = TokenData(chipAddress);
-  //     }
-  // }
-
-  // Should only be called for tokenIds that have been minted
-  // If the tokenId hasn't been minted yet, use _seedChipToTokenMapping instead
-  // Should only be used and called with care and rails to avoid a centralized entity swapping out valid chips.
-  // TODO: consider preventing multiple chip addresses mapping to the same tokenId (store a tokenId->chip mapping)
-  // function _updateChips(address[] calldata chipAddressesOld, address[] calldata chipAddressesNew) internal {
-  //     if (chipAddressesOld.length != chipAddressesNew.length) {
-  //         revert ArrayLengthMismatch();
-  //     }
-  //     for (uint256 i = 0; i < chipAddressesOld.length; ++i) {
-  //         address oldChipAddress = chipAddressesOld[i];
-  //         TokenData memory oldTokenData = _tokenDatas[oldChipAddress];
-  //         if (!oldTokenData.set) {
-  //             revert UpdatingChipForUnsetChipMapping();
-  //         }
-  //         address newChipAddress = chipAddressesNew[i];
-  //         uint256 tokenId = oldTokenData.tokenId;
-  //         _tokenDatas[newChipAddress] = TokenData(tokenId, newChipAddress, true);
-  //         if (_exists(tokenId)) {
-  //             emit PBTChipRemapping(tokenId, oldChipAddress, newChipAddress);
-  //         }
-  //         delete _tokenDatas[oldChipAddress];
-  //     }
-  // }
-
-  // function tokenIdFor(address chipAddress) external view override returns (uint256) {
-  //     uint256 tokenId = tokenIdMappedFor(chipAddress);
-  //     if (!_exists(tokenId)) {
-  //         revert NoMintedTokenForChip();
-  //     }
-  //     return tokenId;
-  // }
-
-  // function tokenIdMappedFor(address chipAddress) public view returns (uint256) {
-  //     if (!_tokenDatas[chipAddress].set) {
-  //         revert NoMappedTokenForChip();
-  //     }
-  //     return _tokenDatas[chipAddress].tokenId;
-  // }
+  function tokenIdFor(address chipAddress) external view returns (uint256) {
+    if (!_tokenDatas[chipAddress].set) {
+      revert NoMintedTokenForChip();
+    }
+    return _tokenDatas[chipAddress].tokenId;
+  }
 
   // Returns true if the signer of the signature of the payload is the chip for the token id
-  function recoverChipAddress(bytes memory signature, uint256 blockNumberUsedInSig) public view returns (address) {
-    bytes32 blockHash = blockhash(blockNumberUsedInSig);
-    bytes32 payloadHash = keccak256(abi.encodePacked(_msgSender(), blockHash));
-    bytes32 signedHash = payloadHash.toEthSignedMessageHash();
-    address recoveredAddr = signedHash.recover(signature);
-    return recoveredAddr;
+  function isChipSignatureForToken(
+    uint256 tokenId,
+    bytes memory payload,
+    bytes memory signature
+  ) public view returns (bool) {
+    if (!_exists(tokenId)) {
+      revert NoMintedTokenForChip();
+    }
+    bytes32 signedHash = keccak256(payload).toEthSignedMessageHash();
+    address chipAddr = signedHash.recover(signature);
+    return _tokenDatas[chipAddr].set && _tokenDatas[chipAddr].tokenId == tokenId;
   }
 
-  // function isChipSignatureValid(
-  // bytes memory payload,
-  //   bytes memory signature
-  // ) public view override returns (bool) {
-  //   if (!_exists(tokenId)) {
-  //     revert NoMintedTokenForChip();
-  //   }
-  //   address chipAddr = recoverChipAddress(payload, signature);
-  //   // return _tokenDatas[chipAddr].set && _tokenDatas[chipAddr].tokenId == tokenId;
-  //   return _chipWhitelist[chipAddr];
-  // }
-
-  //
   // Parameters:
   //    to: the address of the new owner
   //    signatureFromChip: signature(receivingAddress + recentBlockhash), signed by an approved chip
   //
   // Contract should check that (1) recentBlockhash is a recent blockhash, (2) receivingAddress === to, and (3) the signing chip is allowlisted.
-  function _mintTokenWithChip(
-    bytes calldata signatureFromChip,
-    uint256 blockNumberUsedInSig,
-    string memory nonce
-  )
-    internal
-    isChipWhitelisted(signatureFromChip, blockNumberUsedInSig)
-    isNonceUsed(signatureFromChip, blockNumberUsedInSig, nonce)
-    returns (uint256)
-  {
-    uint256 tokenId = currentTokenId.current();
-    address recipient = _msgSender();
-    currentTokenId.increment();
-    _numAvailableRemainingTokens--;
+  function _mintTokenWithChip(bytes memory signatureFromChip, uint256 blockNumberUsedInSig) internal returns (uint256) {
+    address chipAddr = _getChipAddrForChipSignature(signatureFromChip, blockNumberUsedInSig);
 
-    _mint(recipient, tokenId);
-    emit PBTMint(recipient, tokenId);
+    if (_tokenDatas[chipAddr].set) {
+      revert ChipAlreadyLinkedToMintedToken();
+    } else if (_tokenDatas[chipAddr].chipAddress != chipAddr) {
+      revert InvalidChipAddress();
+    }
+
+    uint256 tokenId = _useRandomAvailableTokenId();
+    _mint(_msgSender(), tokenId);
+    _tokenDatas[chipAddr] = TokenData(tokenId, chipAddr, true);
+
+    emit PBTMint(chipAddr, tokenId);
+
     return tokenId;
   }
 
-  // function transferTokenWithChip(bytes calldata signatureFromChip, uint256 blockNumberUsedInSig) public override {
-  //   transferTokenWithChip(signatureFromChip, blockNumberUsedInSig, false);
-  // }
+  // Generates a pseudorandom number between [0,maxSupply) that has not yet been generated before, in O(1) time.
+  //
+  // Uses Durstenfeld's version of the Yates Shuffle https://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle
+  // with a twist to avoid having to manually spend gas to preset an array's values to be values 0...n.
+  // It does this by interpreting zero-values for an index X as meaning that index X itself is an available value
+  // that is returnable.
+  //
+  // How it works:
+  //  - zero-initialize a mapping (_availableRemainingTokens) and track its length (_numAvailableRemainingTokens). functionally similar to an array with dynamic sizing
+  //    - this mapping will track all remaining valid values that haven't been generated yet, through a combination of its indices and values
+  //      - if _availableRemainingTokens[x] == 0, that means x has not been generated yet
+  //      - if _availableRemainingTokens[x] != 0, that means _availableRemainingTokens[x] has not been generated yet
+  //  - when prompted for a random number between [0,maxSupply) that hasn't already been used:
+  //    - generate a random index randIndex between [0,_numAvailableRemainingTokens)
+  //    - examine the value at _availableRemainingTokens[randIndex]
+  //        - if the value is zero, it means randIndex has not been used, so we can return randIndex
+  //        - if the value is non-zero, it means the value has not been used, so we can return _availableRemainingTokens[randIndex]
+  //    - update the _availableRemainingTokens mapping state
+  //        - set _availableRemainingTokens[randIndex] to either the index or the value of the last entry in the mapping (depends on the last entry's state)
+  //        - decrement _numAvailableRemainingTokens to mimic the shrinking of an array
+  function _useRandomAvailableTokenId() internal returns (uint256) {
+    uint256 numAvailableRemainingTokens = _numAvailableRemainingTokens;
+    if (numAvailableRemainingTokens == 0) {
+      revert NoMoreTokenIds();
+    }
 
-  // function transferTokenWithChip(
-  //   bytes calldata signatureFromChip,
-  //   uint256 blockNumberUsedInSig,
-  //   bool useSafeTransferFrom
-  // ) public override {
-  //   _transferTokenWithChip(signatureFromChip, blockNumberUsedInSig, useSafeTransferFrom);
-  // }
+    uint256 randomNum = _getRandomNum(numAvailableRemainingTokens);
+    uint256 randomIndex = randomNum % numAvailableRemainingTokens;
+    uint256 valAtIndex = _availableRemainingTokens[randomIndex];
 
-  // function _transferTokenWithChip(
-  //   bytes calldata signatureFromChip,
-  //   uint256 blockNumberUsedInSig,
-  //   bool useSafeTransferFrom
-  // ) internal virtual {
-  //   uint256 tokenId = _getTokenDataForChipSignature(signatureFromChip, blockNumberUsedInSig).tokenId;
-  //   if (useSafeTransferFrom) {
-  //     _safeTransfer(ownerOf(tokenId), _msgSender(), tokenId, '');
-  //   } else {
-  //     _transfer(ownerOf(tokenId), _msgSender(), tokenId);
-  //   }
-  // }
+    uint256 result;
+    if (valAtIndex == 0) {
+      // This means the index itself is still an available token
+      result = randomIndex;
+    } else {
+      // This means the index itself is not an available token, but the val at that index is.
+      result = valAtIndex;
+    }
 
-  // function _getTokenDataForChipSignature(bytes calldata signatureFromChip, uint256 blockNumberUsedInSig) internal view returns (TokenData memory) {
-  //   // The blockNumberUsedInSig must be in a previous block because the blockhash of the current
-  //   // block does not exist yet.
-  //   if (block.number <= blockNumberUsedInSig) {
-  //     revert InvalidBlockNumber();
-  //   }
+    uint256 lastIndex = numAvailableRemainingTokens - 1;
+    if (randomIndex != lastIndex) {
+      // Replace the value at randomIndex, now that it's been used.
+      // Replace it with the data from the last index in the array, since we are going to decrease the array size afterwards.
+      uint256 lastValInArray = _availableRemainingTokens[lastIndex];
+      if (lastValInArray == 0) {
+        // This means the index itself is still an available token
+        _availableRemainingTokens[randomIndex] = lastIndex;
+      } else {
+        // This means the index itself is not an available token, but the val at that index is.
+        _availableRemainingTokens[randomIndex] = lastValInArray;
+        delete _availableRemainingTokens[lastIndex];
+      }
+    }
 
-  //   unchecked {
-  //     if (block.number - blockNumberUsedInSig > getMaxBlockhashValidWindow()) {
-  //       revert BlockNumberTooOld();
-  //     }
-  //   }
+    _numAvailableRemainingTokens--;
 
-  //   bytes32 blockHash = blockhash(blockNumberUsedInSig);
-  //   bytes32 signedHash = keccak256(abi.encodePacked(_msgSender(), blockHash)).toEthSignedMessageHash();
-  //   address chipAddr = signedHash.recover(signatureFromChip);
+    return result;
+  }
 
-  //   TokenData memory tokenData = tokenDatas[chipAddr];
-  //   if (tokenData.set) {
-  //     return tokenData;
-  //   }
-  //   revert InvalidSignature();
-  // }
+  // Devs can swap this out for something less gameable like chainlink if it makes sense for their use case.
+  function _getRandomNum(uint256 numAvailableRemainingTokens) internal view virtual returns (uint256) {
+    return
+      uint256(
+        keccak256(
+          abi.encode(
+            _msgSender(),
+            tx.gasprice,
+            block.number,
+            block.timestamp,
+            block.difficulty,
+            blockhash(block.number - 1),
+            address(this),
+            numAvailableRemainingTokens
+          )
+        )
+      );
+  }
+
+  function transferTokenWithChip(bytes calldata signatureFromChip, uint256 blockNumberUsedInSig) public {
+    transferTokenWithChip(signatureFromChip, blockNumberUsedInSig, false);
+  }
+
+  function transferTokenWithChip(
+    bytes calldata signatureFromChip,
+    uint256 blockNumberUsedInSig,
+    bool useSafeTransferFrom
+  ) public {
+    _transferTokenWithChip(signatureFromChip, blockNumberUsedInSig, useSafeTransferFrom);
+  }
+
+  function _transferTokenWithChip(
+    bytes calldata signatureFromChip,
+    uint256 blockNumberUsedInSig,
+    bool useSafeTransferFrom
+  ) internal virtual {
+    TokenData memory tokenData = _getTokenDataForChipSignature(signatureFromChip, blockNumberUsedInSig);
+    uint256 tokenId = tokenData.tokenId;
+    if (useSafeTransferFrom) {
+      _safeTransfer(ownerOf(tokenId), _msgSender(), tokenId, '');
+    } else {
+      _transfer(ownerOf(tokenId), _msgSender(), tokenId);
+    }
+  }
+
+  function _getTokenDataForChipSignature(bytes calldata signatureFromChip, uint256 blockNumberUsedInSig) internal view returns (TokenData memory) {
+    address chipAddr = _getChipAddrForChipSignature(signatureFromChip, blockNumberUsedInSig);
+    TokenData memory tokenData = _tokenDatas[chipAddr];
+    if (tokenData.set) {
+      return tokenData;
+    }
+    revert InvalidSignature();
+  }
+
+  function _getChipAddrForChipSignature(bytes memory signatureFromChip, uint256 blockNumberUsedInSig) internal view returns (address) {
+    // The blockNumberUsedInSig must be in a previous block because the blockhash of the current
+    // block does not exist yet.
+    if (block.number <= blockNumberUsedInSig) {
+      revert InvalidBlockNumber();
+    }
+
+    if (block.number - blockNumberUsedInSig > getMaxBlockhashValidWindow()) {
+      revert BlockNumberTooOld();
+    }
+
+    bytes32 blockHash = blockhash(blockNumberUsedInSig);
+    bytes32 signedHash = keccak256(abi.encodePacked(_msgSender(), blockHash)).toEthSignedMessageHash();
+    return signedHash.recover(signatureFromChip);
+  }
 
   function getMaxBlockhashValidWindow() public pure virtual returns (uint256) {
     return 100;
@@ -226,22 +255,5 @@ contract AmhoPBT is ERC721ReadOnly, IPBT {
    */
   function supportsInterface(bytes4 interfaceId) public view virtual override returns (bool) {
     return interfaceId == type(IPBT).interfaceId || super.supportsInterface(interfaceId);
-  }
-
-  modifier isChipWhitelisted(bytes calldata signatureFromChip, uint256 blockNumberUsedInSig) {
-    address chipAddress = recoverChipAddress(signatureFromChip, blockNumberUsedInSig);
-    require(_chipWhitelist[chipAddress], 'Chip is not whitelisted');
-    _;
-  }
-
-  modifier isNonceUsed(
-    bytes calldata signatureFromChip,
-    uint256 blockNumberUsedInSig,
-    string memory nonce
-  ) {
-    address chipAddress = recoverChipAddress(signatureFromChip, blockNumberUsedInSig);
-    require(keccak256(bytes(_nonces[chipAddress])) != keccak256(bytes(nonce)), 'Nonce has already been used');
-    _nonces[chipAddress] = nonce;
-    _;
   }
 }

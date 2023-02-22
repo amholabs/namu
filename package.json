@@ -22,7 +22,7 @@
     "ceramic:generate": "yarn run ceramic:generate-profile && yarn run ceramic:generate-urllink && yarn run ceramic:merge && yarn run ceramic:runtime && yarn run ceramic:runtime-js",
     "deploy:pbt": "./deploy-goerli.sh",
     "deploy:tt": "./tunnelto.sh",
-    "deploy:dev": "concurrently \"yarn run ceramic:daemon\" \"sleep 10 && yarn run ceramic:generate\" \"yarn run gql:server\"",
+    "deploy:dev": "concurrently \"yarn run ceramic:daemon\" \"sleep 20 && yarn run ceramic:generate\" \"yarn run gql:server\"",
     "network:setup": "ts-node --esm ./scripts/utils/setip.ts",
     "storybook": "start-storybook -p 6006",
     "build-storybook": "build-storybook"
@@ -55,6 +55,7 @@
     "@emotion/react": "^11.10.5",
     "@emotion/styled": "^11.10.5",
     "@ethersproject/hash": "^5.7.0",
+    "@ethersproject/providers": "^5.7.2",
     "@ethersproject/transactions": "^5.7.0",
     "@fontsource/inter": "^4.5.15",
     "@next/bundle-analyzer": "^13.1.1",
@@ -80,7 +81,7 @@
     "dayjs": "^1.11.7",
     "did-session": "^1.0.0",
     "dotenv": "^16.0.3",
-    "ethers": "^5.7.2",
+    "ethers": "^5",
     "framer-motion": "^8.4.6",
     "global": "^4.4.0",
     "graphql": "^16.6.0",
@@ -132,6 +133,7 @@
     "@types/react-dom": "18.0.10",
     "autoprefixer": "^10.4.13",
     "babel-loader": "^8.3.0",
+    "bufferutil": "^4.0.7",
     "chai": "^4.3.7",
     "concurrently": "^7.6.0",
     "eslint": "8.30.0",
@@ -157,12 +159,16 @@
     "jsonwebtoken": "^9.0.0",
     "lint-staged": "^13.1.0",
     "make-runnable": "^1.4.1",
+    "net": "^1.0.2",
     "node-jq": "^2.3.4",
     "path": "^0.12.7",
     "postcss": "^8.4.19",
     "prettier": "^2.8.1",
     "prettier-plugin-tailwindcss": "^0.2.0",
+    "request": "^2.88.2",
+    "tls": "^0.0.1",
     "ts-node": "^10.9.1",
-    "typescript": "^4.9.4"
+    "typescript": "^4.9.4",
+    "utf-8-validate": "^6.0.2"
   }
 }

@@ -95,6 +95,7 @@ export default function Setttings() {
             hash: block.hash,
           }).then((data) => {
             if (data) {
+              console.log(data)
               setSig(data)
             }
           })

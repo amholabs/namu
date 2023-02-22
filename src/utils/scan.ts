@@ -1,11 +1,12 @@
+import { ComposeClient } from '@composedb/client'
 import type { AuthMethod } from '@didtools/cacao'
 import { EthereumWebAuth, getAccountId } from '@didtools/pkh-ethereum'
 import { AccountId, AccountIdParams, ChainId, ChainIdParams } from 'caip'
 import { DIDSession } from 'did-session'
 // @ts-ignore
-import { ethers } from 'ethers'
 import { ethSignMessage, listKeys } from 'halo-chip'
 
+import { definition } from '@/out/__generated__/runtime'
 import { AuthMethodParams } from '@/src/lib/types'
 import { useStore } from '@/src/store'
 
@@ -60,6 +61,8 @@ export const loadAuthMethod = async (address: string, slot: string): Promise<Aut
 
 export const loadSession = async (): Promise<DIDSession> => {
   const compose = useStore.getState().compose
+  // const compose = new ComposeClient({ ceramic: 'https://amhocer.tunnelto.dev/', definition })
+  console.log(compose)
   const { address, slot } = useStore.getState()
   const sessionStr = localStorage.getItem('didsession')
 
