@@ -70,6 +70,29 @@ contract AmhoPBTRandomTest is Test {
     // pbt.mintTokenWithChip(signature, blockNumber);
   }
 
+  function testSeedingMaxPerChip() public {
+    // Change block number to the next block to set blockHash(blockNumber)
+    vm.roll(blockNumber + 1);
+
+    bytes memory payload = abi.encodePacked(user1, blockhash(blockNumber));
+    bytes memory signature = _createSignature(payload, 101);
+
+    vm.startPrank(user1);
+    vm.roll(blockNumber + 2);
+    uint256 expectedTokenId = 3;
+
+    // Seed chip addresses
+    address[] memory chipAddresses = new address[](1);
+    chipAddresses[0] = chipAddr1;
+    vm.expectRevert(ChipHasReachedMaxSupply.selector);
+    pbt.seedChipAddresses(chipAddresses, 101);
+
+    // Mint should now succeed
+    // vm.expectEmit(true, true, true, true);
+    // emit PBTMint(expectedTokenId, chipAddr1);
+    // pbt.mintTokenWithChip(signature, blockNumber);
+  }
+
   modifier withSeededChips() {
     address[] memory chipAddresses = new address[](3);
     chipAddresses[0] = chipAddr1;

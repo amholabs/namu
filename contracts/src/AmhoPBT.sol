@@ -10,6 +10,7 @@ error InvalidChipAddress();
 error NoMintedTokenForChip();
 error ArrayLengthMismatch();
 error ChipAlreadyLinkedToMintedToken();
+error ChipHasReachedMaxSupply();
 error UpdatingChipForUnsetChipMapping();
 error NoMoreTokenIds();
 error InvalidBlockNumber();
@@ -54,7 +55,9 @@ contract AmhoPBT is ERC721ReadOnly, IPBT {
     for (uint256 i = 0; i < chipAddresses.length; ++i) {
       address chipAddress = chipAddresses[i];
       // add a require statement to check if 100 does not exceed _numAvailableRemainingTokens
-      require(_numAvailableRemainingSlots >= floatSupply, 'Not enough tokens left to seed');
+      if (_numAvailableRemainingSlots < floatSupply) {
+        revert ChipHasReachedMaxSupply();
+      }
       _tokenDatas[chipAddress] = TokenData(0, floatSupply, chipAddress, false);
     }
   }
