@@ -34,6 +34,7 @@ contract AmhoPBT is ERC721ReadOnly, IPBT {
   // Max token supply
   uint256 public immutable maxSupply;
   uint256 private _numAvailableRemainingTokens;
+  uint256 private _numAvailableRemainingSlots;
 
   // Data structure used for Fisher Yates shuffle
   mapping(uint256 => uint256) internal _availableRemainingTokens;
@@ -46,12 +47,15 @@ contract AmhoPBT is ERC721ReadOnly, IPBT {
   ) ERC721ReadOnly(name_, symbol_, trustedForwarder_) {
     maxSupply = maxSupply_;
     _numAvailableRemainingTokens = maxSupply_;
+    _numAvailableRemainingSlots = maxSupply_;
   }
 
-  function _seedChipAddresses(address[] memory chipAddresses) internal {
+  function _seedChipAddresses(address[] memory chipAddresses, uint256 floatSupply) internal {
     for (uint256 i = 0; i < chipAddresses.length; ++i) {
       address chipAddress = chipAddresses[i];
-      _tokenDatas[chipAddress] = TokenData(0, 100, chipAddress, false);
+      // add a require statement to check if 100 does not exceed _numAvailableRemainingTokens
+      require(_numAvailableRemainingSlots >= floatSupply, 'Not enough tokens left to seed');
+      _tokenDatas[chipAddress] = TokenData(0, floatSupply, chipAddress, false);
     }
   }
 

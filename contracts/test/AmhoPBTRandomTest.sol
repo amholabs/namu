@@ -23,9 +23,10 @@ contract AmhoPBTRandomTest is Test {
   address public chipAddr3 = vm.addr(103);
   address public chipAddr4 = vm.addr(104);
   uint256 public blockNumber = 10;
+  uint256 public floatSupply = 100;
 
   function setUp() public {
-    pbt = new AmhoPBTMock('AmhoPBT', 'AMHO', 10, trustedForward);
+    pbt = new AmhoPBTMock('AmhoPBT', 'AMHO', floatSupply, trustedForward);
   }
 
   function _createSignature(bytes memory payload, uint256 chipAddrNum) private returns (bytes memory signature) {
@@ -57,7 +58,7 @@ contract AmhoPBTRandomTest is Test {
     // Seed chip addresses
     address[] memory chipAddresses = new address[](1);
     chipAddresses[0] = chipAddr1;
-    pbt.seedChipAddresses(chipAddresses);
+    pbt.seedChipAddresses(chipAddresses, floatSupply);
 
     // Mint should now succeed
     // vm.expectEmit(true, true, true, true);
@@ -74,7 +75,7 @@ contract AmhoPBTRandomTest is Test {
     chipAddresses[0] = chipAddr1;
     chipAddresses[1] = chipAddr2;
     chipAddresses[2] = chipAddr3;
-    pbt.seedChipAddresses(chipAddresses);
+    pbt.seedChipAddresses(chipAddresses, floatSupply);
     _;
   }
 
@@ -100,7 +101,7 @@ contract AmhoPBTRandomTest is Test {
     address[] memory oldChips = new address[](2);
     oldChips[0] = chipAddr1;
     oldChips[1] = chipAddr2;
-    pbt.seedChipAddresses(oldChips);
+    pbt.seedChipAddresses(oldChips, floatSupply);
 
     address[] memory newChips = new address[](2);
     newChips[0] = chipAddr3;
@@ -162,7 +163,7 @@ contract AmhoPBTRandomTest is Test {
 
     address[] memory chipAddresses = new address[](1);
     chipAddresses[0] = chipAddr1;
-    pbt.seedChipAddresses(chipAddresses);
+    pbt.seedChipAddresses(chipAddresses, floatSupply);
 
     uint256 tokenId = pbt.mintTokenWithChip(signature, blockNumber);
     assertEq(pbt.tokenIdFor(chipAddr1), tokenId);

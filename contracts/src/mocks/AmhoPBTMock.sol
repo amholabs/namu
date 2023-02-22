@@ -23,8 +23,8 @@ contract AmhoPBTMock is AmhoPBT {
     _updateChips(chipAddressesOld, chipAddressesNew);
   }
 
-  function seedChipAddresses(address[] calldata chipAddresses) public {
-    _seedChipAddresses(chipAddresses);
+  function seedChipAddresses(address[] calldata chipAddresses, uint256 floatSupply) public {
+    _seedChipAddresses(chipAddresses, floatSupply);
   }
 
   function mintTokenWithChip(bytes calldata signatureFromChip, uint256 blockNumberUsedInSig) public returns (uint256) {

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 
-import { Center, HStack, Heading, VStack, useToast, Input } from '@chakra-ui/react'
+import { Center, HStack, Heading, Input, VStack, useToast } from '@chakra-ui/react'
 import { ethers } from 'ethers'
 import { getSignatureFromScan } from 'pbt-chip-client/kong'
 import { useDebounce } from 'usehooks-ts'
@@ -120,7 +120,7 @@ export default function Setttings() {
         </Heading>
       </Center>
       <VStack spacing={3}>
-        <Input placeholder='How many to seed chip with'/>
+        <Input placeholder="How many to seed chip with" />
         <CoreButton isLoading={isLoadingWhitelist} size="sm" clickHandler={handleWhitelistToken}>
           SEED CHIPS
         </CoreButton>
