@@ -88,7 +88,6 @@ contract AmhoPBTRandomTest is Test {
     chipAddresses[0] = chipAddr1;
     vm.expectRevert(ChipHasReachedMaxSupply.selector);
     pbt.seedChipAddresses(chipAddresses, 101);
-    // console.log(nonce1);
 
     // Mint should now succeed
     pbt.seedChipAddresses(chipAddresses, 2);
@@ -99,14 +98,13 @@ contract AmhoPBTRandomTest is Test {
 
     vm.startPrank(user1);
     uint256 nonce2 = pbt.getNonce();
-    // console.log(nonce2);
     bytes memory payload1 = abi.encodePacked(user1, blockhash(blockNumber), nonce2);
     bytes memory signature1 = _createSignature(payload1, 101);
 
     // vm.expectRevert(ChipHasReachedMaxSlots.selector);
     uint256 tokenId2 = pbt.mintTokenWithChip(signature1, blockNumber, nonce2);
-
     vm.expectEmit(true, true, true, true);
+    emit Transfer(user1, address(0), tokenId);
     pbt.burn(tokenId);
     vm.stopPrank();
   }
@@ -321,10 +319,13 @@ contract AmhoPBTRandomTest is Test {
     bytes memory payload = abi.encodePacked(user1, blockhash(blockNumber), nonce1);
     bytes memory signature = _createSignature(payload, 101);
     uint256 tokenId = pbt.mintTokenWithChip(signature, blockNumber, nonce1);
+    vm.stopPrank();
 
     vm.startPrank(user1);
     uint256 nonce2 = pbt.getNonce();
-    AmhoPBT.TokenData memory td = pbt.getTokenDataForChipSignature(signature, blockNumber, nonce2);
+    bytes memory payload2 = abi.encodePacked(user1, blockhash(blockNumber), nonce2);
+    bytes memory signature2 = _createSignature(payload2, 101);
+    AmhoPBT.TokenData memory td = pbt.getTokenDataForChipSignature(signature2, blockNumber, nonce2);
     assertEq(td.set, true);
     assertEq(td.chipAddress, chipAddr1);
     assertEq(td.tokenId, tokenId);
