@@ -19,11 +19,30 @@ error NoMoreTokenIds();
 error InvalidBlockNumber();
 error BlockNumberTooOld();
 
+library Counter {
+  struct CounterData {
+    uint256 _value;
+  }
+
+  function current(CounterData storage counter) internal view returns (uint256) {
+    return counter._value;
+  }
+
+  function increment(CounterData storage counter) internal {
+    unchecked {
+      counter._value += 1;
+    }
+  }
+}
+
 /**
  * Implementation of PBT where all tokenIds are randomly chosen at mint time.
  */
 contract AmhoPBT is ERC721ReadOnly, IPBT {
   using ECDSA for bytes32;
+  using Counter for Counter.CounterData;
+
+  Counter.CounterData internal _tokenId;
 
   struct TokenData {
     uint256 tokenId;
@@ -36,7 +55,6 @@ contract AmhoPBT is ERC721ReadOnly, IPBT {
   mapping(address => TokenData) _tokenDatas;
 
   // Max token supply
-  uint256 public immutable maxSupply;
   uint256 private _numAvailableRemainingTokens;
   uint256 private _numAvailableRemainingSlots;
 
@@ -51,7 +69,6 @@ contract AmhoPBT is ERC721ReadOnly, IPBT {
     uint256 maxSupply_,
     address trustedForwarder_
   ) ERC721ReadOnly(name_, symbol_, trustedForwarder_) {
-    maxSupply = maxSupply_;
     _numAvailableRemainingTokens = maxSupply_;
     _numAvailableRemainingSlots = maxSupply_;
   }
@@ -59,9 +76,10 @@ contract AmhoPBT is ERC721ReadOnly, IPBT {
   function _seedChipAddresses(address[] memory chipAddresses, uint256 floatSupply) internal {
     for (uint256 i = 0; i < chipAddresses.length; ++i) {
       address chipAddress = chipAddresses[i];
-      if (_numAvailableRemainingSlots < floatSupply) {
-        revert ChipHasReachedMaxSupply();
+      if (floatSupply > _numAvailableRemainingSlots) {
+        revert ChipHasReachedMaxSlots();
       }
+      _numAvailableRemainingSlots--;
       _tokenDatas[chipAddress] = TokenData(0, floatSupply, chipAddress, false);
     }
   }
@@ -129,98 +147,92 @@ contract AmhoPBT is ERC721ReadOnly, IPBT {
   ) internal returns (uint256) {
     address chipAddr = _getChipAddrForChipSignature(signatureFromChip, blockNumberUsedInSig, nonce);
 
+    uint256 totalSupply = _tokenId.current() + 1;
+
     if (_tokenDatas[chipAddr].chipAddress != chipAddr) {
       revert InvalidChipAddress();
     }
 
-    uint256 tokenId = _useRandomAvailableTokenId();
+    if (_tokenDatas[chipAddr].floatSupply == 0) {
+      revert ChipHasReachedMaxSlots();
+    }
+
+    if (_numAvailableRemainingTokens == 0) {
+      revert ChipHasReachedMaxSupply();
+    }
+
+    uint256 tokenId = _tokenId.current();
     uint256 oldFloatSupply = _tokenDatas[chipAddr].floatSupply;
     uint256 newFloatSupply = oldFloatSupply - 1;
-    _mint(_msgSender(), tokenId);
+
+    _tokenId.increment();
     _tokenDatas[chipAddr] = TokenData(tokenId, newFloatSupply, chipAddr, true);
+    _numAvailableRemainingTokens--;
+
+    _mint(_msgSender(), tokenId);
 
     emit PBTMint(chipAddr, tokenId);
 
     return tokenId;
   }
 
-  // Generates a pseudorandom number between [0,maxSupply) that has not yet been generated before, in O(1) time.
-  //
-  // Uses Durstenfeld's version of the Yates Shuffle https://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle
-  // with a twist to avoid having to manually spend gas to preset an array's values to be values 0...n.
-  // It does this by interpreting zero-values for an index X as meaning that index X itself is an available value
-  // that is returnable.
-  //
-  // How it works:
-  //  - zero-initialize a mapping (_availableRemainingTokens) and track its length (_numAvailableRemainingTokens). functionally similar to an array with dynamic sizing
-  //    - this mapping will track all remaining valid values that haven't been generated yet, through a combination of its indices and values
-  //      - if _availableRemainingTokens[x] == 0, that means x has not been generated yet
-  //      - if _availableRemainingTokens[x] != 0, that means _availableRemainingTokens[x] has not been generated yet
-  //  - when prompted for a random number between [0,maxSupply) that hasn't already been used:
-  //    - generate a random index randIndex between [0,_numAvailableRemainingTokens)
-  //    - examine the value at _availableRemainingTokens[randIndex]
-  //        - if the value is zero, it means randIndex has not been used, so we can return randIndex
-  //        - if the value is non-zero, it means the value has not been used, so we can return _availableRemainingTokens[randIndex]
-  //    - update the _availableRemainingTokens mapping state
-  //        - set _availableRemainingTokens[randIndex] to either the index or the value of the last entry in the mapping (depends on the last entry's state)
-  //        - decrement _numAvailableRemainingTokens to mimic the shrinking of an array
-  function _useRandomAvailableTokenId() internal returns (uint256) {
-    uint256 numAvailableRemainingTokens = _numAvailableRemainingTokens;
-    if (numAvailableRemainingTokens == 0) {
-      revert NoMoreTokenIds();
-    }
+  // function _useRandomAvailableTokenId() internal returns (uint256) {
+  //   uint256 numAvailableRemainingTokens = _numAvailableRemainingTokens;
+  //   if (numAvailableRemainingTokens == 0) {
+  //     revert NoMoreTokenIds();
+  //   }
 
-    uint256 randomNum = _getRandomNum(numAvailableRemainingTokens);
-    uint256 randomIndex = randomNum % numAvailableRemainingTokens;
-    uint256 valAtIndex = _availableRemainingTokens[randomIndex];
+  //   uint256 randomNum = _getRandomNum(numAvailableRemainingTokens);
+  //   uint256 randomIndex = randomNum % numAvailableRemainingTokens;
+  //   uint256 valAtIndex = _availableRemainingTokens[randomIndex];
 
-    uint256 result;
-    if (valAtIndex == 0) {
-      // This means the index itself is still an available token
-      result = randomIndex;
-    } else {
-      // This means the index itself is not an available token, but the val at that index is.
-      result = valAtIndex;
-    }
+  //   uint256 result;
+  //   if (valAtIndex == 0) {
+  //     // This means the index itself is still an available token
+  //     result = randomIndex;
+  //   } else {
+  //     // This means the index itself is not an available token, but the val at that index is.
+  //     result = valAtIndex;
+  //   }
 
-    uint256 lastIndex = numAvailableRemainingTokens - 1;
-    if (randomIndex != lastIndex) {
-      // Replace the value at randomIndex, now that it's been used.
-      // Replace it with the data from the last index in the array, since we are going to decrease the array size afterwards.
-      uint256 lastValInArray = _availableRemainingTokens[lastIndex];
-      if (lastValInArray == 0) {
-        // This means the index itself is still an available token
-        _availableRemainingTokens[randomIndex] = lastIndex;
-      } else {
-        // This means the index itself is not an available token, but the val at that index is.
-        _availableRemainingTokens[randomIndex] = lastValInArray;
-        delete _availableRemainingTokens[lastIndex];
-      }
-    }
+  //   uint256 lastIndex = numAvailableRemainingTokens - 1;
+  //   if (randomIndex != lastIndex) {
+  //     // Replace the value at randomIndex, now that it's been used.
+  //     // Replace it with the data from the last index in the array, since we are going to decrease the array size afterwards.
+  //     uint256 lastValInArray = _availableRemainingTokens[lastIndex];
+  //     if (lastValInArray == 0) {
+  //       // This means the index itself is still an available token
+  //       _availableRemainingTokens[randomIndex] = lastIndex;
+  //     } else {
+  //       // This means the index itself is not an available token, but the val at that index is.
+  //       _availableRemainingTokens[randomIndex] = lastValInArray;
+  //       delete _availableRemainingTokens[lastIndex];
+  //     }
+  //   }
 
-    _numAvailableRemainingTokens--;
+  //   _numAvailableRemainingTokens--;
 
-    return result;
-  }
+  //   return result;
+  // }
 
   // Devs can swap this out for something less gameable like chainlink if it makes sense for their use case.
-  function _getRandomNum(uint256 numAvailableRemainingTokens) internal view virtual returns (uint256) {
-    return
-      uint256(
-        keccak256(
-          abi.encode(
-            _msgSender(),
-            tx.gasprice,
-            block.number,
-            block.timestamp,
-            block.difficulty,
-            blockhash(block.number - 1),
-            address(this),
-            numAvailableRemainingTokens
-          )
-        )
-      );
-  }
+  // function _getRandomNum(uint256 numAvailableRemainingTokens) internal view virtual returns (uint256) {
+  //   return
+  //     uint256(
+  //       keccak256(
+  //         abi.encode(
+  //           _msgSender(),
+  //           tx.gasprice,
+  //           block.number,
+  //           block.timestamp,
+  //           block.difficulty,
+  //           blockhash(block.number - 1),
+  //           address(this),
+  //           numAvailableRemainingTokens
+  //         )
+  //       )
+  //     );
+  // }
 
   function transferTokenWithChip(
     bytes calldata signatureFromChip,
@@ -287,9 +299,7 @@ contract AmhoPBT is ERC721ReadOnly, IPBT {
     }
 
     uint256 nonce_ = useNonce();
-    console.log('nonce1_:', nonce_);
     uint256 nonce_1 = getNonce();
-    console.log('nonce2_:', nonce_1);
     bytes32 blockHash = blockhash(blockNumberUsedInSig);
     bytes32 signedHash = keccak256(abi.encodePacked(_msgSender(), blockHash, nonce_)).toEthSignedMessageHash();
     return signedHash.recover(signatureFromChip);

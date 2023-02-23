@@ -46,8 +46,4 @@ contract AmhoPBTMock is AmhoPBT {
   function getAvailableRemainingTokens(uint256 index) public view returns (uint256) {
     return _availableRemainingTokens[index];
   }
-
-  function useRandomAvailableTokenId() public returns (uint256) {
-    return _useRandomAvailableTokenId();
-  }
 }

@@ -24,11 +24,12 @@ contract AmhoPBTRandomTest is Test {
   address public chipAddr3 = vm.addr(103);
   address public chipAddr4 = vm.addr(104);
   uint256 public blockNumber = 10;
-  uint256 public floatSupply = 100;
+  uint256 public floatSupply = 1;
+  uint256 public maxSupply = 5;
   uint256 public nonce = 0;
 
   function setUp() public {
-    pbt = new AmhoPBTMock('AmhoPBT', 'AMHO', floatSupply, trustedForward);
+    pbt = new AmhoPBTMock('AmhoPBT', 'AMHO', maxSupply, trustedForward);
   }
 
   function _createSignature(bytes memory payload, uint256 chipAddrNum) private returns (bytes memory signature) {
@@ -47,8 +48,8 @@ contract AmhoPBTRandomTest is Test {
     vm.roll(blockNumber + 1);
 
     vm.startPrank(user1);
-    uint256 nonce1 = pbt.getNonce();
-    bytes memory payload = abi.encodePacked(user1, blockhash(blockNumber), nonce1);
+    uint256 _nonce = pbt.getNonce();
+    bytes memory payload = abi.encodePacked(user1, blockhash(blockNumber), _nonce);
     bytes memory signature = _createSignature(payload, 101);
 
     vm.roll(blockNumber + 2);
@@ -56,7 +57,7 @@ contract AmhoPBTRandomTest is Test {
 
     // First mint will fail because seeding hasn't happened
     vm.expectRevert(InvalidChipAddress.selector);
-    pbt.mintTokenWithChip(signature, blockNumber, nonce1);
+    pbt.mintTokenWithChip(signature, blockNumber, _nonce);
 
     // Seed chip addresses
     address[] memory chipAddresses = new address[](1);
@@ -66,12 +67,70 @@ contract AmhoPBTRandomTest is Test {
     // Mint should now succeed
     // vm.expectEmit(true, true, true, true);
     emit PBTMint(expectedTokenId, chipAddr1);
-    uint256 nonce2 = pbt.getNonce();
-    pbt.mintTokenWithChip(signature, blockNumber, nonce2);
+    _nonce = pbt.getNonce();
+    payload = abi.encodePacked(user1, blockhash(blockNumber), _nonce);
+    signature = _createSignature(payload, 101);
+    pbt.mintTokenWithChip(signature, blockNumber, _nonce);
 
-    // Make sure a chipAddr that has been minted can't mint again
-    // vm.expectRevert(ChipAlreadyLinkedToMintedToken.selector);
-    // pbt.mintTokenWithChip(signature, blockNumber);
+    // Prevent use of same nonce again
+    vm.expectRevert(InvalidNonce.selector);
+    pbt.mintTokenWithChip(signature, blockNumber, _nonce);
+
+    _nonce = pbt.getNonce();
+    payload = abi.encodePacked(user1, blockhash(blockNumber), _nonce);
+    signature = _createSignature(payload, 101);
+
+    // Prevent mint if no more slots on chip
+
+    vm.expectRevert(ChipHasReachedMaxSlots.selector);
+    pbt.mintTokenWithChip(signature, blockNumber, _nonce);
+
+    pbt.seedChipAddresses(chipAddresses, maxSupply - 1);
+
+    _nonce = pbt.getNonce();
+    payload = abi.encodePacked(user1, blockhash(blockNumber), _nonce);
+    signature = _createSignature(payload, 101);
+    pbt.mintTokenWithChip(signature, blockNumber, _nonce);
+
+    _nonce = pbt.getNonce();
+    payload = abi.encodePacked(user1, blockhash(blockNumber), _nonce);
+    signature = _createSignature(payload, 101);
+    pbt.mintTokenWithChip(signature, blockNumber, _nonce);
+
+    _nonce = pbt.getNonce();
+    payload = abi.encodePacked(user1, blockhash(blockNumber), _nonce);
+    signature = _createSignature(payload, 101);
+    pbt.mintTokenWithChip(signature, blockNumber, _nonce);
+
+    _nonce = pbt.getNonce();
+    payload = abi.encodePacked(user1, blockhash(blockNumber), _nonce);
+    signature = _createSignature(payload, 101);
+    pbt.mintTokenWithChip(signature, blockNumber, _nonce);
+
+    _nonce = pbt.getNonce();
+    payload = abi.encodePacked(user1, blockhash(blockNumber), _nonce);
+    signature = _createSignature(payload, 101);
+    vm.expectRevert(ChipHasReachedMaxSlots.selector);
+    pbt.mintTokenWithChip(signature, blockNumber, _nonce);
+
+  }
+
+  function testMintAndOverSeed() public {
+    vm.roll(blockNumber + 1);
+
+    vm.startPrank(user1);
+    uint256 nonce1 = pbt.getNonce();
+    bytes memory payload = abi.encodePacked(user1, blockhash(blockNumber), nonce1);
+    bytes memory signature = _createSignature(payload, 101);
+
+    address[] memory chipAddresses = new address[](1);
+    chipAddresses[0] = chipAddr1;
+    pbt.seedChipAddresses(chipAddresses, maxSupply);
+
+    uint256 tokenId = pbt.mintTokenWithChip(signature, blockNumber, nonce1);
+
+    vm.expectRevert(ChipHasReachedMaxSlots.selector);
+    pbt.seedChipAddresses(chipAddresses, maxSupply);
   }
 
   function testBurning() public {
@@ -86,8 +145,8 @@ contract AmhoPBTRandomTest is Test {
     // Seed chip addresses
     address[] memory chipAddresses = new address[](1);
     chipAddresses[0] = chipAddr1;
-    vm.expectRevert(ChipHasReachedMaxSupply.selector);
-    pbt.seedChipAddresses(chipAddresses, 101);
+    vm.expectRevert(ChipHasReachedMaxSlots.selector);
+    pbt.seedChipAddresses(chipAddresses, maxSupply + 1);
 
     // Mint should now succeed
     pbt.seedChipAddresses(chipAddresses, 2);
@@ -101,7 +160,6 @@ contract AmhoPBTRandomTest is Test {
     bytes memory payload1 = abi.encodePacked(user1, blockhash(blockNumber), nonce2);
     bytes memory signature1 = _createSignature(payload1, 101);
 
-    // vm.expectRevert(ChipHasReachedMaxSlots.selector);
     uint256 tokenId2 = pbt.mintTokenWithChip(signature1, blockNumber, nonce2);
     vm.expectEmit(true, true, true, true);
     emit Transfer(user1, address(0), tokenId);
@@ -123,13 +181,8 @@ contract AmhoPBTRandomTest is Test {
     // Seed chip addresses
     address[] memory chipAddresses = new address[](1);
     chipAddresses[0] = chipAddr1;
-    vm.expectRevert(ChipHasReachedMaxSupply.selector);
-    pbt.seedChipAddresses(chipAddresses, 101);
-
-    // Mint should now succeed
-    // vm.expectEmit(true, true, true, true);
-    // emit PBTMint(expectedTokenId, chipAddr1);
-    // pbt.mintTokenWithChip(signature, blockNumber);
+    vm.expectRevert(ChipHasReachedMaxSlots.selector);
+    pbt.seedChipAddresses(chipAddresses, maxSupply + 1);
   }
 
   function testTokenDataUpdate() public {
@@ -145,14 +198,14 @@ contract AmhoPBTRandomTest is Test {
     // Seed chip addresses
     address[] memory chipAddresses = new address[](1);
     chipAddresses[0] = chipAddr1;
-    pbt.seedChipAddresses(chipAddresses, 10);
+    pbt.seedChipAddresses(chipAddresses, floatSupply);
 
     uint256 nonce2 = pbt.getNonce();
     emit PBTMint(expectedTokenId, chipAddr1);
     pbt.mintTokenWithChip(signature, blockNumber, nonce2);
 
     AmhoPBT.TokenData memory tokenData = pbt.getTokenData(chipAddresses[0]);
-    assertEq(tokenData.floatSupply, 9);
+    assertEq(tokenData.floatSupply, 0);
   }
 
   modifier withSeededChips() {
@@ -330,82 +383,6 @@ contract AmhoPBTRandomTest is Test {
     assertEq(td.chipAddress, chipAddr1);
     assertEq(td.tokenId, tokenId);
   }
-
-  // function testUseRandomAvailableTokenId() public {
-  //   // randomIndex: 7
-  //   // lastIndex: 9
-  //   // _availableRemainingTokens: [0, 0, 0, 0, 0, 0, 0, 9, 0, 0]
-  //   vm.roll(4);
-  //   assertEq(pbt.useRandomAvailableTokenId(), 7);
-  //   assertEq(pbt.getAvailableRemainingTokens(7), 9);
-
-  //   // randomIndex: 1
-  //   // lastIndex: 8
-  //   // _availableRemainingTokens: [0, 8, 0, 0, 0, 0, 0, 9, 0, 0]
-  //   vm.roll(5);
-  //   assertEq(pbt.useRandomAvailableTokenId(), 1);
-  //   assertEq(pbt.getAvailableRemainingTokens(1), 8);
-
-  //   // randomIndex: 7
-  //   // lastIndex: 7
-  //   // _availableRemainingTokens: [0, 8, 0, 0, 0, 0, 0, 9, 0, 0]
-  //   vm.roll(6);
-  //   assertEq(pbt.useRandomAvailableTokenId(), 9);
-  //   assertEq(pbt.getAvailableRemainingTokens(7), 9);
-
-  //   // randomIndex: 4
-  //   // lastIndex: 6
-  //   // _availableRemainingTokens: [0, 8, 0, 0, 6, 0, 0, 9, 0, 0]
-  //   vm.roll(7);
-  //   assertEq(pbt.useRandomAvailableTokenId(), 4);
-  //   assertEq(pbt.getAvailableRemainingTokens(4), 6);
-
-  //   // randomIndex: 1
-  //   // lastIndex: 5
-  //   // _availableRemainingTokens: [0, 5, 0, 0, 6, 0, 0, 9, 0, 0]
-  //   vm.roll(8);
-  //   assertEq(pbt.useRandomAvailableTokenId(), 8);
-  //   assertEq(pbt.getAvailableRemainingTokens(1), 5);
-
-  //   // randomIndex: 0
-  //   // lastIndex: 4
-  //   // _availableRemainingTokens: [6, 5, 0, 0, 0, 0, 0, 9, 0, 0]
-  //   vm.roll(7);
-  //   assertEq(pbt.useRandomAvailableTokenId(), 0);
-  //   assertEq(pbt.getAvailableRemainingTokens(0), 6);
-
-  //   // randomIndex: 1
-  //   // lastIndex: 3
-  //   // _availableRemainingTokens: [6, 3, 0, 0, 0, 0, 0, 9,  0]
-  //   vm.roll(8);
-  //   assertEq(pbt.useRandomAvailableTokenId(), 5);
-  //   assertEq(pbt.getAvailableRemainingTokens(1), 3);
-
-  //   // randomIndex: 1
-  //   // lastIndex: 2
-  //   // _availableRemainingTokens: [6, 2, 0, 0, 0, 0, 0, 9, 0, 0]
-  //   vm.roll(9);
-  //   assertEq(pbt.useRandomAvailableTokenId(), 3);
-  //   assertEq(pbt.getAvailableRemainingTokens(1), 2);
-
-  //   // randomIndex: 0
-  //   // lastIndex: 1
-  //   // _availableRemainingTokens: [2, 0, 0, 0, 0, 0, 0, 9, 0, 0]
-  //   vm.roll(10);
-  //   assertEq(pbt.useRandomAvailableTokenId(), 6);
-  //   assertEq(pbt.getAvailableRemainingTokens(0), 2);
-
-  //   // randomIndex: 0
-  //   // lastIndex: 0
-  //   // _availableRemainingTokens: [2, 0, 0, 0, 0, 0, 0, 9, 0, 0]
-  //   vm.roll(11);
-  //   assertEq(pbt.useRandomAvailableTokenId(), 2);
-  //   assertEq(pbt.getAvailableRemainingTokens(0), 2);
-
-  //   // All tokens have been assigned so an error should be raised
-  //   vm.expectRevert(NoMoreTokenIds.selector);
-  //   pbt.useRandomAvailableTokenId();
-  // }
 
   function testSupportsInterface() public {
     assertEq(pbt.supportsInterface(type(IPBT).interfaceId), true);
