@@ -37,9 +37,9 @@ contract AmhoPBT is ERC721ReadOnly, IPBT {
   uint256 public immutable maxSupply;
   uint256 private _numAvailableRemainingTokens;
   uint256 private _numAvailableRemainingSlots;
-  uint256 public lastNonce;
 
   // Data structure used for Fisher Yates shuffle
+  mapping(address => uint256) internal _nonceToAddress;
   mapping(uint256 => uint256) internal _availableRemainingTokens;
 
   constructor(
@@ -51,13 +51,11 @@ contract AmhoPBT is ERC721ReadOnly, IPBT {
     maxSupply = maxSupply_;
     _numAvailableRemainingTokens = maxSupply_;
     _numAvailableRemainingSlots = maxSupply_;
-    lastNonce = 0;
   }
 
   function _seedChipAddresses(address[] memory chipAddresses, uint256 floatSupply) internal {
     for (uint256 i = 0; i < chipAddresses.length; ++i) {
       address chipAddress = chipAddresses[i];
-      // add a require statement to check if 100 does not exceed _numAvailableRemainingTokens
       if (_numAvailableRemainingSlots < floatSupply) {
         revert ChipHasReachedMaxSupply();
       }
@@ -85,8 +83,14 @@ contract AmhoPBT is ERC721ReadOnly, IPBT {
     }
   }
 
-  function getNonce() external view returns (uint256) {
-    return lastNonce;
+  function getNonce() public view returns (uint256) {
+    _nonceToAddress[_msgSender()];
+  }
+
+  function useNonce() public returns (uint256) {
+    uint256 currentNonce = _nonceToAddress[_msgSender()];
+    _nonceToAddress[_msgSender()]++;
+    return currentNonce;
   }
 
   function tokenIdFor(address chipAddress) external view returns (uint256) {
@@ -120,14 +124,7 @@ contract AmhoPBT is ERC721ReadOnly, IPBT {
     uint256 blockNumberUsedInSig,
     uint256 nonce
   ) internal returns (uint256) {
-    if (nonce < lastNonce) {
-      revert InvalidNonce();
-    }
-
-    address chipAddr = _getChipAddrForChipSignature(signatureFromChip, blockNumberUsedInSig);
-    // if (_tokenDatas[chipAddr].set) {
-    // revert ChipAlreadyLinkedToMintedToken();
-    // } else if (_tokenDatas[chipAddr].chipAddress != chipAddr) {
+    address chipAddr = _getChipAddrForChipSignature(signatureFromChip, blockNumberUsedInSig, nonce);
 
     if (_tokenDatas[chipAddr].chipAddress != chipAddr) {
       revert InvalidChipAddress();
@@ -259,10 +256,7 @@ contract AmhoPBT is ERC721ReadOnly, IPBT {
     uint256 blockNumberUsedInSig,
     uint256 nonce
   ) internal returns (TokenData memory) {
-    if (nonce < lastNonce) {
-      revert InvalidNonce();
-    }
-    address chipAddr = _getChipAddrForChipSignature(signatureFromChip, blockNumberUsedInSig);
+    address chipAddr = _getChipAddrForChipSignature(signatureFromChip, blockNumberUsedInSig, nonce);
     TokenData memory tokenData = _tokenDatas[chipAddr];
     if (tokenData.set) {
       return tokenData;
@@ -270,9 +264,17 @@ contract AmhoPBT is ERC721ReadOnly, IPBT {
     revert InvalidSignature();
   }
 
-  function _getChipAddrForChipSignature(bytes memory signatureFromChip, uint256 blockNumberUsedInSig) internal returns (address) {
+  function _getChipAddrForChipSignature(
+    bytes memory signatureFromChip,
+    uint256 blockNumberUsedInSig,
+    uint256 _nonce
+  ) internal returns (address) {
     // The blockNumberUsedInSig must be in a previous block because the blockhash of the current
     // block does not exist yet.
+    if (_nonce != getNonce()) {
+      revert InvalidNonce();
+    }
+
     if (block.number <= blockNumberUsedInSig) {
       revert InvalidBlockNumber();
     }
@@ -281,9 +283,9 @@ contract AmhoPBT is ERC721ReadOnly, IPBT {
       revert BlockNumberTooOld();
     }
 
+    uint256 nonce_ = useNonce();
     bytes32 blockHash = blockhash(blockNumberUsedInSig);
-    bytes32 signedHash = keccak256(abi.encodePacked(_msgSender(), blockHash)).toEthSignedMessageHash();
-    lastNonce++;
+    bytes32 signedHash = keccak256(abi.encodePacked(_msgSender(), blockHash, nonce_)).toEthSignedMessageHash();
     return signedHash.recover(signatureFromChip);
   }
 
