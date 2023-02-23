@@ -74,9 +74,42 @@ contract AmhoPBTRandomTest is Test {
     // pbt.mintTokenWithChip(signature, blockNumber);
   }
 
-  // function testNonceIncrement() public {
+  function testBurning() public {
+    // Change block number to the next block to set blockHash(blockNumber)
+    vm.roll(blockNumber + 1);
 
-  // }
+    vm.startPrank(user1);
+    uint256 nonce1 = pbt.getNonce();
+    bytes memory payload = abi.encodePacked(user1, blockhash(blockNumber), nonce1);
+    bytes memory signature = _createSignature(payload, 101);
+
+    // Seed chip addresses
+    address[] memory chipAddresses = new address[](1);
+    chipAddresses[0] = chipAddr1;
+    vm.expectRevert(ChipHasReachedMaxSupply.selector);
+    pbt.seedChipAddresses(chipAddresses, 101);
+    // console.log(nonce1);
+
+    // Mint should now succeed
+    pbt.seedChipAddresses(chipAddresses, 2);
+    uint256 tokenId = pbt.mintTokenWithChip(signature, blockNumber, nonce1);
+    vm.stopPrank();
+
+    vm.roll(blockNumber + 2);
+
+    vm.startPrank(user1);
+    uint256 nonce2 = pbt.getNonce();
+    // console.log(nonce2);
+    bytes memory payload1 = abi.encodePacked(user1, blockhash(blockNumber), nonce2);
+    bytes memory signature1 = _createSignature(payload1, 101);
+
+    // vm.expectRevert(ChipHasReachedMaxSlots.selector);
+    uint256 tokenId2 = pbt.mintTokenWithChip(signature1, blockNumber, nonce2);
+
+    vm.expectEmit(true, true, true, true);
+    pbt.burn(tokenId);
+    vm.stopPrank();
+  }
 
   function testSeedingMaxPerChip() public {
     // Change block number to the next block to set blockHash(blockNumber)

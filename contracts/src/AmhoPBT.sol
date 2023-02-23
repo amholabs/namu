@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.13;
 
+import 'forge-std/console.sol';
 import './IPBT.sol';
 import './ERC721ReadOnly.sol';
 import '@openzeppelin/contracts/utils/cryptography/ECDSA.sol';
@@ -12,6 +13,7 @@ error NoMintedTokenForChip();
 error ArrayLengthMismatch();
 error ChipAlreadyLinkedToMintedToken();
 error ChipHasReachedMaxSupply();
+error ChipHasReachedMaxSlots();
 error UpdatingChipForUnsetChipMapping();
 error NoMoreTokenIds();
 error InvalidBlockNumber();
@@ -38,8 +40,9 @@ contract AmhoPBT is ERC721ReadOnly, IPBT {
   uint256 private _numAvailableRemainingTokens;
   uint256 private _numAvailableRemainingSlots;
 
+  mapping(address => uint256) public _nonceToAddress;
+
   // Data structure used for Fisher Yates shuffle
-  mapping(address => uint256) internal _nonceToAddress;
   mapping(uint256 => uint256) internal _availableRemainingTokens;
 
   constructor(
@@ -84,7 +87,7 @@ contract AmhoPBT is ERC721ReadOnly, IPBT {
   }
 
   function getNonce() public view returns (uint256) {
-    _nonceToAddress[_msgSender()];
+    return _nonceToAddress[_msgSender()];
   }
 
   function useNonce() public returns (uint256) {
@@ -284,6 +287,9 @@ contract AmhoPBT is ERC721ReadOnly, IPBT {
     }
 
     uint256 nonce_ = useNonce();
+    console.log('nonce1_:', nonce_);
+    uint256 nonce_1 = getNonce();
+    console.log('nonce2_:', nonce_1);
     bytes32 blockHash = blockhash(blockNumberUsedInSig);
     bytes32 signedHash = keccak256(abi.encodePacked(_msgSender(), blockHash, nonce_)).toEthSignedMessageHash();
     return signedHash.recover(signatureFromChip);
