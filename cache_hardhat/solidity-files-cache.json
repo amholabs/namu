@@ -2,8 +2,8 @@
   "_format": "hh-sol-cache-2",
   "files": {
     "/Users/nnn/Projects/namu/contracts/src/AmhoPBT.sol": {
-      "lastModificationDate": 1677130430733,
-      "contentHash": "16bf790e5a23c93197f9a6df4ad8c50f",
+      "lastModificationDate": 1677197759372,
+      "contentHash": "fb3efddd2d99ec45f1f5fab3ff29d0e3",
       "sourceName": "contracts/src/AmhoPBT.sol",
       "solcConfig": {
         "version": "0.8.13",
@@ -33,6 +33,7 @@
         }
       },
       "imports": [
+        "forge-std/console.sol",
         "./IPBT.sol",
         "./ERC721ReadOnly.sol",
         "@openzeppelin/contracts/utils/cryptography/ECDSA.sol"
@@ -41,7 +42,8 @@
         "^0.8.13"
       ],
       "artifacts": [
-        "AmhoPBT"
+        "AmhoPBT",
+        "Counter"
       ]
     },
     "/Users/nnn/Projects/namu/contracts/src/IPBT.sol": {
@@ -171,8 +173,8 @@
       ]
     },
     "/Users/nnn/Projects/namu/contracts/src/ERC721ReadOnly.sol": {
-      "lastModificationDate": 1676684607713,
-      "contentHash": "33dcbfb23590210ead2a86851724c785",
+      "lastModificationDate": 1677197466604,
+      "contentHash": "edd1c658a64af83a1ba67405b7f84c61",
       "sourceName": "contracts/src/ERC721ReadOnly.sol",
       "solcConfig": {
         "version": "0.8.13",
@@ -661,8 +663,8 @@
       ]
     },
     "/Users/nnn/Projects/namu/contracts/src/mocks/AmhoPBTMock.sol": {
-      "lastModificationDate": 1677130430735,
-      "contentHash": "0f93e4d67f4210bceba20ba40251f12f",
+      "lastModificationDate": 1677186740804,
+      "contentHash": "b277421b6bfa08a59fcfc36a3d94f146",
       "sourceName": "contracts/src/mocks/AmhoPBTMock.sol",
       "solcConfig": {
         "version": "0.8.13",
@@ -1574,8 +1576,8 @@
       ]
     },
     "/Users/nnn/Projects/namu/contracts/test/AmhoPBTRandomTest.sol": {
-      "lastModificationDate": 1677130430736,
-      "contentHash": "a5b369db8b2b54f56b193975afcda03a",
+      "lastModificationDate": 1677203936871,
+      "contentHash": "f3ae6487b05aeb6d9bdc1ba0bf003a41",
       "sourceName": "contracts/test/AmhoPBTRandomTest.sol",
       "solcConfig": {
         "version": "0.8.13",

@@ -29,7 +29,7 @@ contract AmhoPBTRandomTest is Test {
   uint256 public nonce = 0;
 
   function setUp() public {
-    pbt = new AmhoPBTMock('AmhoPBT', 'AMHO', maxSupply, trustedForward);
+    pbt = new AmhoPBTMock('AmhoIRL', 'AMHO', maxSupply, trustedForward);
   }
 
   function _createSignature(bytes memory payload, uint256 chipAddrNum) private returns (bytes memory signature) {
@@ -112,7 +112,6 @@ contract AmhoPBTRandomTest is Test {
     signature = _createSignature(payload, 101);
     vm.expectRevert(ChipHasReachedMaxSlots.selector);
     pbt.mintTokenWithChip(signature, blockNumber, _nonce);
-
   }
 
   function testMintAndOverSeed() public {
@@ -265,7 +264,7 @@ contract AmhoPBTRandomTest is Test {
 
     vm.prank(user2);
     uint256 tokenId2 = pbt.mintTokenWithChip(signature, blockNumber, nonce2);
-
+    string memory uri = pbt.tokenURI(tokenId1);
     // updateChips should now succeed
     vm.expectEmit(true, true, true, true);
     emit PBTChipRemapping(tokenId1, chipAddr1, chipAddr3);

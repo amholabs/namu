@@ -1,15 +1,12 @@
 import { useEffect, useState } from 'react'
 
 import { Center, HStack, Heading, Input, VStack, useToast } from '@chakra-ui/react'
-import { ethers } from 'ethers'
-import { getSignatureFromScan } from 'pbt-chip-client/kong'
 import { useDebounce } from 'usehooks-ts'
-import { useAccount, useBlockNumber, useContractWrite, useNetwork, usePrepareContractWrite, useWaitForTransaction } from 'wagmi'
+import { useContractWrite, useNetwork, usePrepareContractWrite, useWaitForTransaction } from 'wagmi'
 
 import { CoreButton } from '@/components/shared/CoreButton'
 import WalletConnectCustom from '@/src/components/WalletConnectCustom'
-import { useStore } from '@/src/store'
-import { generateSession, loadSession, scan, setScanVariables } from '@/src/utils/scan'
+import { formatKeys, setScanVariables } from '@/src/utils/scan'
 import MobileLayout from 'app/MobileLayout'
 import { PBT_ADDRESS } from 'config'
 
@@ -21,94 +18,60 @@ export default function Setttings() {
   const toast = useToast()
   const { chain } = useNetwork()
   // eslint-disable-next-line
-  const { address } = useAccount()
-  // eslint-disable-next-line
-  const [sig, setSig] = useState<string | null>(null)
-  // eslint-disable-next-line
-  const [blockNum, setBlockNumber] = useState<number>(0)
+  const [keys, setKeys] = useState<string[]>([])
+  const [numToSeed, setNumToSeed] = useState<number>(0)
+  const debounceNumToSeed = useDebounce(numToSeed)
 
-  const { config: whitelistChipConfig } = usePrepareContractWrite({
+  const { config: seedChipConfig } = usePrepareContractWrite({
     address: PBT_ADDRESS,
     abi,
-    functionName: 'addChipToWhitelist',
-    args: [sig, blockNum],
-    enabled: !!sig && !!blockNum,
+    functionName: 'seedChipAddresses',
+    args: [keys, debounceNumToSeed],
+    enabled: !!keys && !!debounceNumToSeed,
     chainId: chain?.id,
   })
 
   // eslint-disable-next-line
-  const { write: whitelistWrite, data: whitelistData } = useContractWrite(whitelistChipConfig)
+  const { write: seedWrite, data: seedData } = useContractWrite(seedChipConfig)
 
-  const debounceReq = useDebounce(whitelistChipConfig.request)
+  const debounceReq = useDebounce(seedChipConfig.request)
+
   useEffect(() => {
-    whitelistWrite?.()
+    console.log(seedChipConfig)
+    seedWrite?.()
   }, [debounceReq])
 
-  const { isLoading: isLoadingWhitelist } = useWaitForTransaction({
-    hash: whitelistData?.hash,
+  const { isLoading: isLoadingSeed } = useWaitForTransaction({
+    hash: seedData?.hash,
     onSuccess() {
       toast({
-        title: 'Whitelist Success',
+        title: 'Seed Success',
         status: 'success',
         duration: 5000,
         isClosable: true,
       })
-      // handleMintTokens()
     },
   })
 
-  // useEffect(() => {
-  //   ;(async () => {
-  //     if (sig) {
-  //     }
-  //   })()
-  // }, [sig])
+  // give me a handle input function that takes in a string and sets the state of the input to that string
+  const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setNumToSeed(parseInt(e.target.value))
+  }
 
-  // useEffect(() => {
-  //   ;(async () => {
-  //     if (isSuccessMint) {
-  //       toast({
-  //         title: 'Mint Success',
-  //         description: 'Mint Success',
-  //         status: 'success',
-  //         duration: 5000,
-  //         isClosable: true,
-  //       })
-  //     }
-  //   })()
-  // }, [])
-  const handleWhitelistToken = async () => {
-    // console.log(whitelistChipConfig)
-    // whitelistWrite?.()
-    let keyRaw = ''
-    const provider = new ethers.providers.JsonRpcProvider(`https://eth-goerli.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_API_KEY_goeETH}`)
-    await provider.getBlock('latest').then(async (block) => {
-      setBlockNumber(block.number)
-      await setScanVariables().then((keys) => {
-        const hashedKeysAddresses = keys.map((key) => Object.values(key)[0])
-        keyRaw = hashedKeysAddresses[0].slice(2)
-        if (address) {
-          const cpKeyRaw = keyRaw
-          getSignatureFromScan({
-            chipPublicKey: cpKeyRaw,
-            address: address,
-            hash: block.hash,
-          }).then((data) => {
-            if (data) {
-              console.log(data)
-              setSig(data)
-            }
-          })
-        } else {
-          toast({
-            title: 'Please connect wallet',
-            description: 'Please connect wallet',
-            status: 'error',
-            duration: 5000,
-            isClosable: true,
-          })
-        }
-      })
+  const handleSeedTokens = async () => {
+    await setScanVariables().then((keys) => {
+      if (keys) {
+        const { keysAddresses } = formatKeys(keys)
+        setKeys(keysAddresses)
+      } else {
+        toast({
+          title: 'Please connect wallet',
+          description: 'Please connect wallet',
+          status: 'error',
+          duration: 5000,
+          isClosable: true,
+        })
+      }
     })
   }
 
@@ -120,8 +83,8 @@ export default function Setttings() {
         </Heading>
       </Center>
       <VStack spacing={3}>
-        <Input placeholder="How many to seed chip with" />
-        <CoreButton isLoading={isLoadingWhitelist} size="sm" clickHandler={handleWhitelistToken}>
+        <Input onChange={handleInput} placeholder="How many to seed chip with" />
+        <CoreButton isLoading={isLoadingSeed} size="sm" clickHandler={handleSeedTokens}>
           SEED CHIPS
         </CoreButton>
       </VStack>

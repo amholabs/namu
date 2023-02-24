@@ -21,11 +21,12 @@ import {
 } from '@chakra-ui/react'
 import { useWeb3Modal } from '@web3modal/react'
 import { ethers } from 'ethers'
+import { BigNumber } from 'ethers'
 // import { ExecutionResult } from 'graphql'
 import { useRouter } from 'next/router'
 import { getSignatureFromScan } from 'pbt-chip-client/kong'
 import { useDebounce } from 'usehooks-ts'
-import { useAccount, useContractWrite, useNetwork, usePrepareContractWrite, useSignMessage, useWaitForTransaction } from 'wagmi'
+import { useAccount, useContractRead, useContractWrite, useNetwork, usePrepareContractWrite, useSignMessage, useWaitForTransaction } from 'wagmi'
 
 // import { getMintWithChipSig } from '@/lib/actions/chip'
 // import { generateNonce, siweLogin } from '@/lib/actions/siweUtils'
@@ -37,7 +38,7 @@ import WalletConnectCustom from '@/src/components/WalletConnectCustom'
 import { MUTATE_CREATE_PROFILE, QUERY_PROFILE_VIEWER } from '@/src/lib/constants'
 import { DUMMY_SOCIAL_LINKS, DUMMY_TOKEN_DATA } from '@/src/lib/dummy'
 import { useStore } from '@/src/store'
-import { generateSession, loadSession, setScanVariables } from '@/src/utils/scan'
+import { formatKeys, generateSession, loadSession, setScanVariables } from '@/src/utils/scan'
 import MobileLayout from 'app/MobileLayout'
 import { PBT_ADDRESS } from 'config'
 
@@ -50,35 +51,45 @@ export default function Profile() {
   const { address, status } = useAccount()
   const [sig, setSig] = useState<string | null>(null)
   const [blockNum, setBlockNumber] = useState<number>(0)
+  const [nonce, setNonce] = useState<number>(0)
 
-  const debounceSig = useDebounce(sig)
-  const debounceBlockNum = useDebounce(blockNum)
+  useContractRead({
+    address: PBT_ADDRESS,
+    abi,
+    functionName: 'getNonce',
+    overrides: { from: address },
+    onSuccess(data) {
+      const toNum = BigNumber.from(data)
+      console.log(toNum.toNumber())
+      setNonce(toNum.toNumber())
+    },
+  })
 
-  const { config: mintTokenConfig } = usePrepareContractWrite({
+  const { config: mintTokenConfig, error } = usePrepareContractWrite({
     address: PBT_ADDRESS,
     abi,
     functionName: 'mintTokenWithChip',
-    args: [sig, blockNum, { gasLimit: 200000 }],
-    enabled: !!debounceSig && !!debounceBlockNum,
+    args: [sig, blockNum, nonce, { gasLimit: 300000 }],
+    enabled: !!sig && !!blockNum && !!nonce,
     chainId: chain?.id,
   })
 
-  const { writeAsync: mintWrite, data: mintData } = useContractWrite(mintTokenConfig)
-  // const { writeAsync: whitelistWrite, data: whitelistData } = useContractWrite(whitelistChipConfig)
+  // const { writeAsync: mintWrite, data: mintData } = useContractWrite(mintTokenConfig)
+  const { writeAsync: mintWrite, data: mintData } = useContractWrite({
+    mode: 'recklesslyUnprepared',
+    address: PBT_ADDRESS,
+    abi,
+    functionName: 'mintTokenWithChip',
+    args: [sig, blockNum, nonce, { gasLimit: 300000 }],
+  })
 
-  const debounceReq = useDebounce(mintTokenConfig.request, 2000)
-
-  // useEffect(() => {
-  //   if (status === 'connected') {
-  //     resetVariables()
-  //   }
-  // }, [status])
+  // const debounceReq = useDebounce(mintTokenConfig.request, 1000)
 
   useEffect(() => {
     if (sig && blockNum !== 0) {
       mintWrite?.()
     }
-  }, [debounceReq])
+  }, [sig])
 
   // eslint-disable-next-line
   const { isLoading: isLoadingMint } = useWaitForTransaction({
@@ -104,16 +115,16 @@ export default function Profile() {
       setBlockNumber(block.number)
       await setScanVariables().then((keys) => {
         if (address && keys) {
-          const hashedKeysAddresses = keys.map((key) => Object.values(key)[0])
+          const { hashedKeysAddresses } = formatKeys(keys)
           keyRaw = hashedKeysAddresses[0].slice(2)
           const cpKeyRaw = keyRaw
           getSignatureFromScan({
             chipPublicKey: cpKeyRaw,
             address: address,
             hash: block.hash,
+            nonce,
           }).then((data) => {
             if (data) {
-              console.log(data)
               setSig(data)
               onOpen()
             }
@@ -200,20 +211,6 @@ export default function Profile() {
     }
   }
 
-  // useEffect(() => {
-  //   ;(async () => {
-  //     const wait = await checkConnected()
-  //     if (wait) {
-  //       useStore.setState({ address })
-  //       const output = await queryProfile()
-  //       console.log(output)
-  //       if (output.data?.viewer?.profile) {
-  //         setProfile(output.data?.viewer?.profile)
-  //       }
-  //     } else {
-  //     }
-  //   })()
-  // }, [])
   return (
     <>
       <MobileLayout>
@@ -249,6 +246,7 @@ export default function Profile() {
             <CoreButton
               size="sm"
               key={id}
+              isLoading={data.type == UrlLinkSocialType.Base && isLoadingMint}
               clickHandler={async () => {
                 if (data.type == UrlLinkSocialType.Base && (await checkConnected())) {
                   // write?.()
@@ -269,6 +267,16 @@ export default function Profile() {
             <Text textAlign={'center'} onClick={() => handleNavigate('/settings')} as="sub">
               SETTINGS
             </Text>
+            <Text
+              textAlign={'center'}
+              onClick={() => {
+                console.log(mintTokenConfig)
+                console.log(error)
+                console.log(nonce)
+              }}
+              as="sub">
+              Console
+            </Text>
           </HStack>
         </Center>
       </MobileLayout>
@@ -280,7 +288,7 @@ export default function Profile() {
             <Center h="100%">
               <VStack>
                 <Text fontSize="xl">Minting To Your Wallet</Text>
-                <Image boxSize="200px" objectFit="cover" src="/image/bagplaceholder.png" />
+                <Image boxSize="400px" objectFit="cover" src="/image/welcome.jpg" />
                 <Spinner />
               </VStack>
             </Center>

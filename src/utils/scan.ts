@@ -27,6 +27,12 @@ export const setScanVariables = async () => {
   } catch (err) {}
 }
 
+export const formatKeys = (keys) => {
+  const keysAddresses = keys.map((key) => Object.values(key)[2])
+  const hashedKeysAddresses = keys.map((key) => Object.values(key)[0])
+  return { keysAddresses, hashedKeysAddresses }
+}
+
 export const loadAuthMethod = async (address: string, slot: string): Promise<AuthMethod> => {
   const accountId: AccountId = {
     address: address.toLowerCase(),
@@ -62,7 +68,6 @@ export const loadAuthMethod = async (address: string, slot: string): Promise<Aut
 export const loadSession = async (): Promise<DIDSession> => {
   const compose = useStore.getState().compose
   // const compose = new ComposeClient({ ceramic: 'https://amhocer.tunnelto.dev/', definition })
-  console.log(compose)
   const { address, slot } = useStore.getState()
   const sessionStr = localStorage.getItem('didsession')
 

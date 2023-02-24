@@ -44,6 +44,8 @@ contract AmhoPBT is ERC721ReadOnly, IPBT {
 
   Counter.CounterData internal _tokenId;
 
+  string public constant tokenURI = 'ipfs://QmWWRvUkXpsxX6kDgLyYtww3FmRrciGFb1XD8Hvgth7dNK/';
+
   struct TokenData {
     uint256 tokenId;
     uint256 floatSupply;
@@ -170,6 +172,7 @@ contract AmhoPBT is ERC721ReadOnly, IPBT {
     _numAvailableRemainingTokens--;
 
     _mint(_msgSender(), tokenId);
+    _setTokenURI(tokenId, tokenURI);
 
     emit PBTMint(chipAddr, tokenId);
 
