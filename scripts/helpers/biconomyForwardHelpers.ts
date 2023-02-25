@@ -5,7 +5,6 @@ import { goerli } from 'wagmi'
 import { ETH_CHAINS } from '@/lib/constants'
 import { PBT_ADDRESS } from 'config'
 
-
 // given this variable: export const ETH_CHAINS = [mainnet, polygon, optimism, arbitrum, goerli] in src/lib/constants.ts, return goerli.id
 let helperAttributes = {}
 let supportedNetworks = [goerli.id] //add more
