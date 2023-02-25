@@ -20,11 +20,18 @@ const config: HardhatUserConfig = {
   defaultNetwork: 'goerli',
   networks: {
     localhost: {
-      url: 'http://127.0.0.1:8545',
+      url: 'https://amholoc.tunnelto.dev/',
+      accounts: [`0x${process.env.USERA_PRIVATEKEY}`, `0x${process.env.USERB_PRIVATEKEY}`],
     },
     goerli: {
       url: `https://eth-goerli.alchemyapi.io/v2/${process.env.NEXT_PUBLIC_ALCHEMY_API_KEY_goeETH}`,
       accounts: [`0x${process.env.USERA_PRIVATEKEY}`, `0x${process.env.USERB_PRIVATEKEY}`],
+      gasPrice: 'auto',
+      gasMultiplier: 1.1,
+    },
+    sepolia: {
+      url: `https://prettiest-autumn-field.ethereum-sepolia.quiknode.pro/${process.env.NEXT_PUBLIC_QUICKNODE_API_KEY}/`,
+      accounts: [`0x${process.env.USERC_PRIVATEKEY}`],
     },
   },
 }

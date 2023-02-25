@@ -12,7 +12,6 @@ async function main() {
 
   const AmhoPBT = await ethers.getContractFactory('AmhoPBTMock')
   const amhoPBT = await AmhoPBT.deploy('ENIGMA FW 2023', 'ETIXFW2023', 1000, '0xE041608922d06a4F26C0d4c27d8bCD01daf1f792')
-  await amhoPBT.deployed()
 
   console.log(`AmhoPBT address deployed to ${amhoPBT.address}`)
 

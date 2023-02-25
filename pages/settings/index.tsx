@@ -13,8 +13,6 @@ import { PBT_ADDRESS } from 'config'
 import { abi } from '../../artifacts/contracts/src/mocks/AmhoPBTMock.sol/AmhoPBTMock.json'
 
 export default function Setttings() {
-  // const addrs = useStore.getState().chipAddresses
-  // instantiate a new const by taking the addrs variable which is an array of objects in the format of [{ key1: '0x123', ...rest}, {key2: '0x123', ...rest}] and for each item take the values of key1 and key2 and put it in a new array [key1, key2]
   const toast = useToast()
   const { chain } = useNetwork()
   // eslint-disable-next-line

@@ -19,6 +19,11 @@ export const DUMMY_SOCIAL_LINKS: SocialLink[] = [
     link: 'https://twitter.com/AMHOLTD',
   },
   {
+    type: UrlLinkSocialType.Linkedin,
+    title: 'FOLLOW ON LINKEDIN',
+    link: 'https://www.linkedin.com/company/amho-ltd/',
+  },
+  {
     type: UrlLinkSocialType.Signal,
     title: 'LEARN MORE',
     link: 'https://amho.xyz',
@@ -27,5 +32,5 @@ export const DUMMY_SOCIAL_LINKS: SocialLink[] = [
 
 export const DUMMY_TOKEN_DATA = {
   id: 1,
-  name: 'AMHO FW23',
+  name: 'ENIGMA FW23',
 }

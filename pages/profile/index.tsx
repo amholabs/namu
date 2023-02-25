@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react'
 
 // eslint-disable-next-line import/order
+
 import {
   Center,
   HStack,
   Heading,
-  Image,
+  Img,
   Input,
   Modal,
   ModalBody,
@@ -41,6 +42,7 @@ import { useStore } from '@/src/store'
 import { formatKeys, generateSession, loadSession, setScanVariables } from '@/src/utils/scan'
 import MobileLayout from 'app/MobileLayout'
 import { PBT_ADDRESS } from 'config'
+import nftPic from '../../public/image/welcome.jpg'
 
 export default function Profile() {
   const router = useRouter()
@@ -75,7 +77,7 @@ export default function Profile() {
   })
 
   // const { writeAsync: mintWrite, data: mintData } = useContractWrite(mintTokenConfig)
-  const { writeAsync: mintWrite, data: mintData } = useContractWrite({
+  const { write: mintWrite, data: mintData } = useContractWrite({
     mode: 'recklesslyUnprepared',
     address: PBT_ADDRESS,
     abi,
@@ -104,6 +106,7 @@ export default function Profile() {
       onClose()
     },
   })
+
   const resetVariables = () => {
     setSig(null)
     setBlockNumber(0)
@@ -169,11 +172,6 @@ export default function Profile() {
   })
   const compose = useStore.getState().compose
 
-  // const queryProfile = async (): Promise<ExecutionResult<Pick<Query, 'viewer'>>> => {
-  //   const output = compose.executeQuery(QUERY_PROFILE_VIEWER)
-  //   return output
-  // }
-
   const handleNavigate = (uri: string) => {
     router.push(uri)
   }
@@ -215,7 +213,7 @@ export default function Profile() {
     <>
       <MobileLayout>
         <Center>
-          <Image paddingTop="2.5rem" boxSize="200px" objectFit="cover" src="/image/bagplaceholder.png" />
+          <Img paddingTop="2.5rem" boxSize="200px" objectFit="cover" src="/image/bagplaceholder.png" />
         </Center>
         <Center>
           <Text fontSize="xs" textAlign="center">
@@ -275,7 +273,7 @@ export default function Profile() {
                 console.log(nonce)
               }}
               as="sub">
-              Console
+              CONSOLE
             </Text>
           </HStack>
         </Center>
@@ -284,15 +282,13 @@ export default function Profile() {
         <ModalOverlay />
         <ModalContent h="100%">
           <ModalCloseButton />
-          <ModalBody>
-            <Center h="100%">
-              <VStack>
-                <Text fontSize="xl">Minting To Your Wallet</Text>
-                <Image boxSize="400px" objectFit="cover" src="/image/welcome.jpg" />
-                <Spinner />
-              </VStack>
-            </Center>
-          </ModalBody>
+          <Center h="100%">
+            <VStack>
+              <Text fontSize="lg">Minting To Your Wallet</Text>
+              <Img boxSize="400px" objectFit="cover" src="/image/welcome.jpg" alt="ENIGMA BAG" />
+              <Spinner />
+            </VStack>
+          </Center>
         </ModalContent>
       </Modal>
     </>

@@ -12,8 +12,9 @@ import * as ethereum from '@web3modal/ethereum'
 import { Web3Modal } from '@web3modal/react'
 import type { AppProps } from 'next/app'
 import * as wagmi from 'wagmi'
-import { goerli, localhost, mainnet, polygon } from 'wagmi/chains'
+import { goerli, localhost, mainnet, polygon, sepolia } from 'wagmi/chains'
 import { alchemyProvider } from 'wagmi/providers/alchemy'
+import { jsonRpcProvider } from 'wagmi/providers/jsonRpc'
 
 import { Layout } from '@/src/components/layout'
 import { useIsMounted } from '@/src/hooks/useIsMounted'
@@ -179,7 +180,7 @@ export default function App({ Component, pageProps }: AppProps) {
     },
   })
 
-  const chains = [mainnet, polygon, goerli, localhost]
+  const chains = [mainnet, polygon, goerli, sepolia, localhost]
   const { provider } = wagmi.configureChains(chains, [
     ethereum.walletConnectProvider({ projectId: process.env.NEXT_PUBLIC_WC_PROJECT_ID as string }),
     alchemyProvider({ apiKey: process.env.NEXT_PUBLIC_ALCHEMY_API_KEY_goeETH as string }),

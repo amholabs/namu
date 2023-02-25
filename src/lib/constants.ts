@@ -10,7 +10,7 @@ export const SITE_CANONICAL = 'https://amho.xyz'
 export const SITE_EMOJI = ''
 export const SITE_NAME = 'AMHO'
 export const SITE_TITLE = 'AMHO ATELIER'
-export const SITE_DESCRIPTION = 'Fashion house building crypto native luxury goods.'
+export const SITE_DESCRIPTION = 'Fashion house building crypto-native luxury goods.'
 export const SOCIAL_TWITTER = 'AMHOLTD'
 export const SOCIAL_GITHUB = ''
 
