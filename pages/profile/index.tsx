@@ -43,7 +43,14 @@ import { formatKeys, generateSession, loadSession, setScanVariables } from '@/sr
 import MobileLayout from 'app/MobileLayout'
 import { PBT_ADDRESS } from 'config'
 
-import nftPic from '../../public/image/welcome.jpg'
+import {
+  buildForwardTxRequest,
+  getBiconomyForwarderConfig,
+  getDataToSignForEIP712,
+  getDataToSignForPersonalSign,
+  getDomainSeperator,
+  helperAttributes,
+} from '@/scripts/helpers/biconomyForwardHelpers'
 
 export default function Profile() {
   const router = useRouter()
@@ -148,22 +155,7 @@ export default function Profile() {
     // encode the newSig to be passed into a smart contract contract expecting the format "bytes calldata"
   }
 
-  // const handleSeedTokens = async () => {
-  //   console.log(whitelistChipConfig)
-  //   whitelistWrite?.()
-  // }
-
   const { open } = useWeb3Modal()
-  // const { signMessageAsync } = useSignMessage()
-  // const { config } = usePrepareContractWrite({
-  //   address: PBT_ADDRESS,
-  //   abi,
-  //   functionName: 'mintTokenWithChip',
-  //   args: [sig, blockNum],
-  //   enabled: !!sig && !!blockNum,
-  //   chainId: chain?.id,
-  // })
-  // const { write } = useContractWrite(config)
   const [profile, setProfile] = useState<ProfileType>({
     id: '',
     name: '',
