@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react'
 
 import { Center, HStack, Heading, Input, VStack, useToast } from '@chakra-ui/react'
+import { optimism } from '@wagmi/chains'
 import { useDebounce } from 'usehooks-ts'
-import { useContractWrite, useNetwork, usePrepareContractWrite, useWaitForTransaction } from 'wagmi'
+import { useContractWrite, useNetwork, usePrepareContractWrite, useSwitchNetwork, useWaitForTransaction } from 'wagmi'
 
 import { CoreButton } from '@/components/shared/CoreButton'
 import WalletConnectCustom from '@/src/components/WalletConnectCustom'
@@ -15,6 +16,7 @@ import { abi } from '../../artifacts/contracts/src/mocks/AmhoPBTMock.sol/AmhoPBT
 export default function Setttings() {
   const toast = useToast()
   const { chain } = useNetwork()
+  const { switchNetwork } = useSwitchNetwork()
   // eslint-disable-next-line
   const [keys, setKeys] = useState<string[]>([])
   const [numToSeed, setNumToSeed] = useState<number>(0)
@@ -73,6 +75,16 @@ export default function Setttings() {
     })
   }
 
+  const handleSwitchNetwork = async () => {
+    switchNetwork?.(optimism.id)
+  }
+
+  const handleRegisterChipToTable = async () => {
+    if (chain?.id != optimism.id) {
+      await handleSwitchNetwork()
+    }
+  }
+
   return (
     <MobileLayout>
       <Center marginTop="1rem" paddingBottom="1rem">
@@ -84,6 +96,9 @@ export default function Setttings() {
         <Input onChange={handleInput} placeholder="How many to seed chip with" />
         <CoreButton isLoading={isLoadingSeed} size="sm" clickHandler={handleSeedTokens}>
           SEED CHIPS
+        </CoreButton>
+        <CoreButton isLoading={isLoadingSeed} size="sm" clickHandler={handleRegisterChipToTable}>
+          REGISTER CHIPS (OP)
         </CoreButton>
       </VStack>
       <Center>

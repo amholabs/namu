@@ -1,4 +1,5 @@
 import { ComposeClient } from '@composedb/client'
+import { JsonRpcProvider } from '@ethersproject/providers'
 import { create } from 'zustand'
 
 import { definition } from '../out/__generated__/runtime'

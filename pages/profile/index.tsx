@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 
 // eslint-disable-next-line import/order
 
+import { Biconomy } from '@biconomy/mexa'
 import {
   Center,
   HStack,
@@ -20,29 +21,41 @@ import {
   useDisclosure,
   useToast,
 } from '@chakra-ui/react'
+import { ExternalProvider } from '@ethersproject/providers'
+import * as ethereum from '@web3modal/ethereum'
 import { useWeb3Modal } from '@web3modal/react'
+import abi from 'ethereumjs-abi'
+import { toBuffer } from 'ethereumjs-util'
 import { ethers } from 'ethers'
 import { BigNumber } from 'ethers'
 // import { ExecutionResult } from 'graphql'
 import { useRouter } from 'next/router'
 import { getSignatureFromScan } from 'pbt-chip-client/kong'
 import { useDebounce } from 'usehooks-ts'
-import { useAccount, useContractRead, useContractWrite, useNetwork, usePrepareContractWrite, useSignMessage, useWaitForTransaction } from 'wagmi'
+// eslint-disable-next-line import/order
+import {
+  useAccount,
+  useContract,
+  useContractRead,
+  useContractWrite,
+  useFeeData,
+  useNetwork,
+  usePrepareContractWrite,
+  useProvider,
+  useSignMessage,
+  useSigner,
+  useWaitForTransaction,
+} from 'wagmi'
 
 // import { getMintWithChipSig } from '@/lib/actions/chip'
 // import { generateNonce, siweLogin } from '@/lib/actions/siweUtils'
+import * as wagmi from 'wagmi'
+import { alchemyProvider } from 'wagmi/providers/alchemy'
+
 import { CoreButton } from '@/components/shared/CoreButton'
 import { UrlLinkSocialType } from '@/out/__generated__/graphql'
 import { Profile as ProfileType, Query } from '@/out/__generated__/graphql'
-import { abi } from '@/out/AmhoPBTMock.sol/AmhoPBTMock.json'
-import WalletConnectCustom from '@/src/components/WalletConnectCustom'
-import { MUTATE_CREATE_PROFILE, QUERY_PROFILE_VIEWER } from '@/src/lib/constants'
-import { DUMMY_SOCIAL_LINKS, DUMMY_TOKEN_DATA } from '@/src/lib/dummy'
-import { useStore } from '@/src/store'
-import { formatKeys, generateSession, loadSession, setScanVariables } from '@/src/utils/scan'
-import MobileLayout from 'app/MobileLayout'
-import { PBT_ADDRESS } from 'config'
-
+import { abi as PBTabi } from '@/out/AmhoPBTMock.sol/AmhoPBTMock.json'
 import {
   buildForwardTxRequest,
   getBiconomyForwarderConfig,
@@ -50,22 +63,62 @@ import {
   getDataToSignForPersonalSign,
   getDomainSeperator,
   helperAttributes,
+  sendTransaction,
 } from '@/scripts/helpers/biconomyForwardHelpers'
+import WalletConnectCustom from '@/src/components/WalletConnectCustom'
+import { ETH_CHAINS, MUTATE_CREATE_PROFILE, QUERY_PROFILE_VIEWER } from '@/src/lib/constants'
+import { DUMMY_SOCIAL_LINKS, DUMMY_TOKEN_DATA } from '@/src/lib/dummy'
+import { useStore } from '@/src/store'
+import { formatKeys, generateSession, loadSession, setScanVariables } from '@/src/utils/scan'
+import MobileLayout from 'app/MobileLayout'
+import { PBT_ADDRESS } from 'config'
 
 export default function Profile() {
+  let biconomy: any
+
+  const provider = useProvider()
   const router = useRouter()
   const toast = useToast()
-
+  const { data: signer } = useSigner()
   const { isOpen, onOpen, onClose } = useDisclosure()
   const { chain } = useNetwork()
   const { address, status } = useAccount()
+  const [request, setRequest] = useState<any>()
   const [sig, setSig] = useState<string | null>(null)
   const [blockNum, setBlockNumber] = useState<number>(0)
   const [nonce, setNonce] = useState<number>(0)
+  const [dataSigned, setDataSigned] = useState<string | Uint8Array>()
+
+  const {
+    data: signMessageData,
+    isSuccess: signMessageSuccess,
+    signMessage,
+  } = useSignMessage({
+    message: dataSigned,
+  })
+
+  useEffect(() => {
+    const { provider: wagmiProvider } = wagmi.configureChains(ETH_CHAINS, [
+      ethereum.walletConnectProvider({ projectId: process.env.NEXT_PUBLIC_WC_PROJECT_ID as string }),
+      alchemyProvider({ apiKey: process.env.NEXT_PUBLIC_ALCHEMY_API_KEY_goeETH as string }),
+    ])
+    const initBiconomy = async () => {
+      biconomy = new Biconomy(wagmiProvider as ExternalProvider, {
+        apiKey: `${process.env.NEXT_PUBLIC_BICONOMY_API_KEY}`,
+        debug: true,
+        contractAddresses: [PBT_ADDRESS],
+      })
+      await biconomy.init()
+    }
+    if (address && chain) {
+      console.log('biconomy initialized.')
+      initBiconomy()
+    }
+  }, [address, chain])
 
   useContractRead({
     address: PBT_ADDRESS,
-    abi,
+    abi: PBTabi,
     functionName: 'getNonce',
     overrides: { from: address },
     onSuccess(data) {
@@ -75,9 +128,95 @@ export default function Profile() {
     },
   })
 
+  useEffect(() => {
+    const initSendTransaction = async () => {
+      await sendTransaction({ userAddress: address, request, sig: signMessageData, signatureType: 'PERSONAL_SIGN' })
+    }
+    signMessageSuccess && initSendTransaction()
+  }, [signMessageSuccess])
+
+  useEffect(() => {
+    if (sig && blockNum !== 0) {
+      // mintWrite?.()
+      buildRequestForGasless()
+    }
+  }, [sig])
+
+  useEffect(() => {
+    ;(async () => {
+      if (dataSigned) {
+        await signMessage?.()
+      }
+    })()
+  }, [dataSigned])
+
+  const buildRequestForGasless = async () => {
+    // let walletProvider, walletSigner
+    // if (window.ethereum !== undefined) {
+    //   //@ts-ignore
+    //   walletProvider = new ethers.providers.Web3Provider(window.ethereum)
+    //   walletSigner = walletProvider.getSigner()
+    // }
+    const contractInterface = new ethers.utils.Interface(PBTabi)
+    const functionSig = contractInterface.encodeFunctionData('mintTokenWithChip', [sig, blockNum, nonce])
+
+    const to = PBT_ADDRESS
+    const gasLimit = await provider.estimateGas({
+      to,
+      from: address,
+      data: functionSig,
+    })
+    const gasLimitFormatted = Number(gasLimit.toNumber().toString())
+    console.log('gasLimit', gasLimitFormatted)
+
+    let forwarder = await getBiconomyForwarderConfig(chain?.id)
+    console.log(forwarder)
+    let forwarderContract = new ethers.Contract(forwarder.address, forwarder.abi, signer as ethers.Signer)
+    // let forwarderContract = new ethers.Contract(forwarder.address, forwarder.abi, provider)
+
+    console.log('forwarderContract', forwarderContract)
+
+    const batchNonce = await forwarderContract.getNonce(address, 0)
+    const batchId = 0
+
+    console.log(batchNonce)
+    console.log(batchId)
+
+    const requestConfig = {
+      account: address,
+      to,
+      gasLimitNum: gasLimitFormatted,
+      batchId,
+      batchNonce,
+      data: functionSig,
+      deadline: Math.floor(Date.now() / 1000 + 3600),
+    }
+
+    console.log(JSON.stringify(requestConfig))
+
+    const request = await buildForwardTxRequest(requestConfig)
+    console.log('request', request)
+    const dataToSign = await getDataToSignForPersonalSign(request)
+    console.log('dataToSign', dataToSign)
+
+    setRequest(request)
+    setDataSigned(dataToSign)
+    // @ts-ignore
+
+    // walletSigner
+    //   .signMessage(dataToSign)
+    //   .then((sig) => {
+    //     // @ts-ignore
+    //     sendTransaction({ address, request, sig, signatureType: biconomy.PERSONAL_SIGN })
+    //   })
+    //   .catch((err) => {
+    //     console.log(err)
+    //   })
+  }
+
   const { config: mintTokenConfig, error } = usePrepareContractWrite({
     address: PBT_ADDRESS,
-    abi,
+    abi: PBTabi,
     functionName: 'mintTokenWithChip',
     args: [sig, blockNum, nonce, { gasLimit: 300000 }],
     enabled: !!sig && !!blockNum && !!nonce,
@@ -85,35 +224,27 @@ export default function Profile() {
   })
 
   // const { writeAsync: mintWrite, data: mintData } = useContractWrite(mintTokenConfig)
-  const { write: mintWrite, data: mintData } = useContractWrite({
-    mode: 'recklesslyUnprepared',
-    address: PBT_ADDRESS,
-    abi,
-    functionName: 'mintTokenWithChip',
-    args: [sig, blockNum, nonce, { gasLimit: 300000 }],
-  })
+  // const { write: mintWrite, data: mintData } = useContractWrite({
+  //   mode: 'recklesslyUnprepared',
+  //   address: PBT_ADDRESS,
+  //   abi: PBTabi,
+  //   functionName: 'mintTokenWithChip',
+  //   args: [sig, blockNum, nonce, { gasLimit: 300000 }],
+  // })
 
-  // const debounceReq = useDebounce(mintTokenConfig.request, 1000)
-
-  useEffect(() => {
-    if (sig && blockNum !== 0) {
-      mintWrite?.()
-    }
-  }, [sig])
-
-  // eslint-disable-next-line
-  const { isLoading: isLoadingMint } = useWaitForTransaction({
-    hash: mintData?.hash,
-    onSuccess() {
-      toast({
-        title: 'Mint Success',
-        status: 'success',
-        duration: 5000,
-        isClosable: true,
-      })
-      onClose()
-    },
-  })
+  // // eslint-disable-next-line
+  // const { isLoading: isLoadingMint } = useWaitForTransaction({
+  //   hash: mintData?.hash,
+  //   onSuccess() {
+  //     toast({
+  //       title: 'Mint Success',
+  //       status: 'success',
+  //       duration: 5000,
+  //       isClosable: true,
+  //     })
+  //     onClose()
+  //   },
+  // })
 
   const resetVariables = () => {
     setSig(null)
@@ -121,7 +252,9 @@ export default function Profile() {
   }
   const handleMintPrepare = async () => {
     let keyRaw = ''
-    const provider = new ethers.providers.JsonRpcProvider(`https://eth-goerli.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_API_KEY_goeETH}`)
+    // const blockProvider = new ethers.providers.JsonRpcProvider(
+    //   `https://eth-goerli.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_API_KEY_goeETH}`
+    // )
     await provider.getBlock('latest').then(async (block) => {
       setBlockNumber(block.number)
       await setScanVariables().then((keys) => {
@@ -141,7 +274,6 @@ export default function Profile() {
             }
           })
         } else {
-          console.log(mintTokenConfig)
           resetVariables()
           toast({
             title: 'Error',
@@ -237,7 +369,7 @@ export default function Profile() {
             <CoreButton
               size="sm"
               key={id}
-              isLoading={data.type == UrlLinkSocialType.Base && isLoadingMint}
+              // isLoading={data.type == UrlLinkSocialType.Base && isLoadingMint}
               clickHandler={async () => {
                 if (data.type == UrlLinkSocialType.Base && (await checkConnected())) {
                   // write?.()
