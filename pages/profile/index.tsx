@@ -42,6 +42,7 @@ import { useStore } from '@/src/store'
 import { formatKeys, generateSession, loadSession, setScanVariables } from '@/src/utils/scan'
 import MobileLayout from 'app/MobileLayout'
 import { PBT_ADDRESS } from 'config'
+
 import nftPic from '../../public/image/welcome.jpg'
 
 export default function Profile() {
