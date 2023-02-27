@@ -85,6 +85,7 @@ export default function Profile() {
   const { address, status } = useAccount()
   const [request, setRequest] = useState<any>()
   const [sig, setSig] = useState<string | null>(null)
+  const [txHash, setTxHash] = useState<`0x${string}` | undefined>()
   const [blockNum, setBlockNumber] = useState<number>(0)
   const [nonce, setNonce] = useState<number>(0)
   const [dataSigned, setDataSigned] = useState<string | Uint8Array>()
@@ -95,6 +96,19 @@ export default function Profile() {
     signMessage,
   } = useSignMessage({
     message: dataSigned,
+  })
+
+  const { data: txData } = useWaitForTransaction({
+    hash: txHash,
+    onSuccess(data) {
+      console.log('Success', data)
+      onClose()
+      toast({
+        title: 'Mint Success',
+        status: 'success',
+        isClosable: true,
+      })
+    },
   })
 
   useEffect(() => {
@@ -130,7 +144,10 @@ export default function Profile() {
 
   useEffect(() => {
     const initSendTransaction = async () => {
-      await sendTransaction({ userAddress: address, request, sig: signMessageData, signatureType: 'PERSONAL_SIGN' })
+      const txHash = await sendTransaction({ userAddress: address, request, sig: signMessageData, signatureType: 'PERSONAL_SIGN' })
+      console.log('txHash: ', txHash)
+      // @ts-ignore
+      setTxHash(txHash)
     }
     signMessageSuccess && initSendTransaction()
   }, [signMessageSuccess])
@@ -150,13 +167,15 @@ export default function Profile() {
     })()
   }, [dataSigned])
 
+  useEffect(() => {
+    ;(async () => {
+      if (txData) {
+        console.log(txData)
+      }
+    })()
+  }, [txData])
+
   const buildRequestForGasless = async () => {
-    // let walletProvider, walletSigner
-    // if (window.ethereum !== undefined) {
-    //   //@ts-ignore
-    //   walletProvider = new ethers.providers.Web3Provider(window.ethereum)
-    //   walletSigner = walletProvider.getSigner()
-    // }
     const contractInterface = new ethers.utils.Interface(PBTabi)
     const functionSig = contractInterface.encodeFunctionData('mintTokenWithChip', [sig, blockNum, nonce])
 
@@ -201,49 +220,15 @@ export default function Profile() {
 
     setRequest(request)
     setDataSigned(dataToSign)
-    // @ts-ignore
-
-    // walletSigner
-    //   .signMessage(dataToSign)
-    //   .then((sig) => {
-    //     // @ts-ignore
-    //     sendTransaction({ address, request, sig, signatureType: biconomy.PERSONAL_SIGN })
-    //   })
-    //   .catch((err) => {
-    //     console.log(err)
-    //   })
   }
 
-  const { config: mintTokenConfig, error } = usePrepareContractWrite({
-    address: PBT_ADDRESS,
-    abi: PBTabi,
-    functionName: 'mintTokenWithChip',
-    args: [sig, blockNum, nonce, { gasLimit: 300000 }],
-    enabled: !!sig && !!blockNum && !!nonce,
-    chainId: chain?.id,
-  })
-
-  // const { writeAsync: mintWrite, data: mintData } = useContractWrite(mintTokenConfig)
-  // const { write: mintWrite, data: mintData } = useContractWrite({
-  //   mode: 'recklesslyUnprepared',
+  // const { config: mintTokenConfig, error } = usePrepareContractWrite({
   //   address: PBT_ADDRESS,
   //   abi: PBTabi,
   //   functionName: 'mintTokenWithChip',
   //   args: [sig, blockNum, nonce, { gasLimit: 300000 }],
-  // })
-
-  // // eslint-disable-next-line
-  // const { isLoading: isLoadingMint } = useWaitForTransaction({
-  //   hash: mintData?.hash,
-  //   onSuccess() {
-  //     toast({
-  //       title: 'Mint Success',
-  //       status: 'success',
-  //       duration: 5000,
-  //       isClosable: true,
-  //     })
-  //     onClose()
-  //   },
+  //   enabled: !!sig && !!blockNum && !!nonce,
+  //   chainId: chain?.id,
   // })
 
   const resetVariables = () => {
@@ -252,9 +237,6 @@ export default function Profile() {
   }
   const handleMintPrepare = async () => {
     let keyRaw = ''
-    // const blockProvider = new ethers.providers.JsonRpcProvider(
-    //   `https://eth-goerli.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_API_KEY_goeETH}`
-    // )
     await provider.getBlock('latest').then(async (block) => {
       setBlockNumber(block.number)
       await setScanVariables().then((keys) => {
@@ -284,10 +266,10 @@ export default function Profile() {
         }
       })
     })
-    // encode the newSig to be passed into a smart contract contract expecting the format "bytes calldata"
   }
 
   const { open } = useWeb3Modal()
+
   const [profile, setProfile] = useState<ProfileType>({
     id: '',
     name: '',

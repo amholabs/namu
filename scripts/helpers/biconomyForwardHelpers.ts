@@ -364,13 +364,14 @@ const getDomainSeperator = async (networkId) => {
 }
 const sendTransaction = async ({ userAddress, request, sig, domainSeparator, signatureType }) => {
   let params
+  let txHash
   if (domainSeparator) {
     params = [request, domainSeparator, sig]
   } else {
     params = [request, sig]
   }
   try {
-    fetch(`https://api.biconomy.io/api/v2/meta-tx/native`, {
+    await fetch(`https://api.biconomy.io/api/v2/meta-tx/native`, {
       method: 'POST',
       headers: {
         'x-api-key': process.env.NEXT_PUBLIC_BICONOMY_API_KEY || '',
@@ -386,7 +387,9 @@ const sendTransaction = async ({ userAddress, request, sig, domainSeparator, sig
     })
       .then((response) => response.json())
       .then(async function (result) {
-        console.log(result)
+        console.log(result.txHash)
+        txHash = result.txHash
+        return result.txHash
       })
       .catch(function (error) {
         console.log(error)
@@ -394,6 +397,7 @@ const sendTransaction = async ({ userAddress, request, sig, domainSeparator, sig
   } catch (error) {
     console.log(error)
   }
+  return txHash
 }
 export {
   helperAttributes,
