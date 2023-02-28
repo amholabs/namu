@@ -215,6 +215,7 @@ export default function Profile() {
 
     const request = await buildForwardTxRequest(requestConfig)
     console.log('request', request)
+
     const dataToSign = await getDataToSignForPersonalSign(request)
     console.log('dataToSign', dataToSign)
 
