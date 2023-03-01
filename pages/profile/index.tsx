@@ -29,6 +29,7 @@ import { toBuffer } from 'ethereumjs-util'
 import { ethers } from 'ethers'
 import { BigNumber } from 'ethers'
 // import { ExecutionResult } from 'graphql'
+import error from 'next/error'
 import { useRouter } from 'next/router'
 import { getSignatureFromScan } from 'pbt-chip-client/kong'
 import { useDebounce } from 'usehooks-ts'
@@ -57,6 +58,7 @@ import { UrlLinkSocialType } from '@/out/__generated__/graphql'
 import { Profile as ProfileType, Query } from '@/out/__generated__/graphql'
 import { abi as PBTabi } from '@/out/AmhoPBTMock.sol/AmhoPBTMock.json'
 import {
+  BuildForwardTxRequestParams,
   buildForwardTxRequest,
   getBiconomyForwarderConfig,
   getDataToSignForEIP712,
@@ -74,15 +76,13 @@ import MobileLayout from 'app/MobileLayout'
 import { PBT_ADDRESS } from 'config'
 
 export default function Profile() {
-  let biconomy: any
-
   const provider = useProvider()
   const router = useRouter()
   const toast = useToast()
   const { data: signer } = useSigner()
   const { isOpen, onOpen, onClose } = useDisclosure()
   const { chain } = useNetwork()
-  const { address, status } = useAccount()
+  const { address } = useAccount()
   const [request, setRequest] = useState<any>()
   const [sig, setSig] = useState<string | null>(null)
   const [txHash, setTxHash] = useState<`0x${string}` | undefined>()
@@ -110,25 +110,6 @@ export default function Profile() {
       })
     },
   })
-
-  useEffect(() => {
-    const { provider: wagmiProvider } = wagmi.configureChains(ETH_CHAINS, [
-      ethereum.walletConnectProvider({ projectId: process.env.NEXT_PUBLIC_WC_PROJECT_ID as string }),
-      alchemyProvider({ apiKey: process.env.NEXT_PUBLIC_ALCHEMY_API_KEY_goeETH as string }),
-    ])
-    const initBiconomy = async () => {
-      biconomy = new Biconomy(wagmiProvider as ExternalProvider, {
-        apiKey: `${process.env.NEXT_PUBLIC_BICONOMY_API_KEY}`,
-        debug: true,
-        contractAddresses: [PBT_ADDRESS],
-      })
-      await biconomy.init()
-    }
-    if (address && chain) {
-      console.log('biconomy initialized.')
-      initBiconomy()
-    }
-  }, [address, chain])
 
   useContractRead({
     address: PBT_ADDRESS,
@@ -176,51 +157,45 @@ export default function Profile() {
   }, [txData])
 
   const buildRequestForGasless = async () => {
-    const contractInterface = new ethers.utils.Interface(PBTabi)
-    const functionSig = contractInterface.encodeFunctionData('mintTokenWithChip', [sig, blockNum, nonce])
+    if (chain) {
+      const contractInterface = new ethers.utils.Interface(PBTabi)
+      const functionSig = contractInterface.encodeFunctionData('mintTokenWithChip', [sig, blockNum, nonce])
 
-    const to = PBT_ADDRESS
-    const gasLimit = await provider.estimateGas({
-      to,
-      from: address,
-      data: functionSig,
-    })
-    const gasLimitFormatted = Number(gasLimit.toNumber().toString())
-    console.log('gasLimit', gasLimitFormatted)
+      const to = PBT_ADDRESS
 
-    let forwarder = await getBiconomyForwarderConfig(chain?.id)
-    console.log(forwarder)
-    let forwarderContract = new ethers.Contract(forwarder.address, forwarder.abi, signer as ethers.Signer)
-    // let forwarderContract = new ethers.Contract(forwarder.address, forwarder.abi, provider)
+      let forwarder = await getBiconomyForwarderConfig(chain.id)
 
-    console.log('forwarderContract', forwarderContract)
+      let forwarderContract = new ethers.Contract(forwarder.address, forwarder.abi, signer as ethers.Signer)
 
-    const batchNonce = await forwarderContract.getNonce(address, 0)
-    const batchId = 0
+      console.log('forwarderContract', forwarderContract)
 
-    console.log(batchNonce)
-    console.log(batchId)
+      const batchNonce = await forwarderContract.getNonce(address, 0)
+      const batchId = 0
 
-    const requestConfig = {
-      account: address,
-      to,
-      gasLimitNum: gasLimitFormatted,
-      batchId,
-      batchNonce,
-      data: functionSig,
-      deadline: Math.floor(Date.now() / 1000 + 3600),
+      console.log(batchNonce)
+      console.log(batchId)
+
+      const requestConfig: BuildForwardTxRequestParams = {
+        account: address,
+        to,
+        gasLimitNum: 200000,
+        batchId,
+        batchNonce,
+        data: functionSig,
+        deadline: Math.floor(Date.now() / 1000 + 3600),
+      }
+
+      console.log(JSON.stringify(requestConfig))
+
+      const request = await buildForwardTxRequest(requestConfig)
+      console.log('request', request)
+
+      const dataToSign = await getDataToSignForPersonalSign(request)
+      console.log('dataToSign', dataToSign)
+
+      setRequest(request)
+      setDataSigned(dataToSign)
     }
-
-    console.log(JSON.stringify(requestConfig))
-
-    const request = await buildForwardTxRequest(requestConfig)
-    console.log('request', request)
-
-    const dataToSign = await getDataToSignForPersonalSign(request)
-    console.log('dataToSign', dataToSign)
-
-    setRequest(request)
-    setDataSigned(dataToSign)
   }
 
   // const { config: mintTokenConfig, error } = usePrepareContractWrite({
@@ -269,7 +244,7 @@ export default function Profile() {
     })
   }
 
-  const { open } = useWeb3Modal()
+  // const { open } = useWeb3Modal()
 
   const [profile, setProfile] = useState<ProfileType>({
     id: '',
@@ -308,14 +283,14 @@ export default function Profile() {
     return output
   }
 
-  const checkConnected = async () => {
-    const session = await loadSession()
-    if ((address && status == 'connected') || session) {
-      return true
-    } else {
-      return false
-    }
-  }
+  // const checkConnected = async () => {
+  //   const session = await loadSession()
+  //   if ((address && status == 'connected') || session) {
+  //     return true
+  //   } else {
+  //     return false
+  //   }
+  // }
 
   return (
     <>
@@ -354,11 +329,9 @@ export default function Profile() {
               key={id}
               // isLoading={data.type == UrlLinkSocialType.Base && isLoadingMint}
               clickHandler={async () => {
-                if (data.type == UrlLinkSocialType.Base && (await checkConnected())) {
+                if (data.type == UrlLinkSocialType.Base) {
                   // write?.()
                   await handleMintPrepare()
-                } else if (data.type == UrlLinkSocialType.Base && !(await checkConnected())) {
-                  await open()
                 } else {
                   handleNavigate(data.link)
                 }
@@ -376,7 +349,6 @@ export default function Profile() {
             <Text
               textAlign={'center'}
               onClick={() => {
-                console.log(mintTokenConfig)
                 console.log(error)
                 console.log(nonce)
               }}

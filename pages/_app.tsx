@@ -2,8 +2,12 @@ import './app.css'
 
 import '@fontsource/inter/700.css'
 
+import { useEffect } from 'react'
+
+import { Biconomy } from '@biconomy/mexa'
 import { ChakraProvider, extendTheme } from '@chakra-ui/react'
 import { ComposeClient } from '@composedb/client'
+import { ExternalProvider } from '@ethersproject/providers'
 import * as ethereum from '@web3modal/ethereum'
 import { Web3Modal } from '@web3modal/react'
 import type { AppProps } from 'next/app'
@@ -17,6 +21,7 @@ import { useIsMounted } from '@/src/hooks/useIsMounted'
 import Fonts from '@/src/lib/Fonts'
 import { WalletConnectProvider } from '@/src/providers/WalletConnect'
 import { useStore } from '@/src/store'
+import { PBT_ADDRESS } from 'config'
 
 import { definition } from '../out/__generated__/runtime'
 
@@ -182,16 +187,16 @@ export default function App({ Component, pageProps }: AppProps) {
     alchemyProvider({ apiKey: process.env.NEXT_PUBLIC_ALCHEMY_API_KEY_goeETH as string }),
   ])
 
-  // useEffect(() => {
-  //   ;(async () => {
-  //     const biconomy = new Biconomy(wagmiProvider as ExternalProvider, {
-  //       apiKey: process.env.NEXT_PUBLIC_BICONOMY_API_KEY as string,
-  //       debug: true,
-  //       contractAddresses: ['0x793edd160b7a0c4b0ab6ef7e3b3f5fef6c78e49d'], // list of contract address you want to enable gasless on
-  //     })
-  //     await biconomy.init()
-  //   })()
-  // }, [])
+  useEffect(() => {
+    ;(async () => {
+      const biconomy = new Biconomy(wagmiProvider as ExternalProvider, {
+        apiKey: process.env.NEXT_PUBLIC_BICONOMY_API_KEY as string,
+        debug: true,
+        contractAddresses: [PBT_ADDRESS as string], // list of contract address you want to enable gasless on
+      })
+      await biconomy.init()
+    })()
+  }, [])
 
   const wagmiClient = wagmi.createClient({
     autoConnect: true,

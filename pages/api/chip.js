@@ -1,6 +1,6 @@
-import parseKeys from '../../scripts/helpers/parseKeys'
-import { ethers } from 'ethers'
-import abi from '../../artifacts/contracts/ChipTable.sol/ChipTable.json'
+// import parseKeys from '../../scripts/helpers/parseKeys'
+// import { ethers } from 'ethers'
+// import abi from '../../artifacts/contracts/ChipTable.sol/ChipTable.json'
 import { parseURLParams } from 'halo-chip'
 
 // const abi = getAbi(path);

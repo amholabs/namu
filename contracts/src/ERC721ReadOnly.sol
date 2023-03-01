@@ -24,47 +24,47 @@ contract ERC721ReadOnly is ERC721URIStorage, ERC2771Context, Ownable {
     return ERC2771Context._msgSender();
   }
 
-  function approve(address to, uint256 tokenId) public virtual override {
-    revert('ERC721 public approve not allowed');
-  }
+  // function approve(address to, uint256 tokenId) public virtual override {
+  //   revert('ERC721 public approve not allowed');
+  // }
 
-  function getApproved(uint256 tokenId) public view virtual override returns (address) {
-    require(_exists(tokenId), 'ERC721: invalid token ID');
-    return address(0);
-  }
+  // function getApproved(uint256 tokenId) public view virtual override returns (address) {
+  //   require(_exists(tokenId), 'ERC721: invalid token ID');
+  //   return address(0);
+  // }
 
-  function setApprovalForAll(address operator, bool approved) public virtual override {
-    revert('ERC721 public setApprovalForAll not allowed');
-  }
+  // function setApprovalForAll(address operator, bool approved) public virtual override {
+  //   revert('ERC721 public setApprovalForAll not allowed');
+  // }
 
-  function isApprovedForAll(address owner, address operator) public view virtual override returns (bool) {
-    return false;
-  }
+  // function isApprovedForAll(address owner, address operator) public view virtual override returns (bool) {
+  //   return false;
+  // }
 
-  function transferFrom(
-    address from,
-    address to,
-    uint256 tokenId
-  ) public virtual override {
-    revert('ERC721 public transferFrom not allowed');
-  }
+  // function transferFrom(
+  //   address from,
+  //   address to,
+  //   uint256 tokenId
+  // ) public virtual override {
+  //   revert('ERC721 public transferFrom not allowed');
+  // }
 
-  function safeTransferFrom(
-    address from,
-    address to,
-    uint256 tokenId
-  ) public virtual override {
-    revert('ERC721 public safeTransferFrom not allowed');
-  }
+  // function safeTransferFrom(
+  //   address from,
+  //   address to,
+  //   uint256 tokenId
+  // ) public virtual override {
+  //   revert('ERC721 public safeTransferFrom not allowed');
+  // }
 
-  function safeTransferFrom(
-    address from,
-    address to,
-    uint256 tokenId,
-    bytes memory data
-  ) public virtual override {
-    revert('ERC721 public safeTransferFrom not allowed');
-  }
+  // function safeTransferFrom(
+  //   address from,
+  //   address to,
+  //   uint256 tokenId,
+  //   bytes memory data
+  // ) public virtual override {
+  //   revert('ERC721 public safeTransferFrom not allowed');
+  // }
 
   // override setTokenURI and call super to avoid the check for the token existing
   function setTokenURI(uint256 tokenId, string memory _tokenURI) public virtual {

@@ -10,13 +10,6 @@ const withPWA = require('next-pwa')({
 const nextConfig = {
   reactStrictMode: true,
   transpilePackages: ['halo-chip', 'fs'],
-  future: {
-    webpack5: true,
-  },
-  swcMinify: true,
-  future: {
-    webpack5: true,
-  },
   env: {
     mode: process.env.NODE_ENV,
     NEXT_PUBLIC_MODE: true,
@@ -67,9 +60,3 @@ const pwa = withPWA({
 })
 
 module.exports = pwa
-// module.exports = withPWA({
-//   nextConfig,
-//   experimental: {
-//     appDir: true,
-//   },
-// })

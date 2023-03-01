@@ -5,9 +5,56 @@ import { goerli } from 'wagmi'
 import { ETH_CHAINS } from '@/lib/constants'
 import { PBT_ADDRESS } from 'config'
 
-// given this variable: export const ETH_CHAINS = [mainnet, polygon, optimism, arbitrum, goerli] in src/lib/constants.ts, return goerli.id
-let helperAttributes = {}
-let supportedNetworks = [goerli.id] //add more
+type OxString = `0x${string}`
+
+type NameTypeData = {
+  name: string
+  type: string
+}
+
+type DomainData = {
+  name: string
+  version: string
+  salt?: string
+  verifyingContract?: string
+}
+interface HelperAttributes {
+  ZERO_ADDRESS: OxString
+  baseURL: string
+  biconomyForwarderAbi: any[]
+  biconomyForwarderDomainData: DomainData
+  domainType: NameTypeData[]
+  forwardRequestType: NameTypeData[]
+}
+
+let helperAttributes: HelperAttributes = {
+  // generate default state for HelperAttributes type
+  ZERO_ADDRESS: '0x0000000000000000000000000000000000000000',
+  baseURL: '',
+  biconomyForwarderAbi: [],
+  biconomyForwarderDomainData: {
+    name: '',
+    version: '',
+  },
+  domainType: [
+    { name: 'name', type: 'string' },
+    { name: 'version', type: 'string' },
+    { name: 'chainId', type: 'uint256' },
+    { name: 'verifyingContract', type: 'address' },
+  ],
+  forwardRequestType: [
+    { name: 'from', type: 'address' },
+    { name: 'to', type: 'address' },
+    { name: 'token', type: 'address' },
+    { name: 'txGas', type: 'uint256' },
+    { name: 'tokenGasPrice', type: 'uint256' },
+    { name: 'batchId', type: 'uint256' },
+    { name: 'batchNonce', type: 'uint256' },
+    { name: 'deadline', type: 'uint256' },
+    { name: 'data', type: 'bytes' },
+  ],
+}
+// let supportedNetworks = [goerli.id] //add more
 
 helperAttributes.ZERO_ADDRESS = '0x0000000000000000000000000000000000000000'
 helperAttributes.baseURL = 'https://api.biconomy.io'
@@ -240,10 +287,14 @@ helperAttributes.forwardRequestType = [
   { name: 'deadline', type: 'uint256' },
   { name: 'data', type: 'bytes' },
 ]
-
+type ContractAddresses = {
+  biconomyForwarderAddress: string
+}
 // pass the networkId to get contract addresses
-const getContractAddresses = async (networkId) => {
-  let contractAddresses = {}
+const getContractAddresses = async (networkId: string) => {
+  let contractAddresses: ContractAddresses = {
+    biconomyForwarderAddress: '',
+  }
   const apiInfo = `${helperAttributes.baseURL}/api/v2/meta-tx/systemInfo?networkId=${networkId}`
   const response = await fetch(apiInfo)
   const systemInfo = await response.json()
@@ -257,9 +308,9 @@ const getContractAddresses = async (networkId) => {
  * You can build biconomy forwarder contract object using above values and calculate the nonce
  * @param {*} networkId
  */
-const getBiconomyForwarderConfig = async (networkId) => {
+const getBiconomyForwarderConfig = async (networkId: number) => {
   //get trusted forwarder contract address from network id
-  const contractAddresses = await getContractAddresses(networkId)
+  const contractAddresses = await getContractAddresses(networkId.toString())
   const forwarderAddress = contractAddresses.biconomyForwarderAddress
   return { abi: helperAttributes.biconomyForwarderAbi, address: forwarderAddress }
 }
@@ -274,14 +325,45 @@ const getBiconomyForwarderConfig = async (networkId) => {
  * @param {*}  data - functionSignature of target method
  * @param {*}  deadline - optional deadline for this forward request
  */
-const buildForwardTxRequest = async ({ account, to, gasLimitNum, batchId, batchNonce, data, deadline }) => {
+export type BuildForwardTxRequestParams = {
+  account: OxString | undefined
+  to: OxString | undefined
+  gasLimitNum: number
+  batchId: number
+  batchNonce: string
+  data: string
+  deadline?: number
+}
+
+// create type for return value of buildForwardTxRequest
+export type BuildForwardTxRequestReturn = {
+  from: OxString | undefined
+  to: OxString | undefined
+  token: OxString
+  txGas: number
+  tokenGasPrice: string
+  batchId: number
+  batchNonce: number
+  deadline: number
+  data: string
+}
+
+const buildForwardTxRequest = async ({
+  account,
+  to,
+  gasLimitNum,
+  batchId,
+  batchNonce,
+  data,
+  deadline,
+}: BuildForwardTxRequestParams): Promise<any> => {
   const req = {
     from: account,
     to: to,
     token: '0x0000000000000000000000000000000000000000',
     txGas: gasLimitNum,
     tokenGasPrice: '0',
-    batchId: parseInt(batchId),
+    batchId: typeof batchId == 'number' ? batchId : parseInt(batchId),
     batchNonce: parseInt(batchNonce),
     deadline: deadline || Math.floor(Date.now() / 1000 + 3600),
     data: data,
@@ -295,10 +377,10 @@ const buildForwardTxRequest = async ({ account, to, gasLimitNum, batchId, batchN
  * @param {*} request - forward request object
  * @param {*} networkId
  */
-const getDataToSignForEIP712 = async (request, networkId) => {
+const getDataToSignForEIP712 = async (request: string, networkId: string) => {
   const contractAddresses = await getContractAddresses(networkId)
   const forwarderAddress = contractAddresses.biconomyForwarderAddress
-  let domainData = helperAttributes.biconomyForwarderDomainData
+  let domainData: DomainData = helperAttributes.biconomyForwarderDomainData
   domainData.salt = ethers.utils.hexZeroPad(ethers.BigNumber.from(networkId).toHexString(), 32)
   domainData.verifyingContract = forwarderAddress
 
@@ -319,7 +401,20 @@ const getDataToSignForEIP712 = async (request, networkId) => {
  * use this method to build message to be signed by end user in personal signature format
  * @param {*} networkId
  */
-const getDataToSignForPersonalSign = async (request) => {
+// based on the body of getDataToSignForPersonalSign method, generate typescript types
+export type ForwardRequest = {
+  from: OxString | undefined
+  to: OxString | undefined
+  token: OxString
+  txGas: number
+  tokenGasPrice: string
+  batchId: number
+  batchNonce: number
+  deadline: number
+  data: string
+}
+
+const getDataToSignForPersonalSign = async (request: ForwardRequest) => {
   const hashToSign = await abi.soliditySHA3(
     ['address', 'address', 'address', 'uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'bytes32'],
     [
@@ -341,7 +436,7 @@ const getDataToSignForPersonalSign = async (request) => {
  * get the domain seperator that needs to be passed while using EIP712 signature type
  * @param {*} networkId
  */
-const getDomainSeperator = async (networkId) => {
+const getDomainSeperator = async (networkId: string) => {
   const contractAddresses = await getContractAddresses(networkId)
   const forwarderAddress = contractAddresses.biconomyForwarderAddress
   let domainData = helperAttributes.biconomyForwarderDomainData
@@ -362,7 +457,15 @@ const getDomainSeperator = async (networkId) => {
   )
   return domainSeparator
 }
-const sendTransaction = async ({ userAddress, request, sig, domainSeparator, signatureType }) => {
+type SendTransactionParams = {
+  userAddress: OxString | undefined
+  request: any
+  sig: OxString | undefined
+  domainSeparator?: string
+  signatureType: string
+}
+
+const sendTransaction = async ({ userAddress, request, sig, domainSeparator, signatureType }: SendTransactionParams) => {
   let params
   let txHash
   if (domainSeparator) {

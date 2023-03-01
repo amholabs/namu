@@ -19,17 +19,17 @@ export const setScanVariables = async () => {
   try {
     const keys = await scan()
     const { address, slot } = keys[0]
-    const keysAddresses = keys.map((key) => Object.values(key)[2])
-    const hashedKeysAddresses = keys.map((key) => Object.values(key)[0])
+    const keysAddresses = keys.map((key: any) => Object.values(key)[2])
+    const hashedKeysAddresses = keys.map((key: any) => Object.values(key)[0])
     useStore.setState({ address, slot })
     useStore.setState({ chipAddresses: keysAddresses, chipHashedAddresses: hashedKeysAddresses })
     return keys
   } catch (err) {}
 }
 
-export const formatKeys = (keys) => {
-  const keysAddresses = keys.map((key) => Object.values(key)[2])
-  const hashedKeysAddresses = keys.map((key) => Object.values(key)[0])
+export const formatKeys = (keys: any) => {
+  const keysAddresses = keys.map((key: any) => Object.values(key)[2])
+  const hashedKeysAddresses = keys.map((key: any) => Object.values(key)[0])
   return { keysAddresses, hashedKeysAddresses }
 }
 
@@ -65,7 +65,7 @@ export const loadAuthMethod = async (address: string, slot: string): Promise<Aut
   return authMethod
 }
 
-export const loadSession = async (): Promise<DIDSession> => {
+export const loadSession = async () => {
   const compose = useStore.getState().compose
   // const compose = new ComposeClient({ ceramic: 'https://amhocer.tunnelto.dev/', definition })
   const { address, slot } = useStore.getState()
