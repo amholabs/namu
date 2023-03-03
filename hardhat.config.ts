@@ -29,6 +29,11 @@ const config: HardhatUserConfig = {
       gasPrice: 'auto',
       gasMultiplier: 1.1,
     },
+    mainnet: {
+      url: `https://eth-mainnet.alchemyapi.io/v2/${process.env.NEXT_PUBLIC_ALCHEMY_API_KEY_mainETH}`,
+      accounts: [`0x${process.env.USERA_PRIVATEKEY}`, `0x${process.env.USERB_PRIVATEKEY}`],
+      gasPrice: 'auto',
+    },
     sepolia: {
       url: `https://prettiest-autumn-field.ethereum-sepolia.quiknode.pro/${process.env.NEXT_PUBLIC_QUICKNODE_API_KEY}/`,
       accounts: [`0x${process.env.USERC_PRIVATEKEY}`],

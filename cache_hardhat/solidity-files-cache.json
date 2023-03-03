@@ -173,8 +173,8 @@
       ]
     },
     "/Users/nnn/Projects/namu/contracts/src/ERC721ReadOnly.sol": {
-      "lastModificationDate": 1677197466604,
-      "contentHash": "edd1c658a64af83a1ba67405b7f84c61",
+      "lastModificationDate": 1677685590177,
+      "contentHash": "5a1901d95f687d9fe5d6e6179205cf9c",
       "sourceName": "contracts/src/ERC721ReadOnly.sol",
       "solcConfig": {
         "version": "0.8.13",

@@ -28,7 +28,9 @@ import abi from 'ethereumjs-abi'
 import { toBuffer } from 'ethereumjs-util'
 import { ethers } from 'ethers'
 import { BigNumber } from 'ethers'
+// @ts-ignore
 // import { ExecutionResult } from 'graphql'
+import { parseURLParamsWithoutLatch } from 'halo-chip'
 import error from 'next/error'
 import { useRouter } from 'next/router'
 import { getSignatureFromScan } from 'pbt-chip-client/kong'
@@ -69,6 +71,7 @@ import {
 } from '@/scripts/helpers/biconomyForwardHelpers'
 import WalletConnectCustom from '@/src/components/WalletConnectCustom'
 import { ETH_CHAINS, MUTATE_CREATE_PROFILE, QUERY_PROFILE_VIEWER } from '@/src/lib/constants'
+import { DUMMY_SIG_DATA, DUMMY_SIG_DATA1, DUMMY_SIG_DATA2, DUMMY_SIG_DATA3 } from '@/src/lib/dummy'
 import { DUMMY_SOCIAL_LINKS, DUMMY_TOKEN_DATA } from '@/src/lib/dummy'
 import { useStore } from '@/src/store'
 import { formatKeys, generateSession, loadSession, setScanVariables } from '@/src/utils/scan'
@@ -92,24 +95,37 @@ export default function Profile() {
 
   const {
     data: signMessageData,
-    isSuccess: signMessageSuccess,
     signMessage,
+    isSuccess: signMessageSuccess,
   } = useSignMessage({
     message: dataSigned,
+    // async onSuccess() {
+    //   const txHash = await sendTransaction({ userAddress: address, request, sig: signMessageData, signatureType: 'PERSONAL_SIGN' })
+    //   console.log('txHash: ', txHash)
+    //   // @ts-ignore
+    //   setTxHash(txHash)
+    // },
+  })
+  useEffect(() => {
+    const initSendTransaction = async () => {
+      const hash = await sendTransaction({ userAddress: address, request, sig: signMessageData, signatureType: 'PERSONAL_SIGN' })
+      setTxHash(hash)
+    }
+    signMessageSuccess && initSendTransaction()
+  }, [signMessageSuccess])
+
+  const { data: txData, isSuccess: finalizedTx } = useWaitForTransaction({
+    hash: txHash,
   })
 
-  const { data: txData } = useWaitForTransaction({
-    hash: txHash,
-    onSuccess(data) {
-      console.log('Success', data)
-      onClose()
-      toast({
-        title: 'Mint Success',
-        status: 'success',
-        isClosable: true,
-      })
-    },
-  })
+  useEffect(() => {
+    onClose()
+    toast({
+      title: 'Mint Success',
+      status: 'success',
+      isClosable: true,
+    })
+  }, [finalizedTx])
 
   useContractRead({
     address: PBT_ADDRESS,
@@ -123,21 +139,23 @@ export default function Profile() {
     },
   })
 
-  useEffect(() => {
-    const initSendTransaction = async () => {
-      const txHash = await sendTransaction({ userAddress: address, request, sig: signMessageData, signatureType: 'PERSONAL_SIGN' })
-      console.log('txHash: ', txHash)
-      // @ts-ignore
-      setTxHash(txHash)
-    }
-    signMessageSuccess && initSendTransaction()
-  }, [signMessageSuccess])
+  // useEffect(() => {
+  //   const initSendTransaction = async () => {
+  //     const txHash = await sendTransaction({ userAddress: address, request, sig: signMessageData, signatureType: 'PERSONAL_SIGN' })
+  //     console.log('txHash: ', txHash)
+  //     // @ts-ignore
+  //     setTxHash(txHash)
+  //   }
+  //   signMessageSuccess && initSendTransaction()
+  // }, [signMessageSuccess])
 
   useEffect(() => {
-    if (sig && blockNum !== 0) {
-      // mintWrite?.()
-      buildRequestForGasless()
-    }
+    ;(async () => {
+      if (sig && blockNum !== 0) {
+        // mintWrite?.()
+        await buildRequestForGasless(sig)
+      }
+    })()
   }, [sig])
 
   useEffect(() => {
@@ -156,10 +174,37 @@ export default function Profile() {
     })()
   }, [txData])
 
-  const buildRequestForGasless = async () => {
+  // Create a function take takes in a URI for example: https://siwe.io/scan?cmd=0x123&res=123&static=123 and return a json object in the format of {cmd: 0x123, res: 123, static: 123}
+  const formatURIParams = (url: string) => {
+    const params = url.split('?')[1]
+    const paramsArray = params.split('&')
+    const paramsObject: any = {}
+    paramsArray.forEach((param) => {
+      const [key, value] = param.split('=')
+      paramsObject[key] = value
+    })
+    return paramsObject
+  }
+
+  const getKeySig = (sigData: any) => {
+    const { keys } = sigData
+    return keys[0].key.slice(2)
+  }
+
+  const handleBuildGasRequest = async (DUMMY_SIG_DATA: any) => {
+    const formatSig = formatURIParams(DUMMY_SIG_DATA)
+    const parsedSig = parseURLParamsWithoutLatch(formatSig)
+    const keySig = getKeySig(parsedSig)
+    await buildRequestForGasless(keySig)
+  }
+
+  const buildRequestForGasless = async (sigData?: any) => {
     if (chain) {
       const contractInterface = new ethers.utils.Interface(PBTabi)
-      const functionSig = contractInterface.encodeFunctionData('mintTokenWithChip', [sig, blockNum, nonce])
+
+      const functionSig = sigData
+        ? contractInterface.encodeFunctionData('mintTokenWithChip', [sigData, blockNum, nonce])
+        : contractInterface.encodeFunctionData('mintTokenWithChip', [sigData, blockNum, nonce])
 
       const to = PBT_ADDRESS
 
@@ -178,7 +223,7 @@ export default function Profile() {
       const requestConfig: BuildForwardTxRequestParams = {
         account: address,
         to,
-        gasLimitNum: 200000,
+        gasLimitNum: 300000,
         batchId,
         batchNonce,
         data: functionSig,
@@ -198,6 +243,14 @@ export default function Profile() {
     }
   }
 
+  // const { writeAsync: mintWrite, data: mintData } = useContractWrite({
+  //   mode: 'recklesslyUnprepared',
+  //   address: PBT_ADDRESS,
+  //   abi: PBTabi,
+  //   functionName: 'mintTokenWithChip',
+  //   args: [sig, blockNum, nonce, { gasLimit: 300000 }],
+  // })
+
   // const { config: mintTokenConfig, error } = usePrepareContractWrite({
   //   address: PBT_ADDRESS,
   //   abi: PBTabi,
@@ -211,6 +264,45 @@ export default function Profile() {
     setSig(null)
     setBlockNumber(0)
   }
+
+  const handleConsole = async () => {
+    console.log('NONCE', nonce)
+    console.log('SIG', sig)
+  }
+
+  const handleMintPrepareStage = async () => {
+    const query = router.query
+    let keyRaw = ''
+    await provider.getBlock('latest').then(async (block) => {
+      setBlockNumber(block.number)
+      const { keys } = await parseURLParamsWithoutLatch(query)
+      if (address) {
+        keyRaw = keys[0].key.slice(2)
+        const cpKeyRaw = keyRaw
+        getSignatureFromScan({
+          chipPublicKey: cpKeyRaw,
+          address: address,
+          hash: block.hash,
+          nonce,
+        }).then((data: any) => {
+          if (data) {
+            console.log(data)
+            setSig(data)
+            // onOpen()
+          }
+        })
+      } else {
+        resetVariables()
+        toast({
+          title: 'Error',
+          description: 'Cannot mint. Try again.',
+          status: 'error',
+          isClosable: true,
+        })
+      }
+    })
+  }
+
   const handleMintPrepare = async () => {
     let keyRaw = ''
     await provider.getBlock('latest').then(async (block) => {
@@ -225,7 +317,7 @@ export default function Profile() {
             address: address,
             hash: block.hash,
             nonce,
-          }).then((data) => {
+          }).then((data: any) => {
             if (data) {
               setSig(data)
               onOpen()
@@ -322,7 +414,19 @@ export default function Profile() {
             </Tag>
           </VStack>
         </Center>
+        <Center>
+          <HStack spacing="5" marginTop="1.0rem" marginBottom="1.5rem">
+            <WalletConnectCustom />
+            <Text textAlign={'center'} onClick={() => handleNavigate('/settings')} as="sub">
+              SETTINGS
+            </Text>
+            <Text textAlign={'center'} onClick={handleConsole} as="sub">
+              CONSOLE
+            </Text>
+          </HStack>
+        </Center>
         <VStack spacing={3}>
+          <CoreButton clickHandler={() => handleBuildGasRequest(DUMMY_SIG_DATA)}>SEND</CoreButton>
           {DUMMY_SOCIAL_LINKS.map((data, id) => (
             <CoreButton
               size="sm"
@@ -331,7 +435,11 @@ export default function Profile() {
               clickHandler={async () => {
                 if (data.type == UrlLinkSocialType.Base) {
                   // write?.()
-                  await handleMintPrepare()
+                  if (process.env.NODE_ENV === 'development') {
+                    await handleMintPrepare()
+                  } else {
+                    await handleMintPrepareStage()
+                  }
                 } else {
                   handleNavigate(data.link)
                 }
@@ -340,23 +448,6 @@ export default function Profile() {
             </CoreButton>
           ))}
         </VStack>
-        <Center>
-          <HStack spacing="5" marginTop="1.0rem" marginBottom="1.5rem">
-            <WalletConnectCustom />
-            <Text textAlign={'center'} onClick={() => handleNavigate('/settings')} as="sub">
-              SETTINGS
-            </Text>
-            <Text
-              textAlign={'center'}
-              onClick={() => {
-                console.log(error)
-                console.log(nonce)
-              }}
-              as="sub">
-              CONSOLE
-            </Text>
-          </HStack>
-        </Center>
       </MobileLayout>
       <Modal onClose={onClose} size={'full'} isOpen={isOpen}>
         <ModalOverlay />

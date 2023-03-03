@@ -14,6 +14,7 @@ import type { AppProps } from 'next/app'
 import * as wagmi from 'wagmi'
 import { goerli, localhost, mainnet, polygon, sepolia } from 'wagmi/chains'
 import { alchemyProvider } from 'wagmi/providers/alchemy'
+import { infuraProvider } from 'wagmi/providers/infura'
 
 import { ETH_CHAINS } from '@/lib/constants'
 import { Layout } from '@/src/components/layout'
@@ -27,8 +28,7 @@ import { definition } from '../out/__generated__/runtime'
 
 export default function App({ Component, pageProps }: AppProps) {
   const isMounted = useIsMounted()
-  let ceramicUrl = 'https://amhocer.tunnelto.dev'
-
+  let ceramicUrl
   switch (process.env.NODE_ENV) {
     case 'development':
       ceramicUrl = `${process.env.NEXT_PUBLIC_CERAMIC_URL}`
@@ -37,7 +37,7 @@ export default function App({ Component, pageProps }: AppProps) {
       ceramicUrl = `${process.env.NEXT_PUBLIC_CERAMIC_URL}`
       break
     case 'production':
-      ceramicUrl = 'https://amho.xyz/'
+      ceramicUrl = 'https://amho.tv/'
       break
     default:
       ceramicUrl = 'error: ceramic'

@@ -52,8 +52,8 @@ const pwa = withPWA({
     return [
       {
         source: '/',
-        destination: '/profile',
-        permanent: true,
+        destination: '/profile/',
+        permanent: false,
       },
     ]
   },

@@ -293,7 +293,7 @@ type ContractAddresses = {
 // pass the networkId to get contract addresses
 const getContractAddresses = async (networkId: string) => {
   let contractAddresses: ContractAddresses = {
-    biconomyForwarderAddress: '',
+    biconomyForwarderAddress: process.env.NEXT_PUBLIC_BICONOMY_FORWARDER_ADDRESS || '',
   }
   const apiInfo = `${helperAttributes.baseURL}/api/v2/meta-tx/systemInfo?networkId=${networkId}`
   const response = await fetch(apiInfo)
