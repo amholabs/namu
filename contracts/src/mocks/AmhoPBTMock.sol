@@ -12,7 +12,7 @@ contract AmhoPBTMock is AmhoPBT {
   ) AmhoPBT(name_, symbol_, supply_, trustedForwarder_) {}
 
   function mint(address to, uint256 tokenId) public {
-    _mint(to, tokenId);
+    revert('Can only mint from scanning');
   }
 
   function getTokenData(address addr) public view returns (TokenData memory) {

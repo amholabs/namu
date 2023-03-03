@@ -3,9 +3,6 @@ import { useEffect, useState } from 'react'
 import { Center, HStack, Heading, Input, VStack, useToast } from '@chakra-ui/react'
 import { optimism } from '@wagmi/chains'
 //@ts-ignore
-import { parseURLParamsWithoutLatch } from 'halo-chip'
-import { useRouter } from 'next/router'
-import { getPublicKeysFromScan, getSignatureFromScan } from 'pbt-chip-client/kong'
 import { useDebounce } from 'usehooks-ts'
 import { useAccount, useContractWrite, useNetwork, usePrepareContractWrite, useProvider, useSwitchNetwork, useWaitForTransaction } from 'wagmi'
 

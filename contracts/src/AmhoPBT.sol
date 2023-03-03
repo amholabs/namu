@@ -142,6 +142,11 @@ contract AmhoPBT is ERC721ReadOnly, IPBT {
   //    signatureFromChip: signature(receivingAddress + recentBlockhash), signed by an approved chip
   //
   // Contract should check that (1) recentBlockhash is a recent blockhash, (2) receivingAddress === to, and (3) the signing chip is allowlisted.
+
+  function _mint(address to, uint256 tokenId) internal virtual override {
+    super._mint(to, tokenId);
+  }
+
   function _mintTokenWithChip(
     bytes memory signatureFromChip,
     uint256 blockNumberUsedInSig,

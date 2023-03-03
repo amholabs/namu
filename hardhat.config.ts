@@ -30,8 +30,8 @@ const config: HardhatUserConfig = {
       gasMultiplier: 1.1,
     },
     mainnet: {
-      url: `https://eth-mainnet.alchemyapi.io/v2/${process.env.NEXT_PUBLIC_ALCHEMY_API_KEY_mainETH}`,
-      accounts: [`0x${process.env.USERA_PRIVATEKEY}`, `0x${process.env.USERB_PRIVATEKEY}`],
+      url: `https://eth-mainnet.alchemyapi.io/v2/${process.env.NEXT_PUBLIC_ALCHEMY_API_KEY_ETH}`,
+      accounts: [`0x${process.env.PROD_PRIVATEKEY}`],
       gasPrice: 'auto',
     },
     sepolia: {

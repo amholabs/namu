@@ -29,6 +29,7 @@ contract AmhoPBTRandomTest is Test {
   uint256 public nonce = 0;
 
   function setUp() public {
+    vm.prank(user1);
     pbt = new AmhoPBTMock('AmhoIRL', 'AMHO', maxSupply, trustedForward);
   }
 
@@ -121,6 +122,9 @@ contract AmhoPBTRandomTest is Test {
     uint256 nonce1 = pbt.getNonce();
     bytes memory payload = abi.encodePacked(user1, blockhash(blockNumber), nonce1);
     bytes memory signature = _createSignature(payload, 101);
+
+    vm.expectRevert();
+    pbt.mint(user2, 1);
 
     address[] memory chipAddresses = new address[](1);
     chipAddresses[0] = chipAddr1;

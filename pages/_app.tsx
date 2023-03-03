@@ -31,10 +31,10 @@ export default function App({ Component, pageProps }: AppProps) {
   let ceramicUrl
   switch (process.env.NODE_ENV) {
     case 'development':
-      ceramicUrl = `${process.env.NEXT_PUBLIC_CERAMIC_URL}`
+      ceramicUrl = ``
       break
     case 'test':
-      ceramicUrl = `${process.env.NEXT_PUBLIC_CERAMIC_URL}`
+      ceramicUrl = ``
       break
     case 'production':
       ceramicUrl = 'https://amho.tv/'
@@ -46,7 +46,6 @@ export default function App({ Component, pageProps }: AppProps) {
 
   useStore.setState({
     compose: new ComposeClient({ ceramic: process.env.NEXT_PUBLIC_CERAMIC_URL || ceramicUrl, definition }),
-    // compose: new ComposeClient({ ceramic: process.env.NEXT_PUBLIC_CERAMIC_URL || ceramicUrl, definition }),
   })
 
   const breakpoints = {
@@ -182,9 +181,14 @@ export default function App({ Component, pageProps }: AppProps) {
   })
 
   const chains = ETH_CHAINS
+  const _alchemyProvider: any =
+    process.env.NODE_ENV === 'production'
+      ? alchemyProvider({ apiKey: process.env.NEXT_PUBLIC_ALCHEMY_API_KEY_ETH as string })
+      : alchemyProvider({ apiKey: process.env.NEXT_PUBLIC_ALCHEMY_API_KEY_goeETH as string })
+
   const { provider: wagmiProvider } = wagmi.configureChains(chains, [
     ethereum.walletConnectProvider({ projectId: process.env.NEXT_PUBLIC_WC_PROJECT_ID as string }),
-    alchemyProvider({ apiKey: process.env.NEXT_PUBLIC_ALCHEMY_API_KEY_goeETH as string }),
+    _alchemyProvider,
   ])
 
   useEffect(() => {

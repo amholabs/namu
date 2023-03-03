@@ -3,13 +3,12 @@ pragma solidity ^0.8.13;
 
 import '@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol';
 import '@openzeppelin/contracts/metatx/ERC2771Context.sol';
-import '@openzeppelin/contracts/access/Ownable.sol';
 
 /**
  * An implementation of 721 that's publicly readonly (no approvals or transfers exposed).
  */
 
-contract ERC721ReadOnly is ERC721URIStorage, ERC2771Context, Ownable {
+contract ERC721ReadOnly is ERC721URIStorage, ERC2771Context {
   constructor(
     string memory name_,
     string memory symbol_,

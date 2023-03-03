@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react'
 
 // eslint-disable-next-line import/order
 
-import { Biconomy } from '@biconomy/mexa'
 import {
   Center,
   HStack,
@@ -10,7 +9,6 @@ import {
   Img,
   Input,
   Modal,
-  ModalBody,
   ModalCloseButton,
   ModalContent,
   ModalOverlay,
@@ -21,39 +19,14 @@ import {
   useDisclosure,
   useToast,
 } from '@chakra-ui/react'
-import { ExternalProvider } from '@ethersproject/providers'
-import * as ethereum from '@web3modal/ethereum'
-import { useWeb3Modal } from '@web3modal/react'
-import abi from 'ethereumjs-abi'
-import { toBuffer } from 'ethereumjs-util'
 import { ethers } from 'ethers'
 import { BigNumber } from 'ethers'
 // @ts-ignore
-// import { ExecutionResult } from 'graphql'
 import { parseURLParamsWithoutLatch } from 'halo-chip'
-import error from 'next/error'
 import { useRouter } from 'next/router'
 import { getSignatureFromScan } from 'pbt-chip-client/kong'
-import { useDebounce } from 'usehooks-ts'
 // eslint-disable-next-line import/order
-import {
-  useAccount,
-  useContract,
-  useContractRead,
-  useContractWrite,
-  useFeeData,
-  useNetwork,
-  usePrepareContractWrite,
-  useProvider,
-  useSignMessage,
-  useSigner,
-  useWaitForTransaction,
-} from 'wagmi'
-
-// import { getMintWithChipSig } from '@/lib/actions/chip'
-// import { generateNonce, siweLogin } from '@/lib/actions/siweUtils'
-import * as wagmi from 'wagmi'
-import { alchemyProvider } from 'wagmi/providers/alchemy'
+import { useAccount, useContractRead, useNetwork, useProvider, useSignMessage, useSigner, useWaitForTransaction } from 'wagmi'
 
 import { CoreButton } from '@/components/shared/CoreButton'
 import { UrlLinkSocialType } from '@/out/__generated__/graphql'
@@ -63,18 +36,14 @@ import {
   BuildForwardTxRequestParams,
   buildForwardTxRequest,
   getBiconomyForwarderConfig,
-  getDataToSignForEIP712,
   getDataToSignForPersonalSign,
-  getDomainSeperator,
-  helperAttributes,
   sendTransaction,
 } from '@/scripts/helpers/biconomyForwardHelpers'
 import WalletConnectCustom from '@/src/components/WalletConnectCustom'
-import { ETH_CHAINS, MUTATE_CREATE_PROFILE, QUERY_PROFILE_VIEWER } from '@/src/lib/constants'
-import { DUMMY_SIG_DATA, DUMMY_SIG_DATA1, DUMMY_SIG_DATA2, DUMMY_SIG_DATA3 } from '@/src/lib/dummy'
+import { MUTATE_CREATE_PROFILE } from '@/src/lib/constants'
 import { DUMMY_SOCIAL_LINKS, DUMMY_TOKEN_DATA } from '@/src/lib/dummy'
 import { useStore } from '@/src/store'
-import { formatKeys, generateSession, loadSession, setScanVariables } from '@/src/utils/scan'
+import { formatKeys, setScanVariables } from '@/src/utils/scan'
 import MobileLayout from 'app/MobileLayout'
 import { PBT_ADDRESS } from 'config'
 
@@ -88,7 +57,7 @@ export default function Profile() {
   const { address } = useAccount()
   const [request, setRequest] = useState<any>()
   const [sig, setSig] = useState<string | null>(null)
-  const [txHash, setTxHash] = useState<`0x${string}` | undefined>()
+  const [txHash, setTxHash] = useState<`0x${string}` | undefined>(undefined)
   const [blockNum, setBlockNumber] = useState<number>(0)
   const [nonce, setNonce] = useState<number>(0)
   const [dataSigned, setDataSigned] = useState<string | Uint8Array>()
@@ -99,12 +68,6 @@ export default function Profile() {
     isSuccess: signMessageSuccess,
   } = useSignMessage({
     message: dataSigned,
-    // async onSuccess() {
-    //   const txHash = await sendTransaction({ userAddress: address, request, sig: signMessageData, signatureType: 'PERSONAL_SIGN' })
-    //   console.log('txHash: ', txHash)
-    //   // @ts-ignore
-    //   setTxHash(txHash)
-    // },
   })
   useEffect(() => {
     const initSendTransaction = async () => {
@@ -114,17 +77,19 @@ export default function Profile() {
     signMessageSuccess && initSendTransaction()
   }, [signMessageSuccess])
 
-  const { data: txData, isSuccess: finalizedTx } = useWaitForTransaction({
+  const { isSuccess: finalizedTx } = useWaitForTransaction({
     hash: txHash,
   })
 
   useEffect(() => {
-    onClose()
-    toast({
-      title: 'Mint Success',
-      status: 'success',
-      isClosable: true,
-    })
+    if (finalizedTx) {
+      onClose()
+      toast({
+        title: 'Mint Success',
+        status: 'success',
+        isClosable: true,
+      })
+    }
   }, [finalizedTx])
 
   useContractRead({
@@ -138,16 +103,6 @@ export default function Profile() {
       setNonce(toNum.toNumber())
     },
   })
-
-  // useEffect(() => {
-  //   const initSendTransaction = async () => {
-  //     const txHash = await sendTransaction({ userAddress: address, request, sig: signMessageData, signatureType: 'PERSONAL_SIGN' })
-  //     console.log('txHash: ', txHash)
-  //     // @ts-ignore
-  //     setTxHash(txHash)
-  //   }
-  //   signMessageSuccess && initSendTransaction()
-  // }, [signMessageSuccess])
 
   useEffect(() => {
     ;(async () => {
@@ -166,38 +121,6 @@ export default function Profile() {
     })()
   }, [dataSigned])
 
-  useEffect(() => {
-    ;(async () => {
-      if (txData) {
-        console.log(txData)
-      }
-    })()
-  }, [txData])
-
-  // Create a function take takes in a URI for example: https://siwe.io/scan?cmd=0x123&res=123&static=123 and return a json object in the format of {cmd: 0x123, res: 123, static: 123}
-  const formatURIParams = (url: string) => {
-    const params = url.split('?')[1]
-    const paramsArray = params.split('&')
-    const paramsObject: any = {}
-    paramsArray.forEach((param) => {
-      const [key, value] = param.split('=')
-      paramsObject[key] = value
-    })
-    return paramsObject
-  }
-
-  const getKeySig = (sigData: any) => {
-    const { keys } = sigData
-    return keys[0].key.slice(2)
-  }
-
-  const handleBuildGasRequest = async (DUMMY_SIG_DATA: any) => {
-    const formatSig = formatURIParams(DUMMY_SIG_DATA)
-    const parsedSig = parseURLParamsWithoutLatch(formatSig)
-    const keySig = getKeySig(parsedSig)
-    await buildRequestForGasless(keySig)
-  }
-
   const buildRequestForGasless = async (sigData?: any) => {
     if (chain) {
       const contractInterface = new ethers.utils.Interface(PBTabi)
@@ -212,13 +135,8 @@ export default function Profile() {
 
       let forwarderContract = new ethers.Contract(forwarder.address, forwarder.abi, signer as ethers.Signer)
 
-      console.log('forwarderContract', forwarderContract)
-
       const batchNonce = await forwarderContract.getNonce(address, 0)
       const batchId = 0
-
-      console.log(batchNonce)
-      console.log(batchId)
 
       const requestConfig: BuildForwardTxRequestParams = {
         account: address,
@@ -230,44 +148,18 @@ export default function Profile() {
         deadline: Math.floor(Date.now() / 1000 + 3600),
       }
 
-      console.log(JSON.stringify(requestConfig))
-
       const request = await buildForwardTxRequest(requestConfig)
-      console.log('request', request)
 
       const dataToSign = await getDataToSignForPersonalSign(request)
-      console.log('dataToSign', dataToSign)
 
       setRequest(request)
       setDataSigned(dataToSign)
     }
   }
 
-  // const { writeAsync: mintWrite, data: mintData } = useContractWrite({
-  //   mode: 'recklesslyUnprepared',
-  //   address: PBT_ADDRESS,
-  //   abi: PBTabi,
-  //   functionName: 'mintTokenWithChip',
-  //   args: [sig, blockNum, nonce, { gasLimit: 300000 }],
-  // })
-
-  // const { config: mintTokenConfig, error } = usePrepareContractWrite({
-  //   address: PBT_ADDRESS,
-  //   abi: PBTabi,
-  //   functionName: 'mintTokenWithChip',
-  //   args: [sig, blockNum, nonce, { gasLimit: 300000 }],
-  //   enabled: !!sig && !!blockNum && !!nonce,
-  //   chainId: chain?.id,
-  // })
-
   const resetVariables = () => {
     setSig(null)
     setBlockNumber(0)
-  }
-
-  const handleConsole = async () => {
-    console.log('NONCE', nonce)
-    console.log('SIG', sig)
   }
 
   const handleMintPrepareStage = async () => {
@@ -286,9 +178,8 @@ export default function Profile() {
           nonce,
         }).then((data: any) => {
           if (data) {
-            console.log(data)
             setSig(data)
-            // onOpen()
+            onOpen()
           }
         })
       } else {
@@ -375,15 +266,6 @@ export default function Profile() {
     return output
   }
 
-  // const checkConnected = async () => {
-  //   const session = await loadSession()
-  //   if ((address && status == 'connected') || session) {
-  //     return true
-  //   } else {
-  //     return false
-  //   }
-  // }
-
   return (
     <>
       <MobileLayout>
@@ -395,7 +277,7 @@ export default function Profile() {
             {DUMMY_TOKEN_DATA.name} #{DUMMY_TOKEN_DATA.id}
           </Text>
         </Center>
-        <Center paddingBottom="1rem">
+        <Center>
           <VStack>
             <Heading>
               <Input
@@ -414,31 +296,22 @@ export default function Profile() {
             </Tag>
           </VStack>
         </Center>
-        <Center>
-          <HStack spacing="5" marginTop="1.0rem" marginBottom="1.5rem">
+        <Center paddingTop="2rem" paddingBottom="2.0rem">
+          <HStack spacing="5">
             <WalletConnectCustom />
-            <Text textAlign={'center'} onClick={() => handleNavigate('/settings')} as="sub">
-              SETTINGS
-            </Text>
-            <Text textAlign={'center'} onClick={handleConsole} as="sub">
-              CONSOLE
-            </Text>
           </HStack>
         </Center>
         <VStack spacing={3}>
-          <CoreButton clickHandler={() => handleBuildGasRequest(DUMMY_SIG_DATA)}>SEND</CoreButton>
           {DUMMY_SOCIAL_LINKS.map((data, id) => (
             <CoreButton
               size="sm"
               key={id}
-              // isLoading={data.type == UrlLinkSocialType.Base && isLoadingMint}
               clickHandler={async () => {
                 if (data.type == UrlLinkSocialType.Base) {
-                  // write?.()
                   if (process.env.NODE_ENV === 'development') {
-                    await handleMintPrepare()
-                  } else {
                     await handleMintPrepareStage()
+                  } else {
+                    await handleMintPrepare()
                   }
                 } else {
                   handleNavigate(data.link)
@@ -447,6 +320,11 @@ export default function Profile() {
               {data.title}
             </CoreButton>
           ))}
+          <Center paddingTop="1.0rem" paddingBottom="2.0rem">
+            <Text textAlign={'center'} onClick={() => handleNavigate('/settings')} as="sub">
+              SETTINGS
+            </Text>
+          </Center>
         </VStack>
       </MobileLayout>
       <Modal onClose={onClose} size={'full'} isOpen={isOpen}>

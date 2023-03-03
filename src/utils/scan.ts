@@ -1,12 +1,10 @@
-import { ComposeClient } from '@composedb/client'
 import type { AuthMethod } from '@didtools/cacao'
-import { EthereumWebAuth, getAccountId } from '@didtools/pkh-ethereum'
-import { AccountId, AccountIdParams, ChainId, ChainIdParams } from 'caip'
+import { EthereumWebAuth } from '@didtools/pkh-ethereum'
+import { AccountId, AccountIdParams, ChainIdParams } from 'caip'
 import { DIDSession } from 'did-session'
 // @ts-ignore
 import { ethSignMessage, listKeys } from 'halo-chip'
 
-import { definition } from '@/out/__generated__/runtime'
 import { AuthMethodParams } from '@/src/lib/types'
 import { useStore } from '@/src/store'
 
@@ -95,7 +93,7 @@ export const generateSession = async () => {
     const { address, slot } = keys[0]
     const resources = compose.resources
     const authMethod = await loadAuthMethod(address, slot)
-    const session = await DIDSession.authorize(authMethod, { resources })
+    const session: any = await DIDSession.authorize(authMethod, { resources })
     localStorage.setItem('didsession', session.serialize())
     compose.setDID(session.did)
     return session
