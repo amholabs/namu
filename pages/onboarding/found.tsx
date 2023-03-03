@@ -10,7 +10,7 @@ import { useStore } from '@/src/store'
 import { loadSession } from '@/src/utils/scan'
 import MobileLayout from 'app/MobileLayout'
 
-import { Query } from '../../out/__generated__/graphql'
+// import { Query } from '../../out/__generated__/graphql'
 
 export default function Found() {
   // const compose = useStore.getState().compose
