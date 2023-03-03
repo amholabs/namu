@@ -7,7 +7,7 @@ import { useRouter } from 'next/router'
 import { CoreButton } from '@/components/shared/CoreButton'
 import { MUTATE_CREATE_PROFILE, QUERY_PROFILE_VIEWER } from '@/src/lib/constants'
 import { useStore } from '@/src/store'
-import { loadSession } from '@/src/utils/scan'
+// import { loadSession } from '@/src/utils/scan'
 import MobileLayout from 'app/MobileLayout'
 
 // import { Query } from '../../out/__generated__/graphql'

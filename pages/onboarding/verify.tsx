@@ -5,30 +5,30 @@ import { useRouter } from 'next/router'
 
 import MobileLayout from '@/app/MobileLayout'
 import { TextButton } from '@/components/shared/TextButton'
-import { generateSession } from '@/src/utils/scan'
+// import { generateSession } from '@/src/utils/scan'
 
 export default function Verify() {
-  const toast = useToast()
-  const router = useRouter()
+  // const toast = useToast()
+  // const router = useRouter()
   // eslint-disable-next-line
   const [loading, setLoading] = useState(false)
-  const handleGenerateSession = async () => {
-    setLoading(true)
-    try {
-      const session = await generateSession()
-      console.log(session)
-      if (session) {
-        router.push('/onboarding/found')
-      } else {
-        setLoading(false)
-        toast({
-          title: 'Scanning Failed. Try again.',
-          status: 'error',
-          isClosable: true,
-        })
-      }
-    } catch (error) {}
-  }
+  // const handleGenerateSession = async () => {
+  //   setLoading(true)
+  //   try {
+  //     const session = await generateSession()
+  //     console.log(session)
+  //     if (session) {
+  //       router.push('/onboarding/found')
+  //     } else {
+  //       setLoading(false)
+  //       toast({
+  //         title: 'Scanning Failed. Try again.',
+  //         status: 'error',
+  //         isClosable: true,
+  //       })
+  //     }
+  //   } catch (error) {}
+  // }
   return (
     <MobileLayout>
       {/* eslint-disable-next-line */}
@@ -47,9 +47,9 @@ export default function Verify() {
       </Center>
       {/* <CoreButton isLoading={loading} size="xs" clickHandler={handleGenerateSession}> */}
       {/* <CoreButton isLoading={loading} size="xs" clickHandler={handleGenerateSession}> */}
-      <TextButton color="" clickHandler={handleGenerateSession}>
+      {/* <TextButton color="" clickHandler={handleGenerateSession}>
         Scan
-      </TextButton>
+      </TextButton> */}
       {/* </CoreButton> */}
     </MobileLayout>
   )
