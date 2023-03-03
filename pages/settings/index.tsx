@@ -7,22 +7,23 @@ import { useDebounce } from 'usehooks-ts'
 import { useAccount, useContractWrite, useNetwork, usePrepareContractWrite, useProvider, useSwitchNetwork, useWaitForTransaction } from 'wagmi'
 
 import { CoreButton } from '@/components/shared/CoreButton'
+import { mockPBTabi as abi } from '@/lib/constants'
 import WalletConnectCustom from '@/src/components/WalletConnectCustom'
 import { formatKeys, setScanVariables } from '@/src/utils/scan'
 import MobileLayout from 'app/MobileLayout'
 // import { PBT_ADDRESS } from 'config'
 
-import { abi as chipTableAbi } from '../../artifacts/contracts/src/ChipTable.sol/ChipTable.json'
-import { abi } from '../../artifacts/contracts/src/mocks/AmhoPBTMock.sol/AmhoPBTMock.json'
+// import { abi as chipTableAbi } from '../../artifacts/contracts/src/ChipTable.sol/ChipTable.json'
+// import { abi } from '../../artifacts/contracts/src/mocks/AmhoPBTMock.sol/AmhoPBTMock.json'
 
 export default function Setttings() {
   const toast = useToast()
-  const { address } = useAccount()
+  // const { address } = useAccount()
   const { chain } = useNetwork()
   const { switchNetwork } = useSwitchNetwork()
   // eslint-disable-next-line
   const [chipIds, setChipIds] = useState<string>()
-  const [sig] = useState<string>()
+  // const [sig] = useState<string>()
   const [keys, setKeys] = useState<string[]>([])
   const [numToSeed, setNumToSeed] = useState<number>(0)
   const debounceNumToSeed = useDebounce(numToSeed)
@@ -37,26 +38,26 @@ export default function Setttings() {
     chainId: chain?.id,
   })
 
-  const { config: registerChipConfig } = usePrepareContractWrite({
-    address: '0xB26A49dAD928C6A045e23f00683e3ee9F65dEB23',
-    abi: chipTableAbi,
-    functionName: 'addChipId',
-    args: [address, chipIds, sig],
-    enabled: !!address && !!chipIds && !!sig,
-    chainId: chain?.id,
-  })
+  // const { config: registerChipConfig } = usePrepareContractWrite({
+  //   address: '0xB26A49dAD928C6A045e23f00683e3ee9F65dEB23',
+  //   abi: chipTableAbi,
+  //   functionName: 'addChipId',
+  //   args: [address, chipIds, sig],
+  //   enabled: !!address && !!chipIds && !!sig,
+  //   chainId: chain?.id,
+  // })
 
   // eslint-disable-next-line
   const { write: seedWrite, data: seedData } = useContractWrite(seedChipConfig)
-  const { write: registerChipWrite } = useContractWrite(registerChipConfig)
+  // const { write: registerChipWrite } = useContractWrite(registerChipConfig)
 
   const debounceReq = useDebounce(seedChipConfig.request)
-  const debounceRegisterReq = useDebounce(registerChipConfig.request)
+  // const debounceRegisterReq = useDebounce(registerChipConfig.request)
 
-  useEffect(() => {
-    console.log(registerChipConfig)
-    registerChipWrite?.()
-  }, [debounceRegisterReq])
+  // useEffect(() => {
+  //   console.log(registerChipConfig)
+  //   registerChipWrite?.()
+  // }, [debounceRegisterReq])
 
   useEffect(() => {
     seedWrite?.()
