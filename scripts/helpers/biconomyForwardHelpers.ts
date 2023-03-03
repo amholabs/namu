@@ -481,7 +481,7 @@ const sendTransaction = async ({ userAddress, request, sig, domainSeparator, sig
         'Content-Type': 'application/json;charset=utf-8',
       },
       body: JSON.stringify({
-        to: process.env.PBT_ADDRESS,
+        to: process.env.NEXT_PUBLIC_PBT_ADDRESS,
         apiId: process.env.NEXT_PUBLIC_BICONOMY_API_ID,
         params: params,
         from: userAddress,

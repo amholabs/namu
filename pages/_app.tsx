@@ -196,7 +196,7 @@ export default function App({ Component, pageProps }: AppProps) {
       const biconomy = new Biconomy(wagmiProvider as ExternalProvider, {
         apiKey: process.env.NEXT_PUBLIC_BICONOMY_API_KEY as string,
         debug: true,
-        contractAddresses: [process.env.PBT_ADDRESS as string], // list of contract address you want to enable gasless on
+        contractAddresses: [process.env.NEXT_PUBLIC_PBT_ADDRESS as string], // list of contract address you want to enable gasless on
       })
       await biconomy.init()
     })()

@@ -30,7 +30,7 @@ export default function Setttings() {
 
   const { config: seedChipConfig } = usePrepareContractWrite({
     //@ts-ignore
-    address: process.env.PBT_ADDRESS,
+    address: process.env.NEXT_PUBLIC_PBT_ADDRESS,
     abi,
     functionName: 'seedChipAddresses',
     args: [keys, debounceNumToSeed],

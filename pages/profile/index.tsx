@@ -96,7 +96,7 @@ export default function Profile() {
   }, [finalizedTx])
 
   useContractRead({
-    address: process.env.PBT_ADDRESS as OxString,
+    address: process.env.NEXT_PUBLIC_PBT_ADDRESS as OxString,
     abi: PBTabi,
     functionName: 'getNonce',
     overrides: { from: address },
@@ -132,7 +132,7 @@ export default function Profile() {
         ? contractInterface.encodeFunctionData('mintTokenWithChip', [sigData, blockNum, nonce])
         : contractInterface.encodeFunctionData('mintTokenWithChip', [sigData, blockNum, nonce])
 
-      const to = process.env.PBT_ADDRESS as OxString
+      const to = process.env.NEXT_PUBLIC_PBT_ADDRESS as OxString
 
       let forwarder = await getBiconomyForwarderConfig(chain.id)
 
