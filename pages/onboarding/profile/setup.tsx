@@ -1,8 +1,8 @@
 import { useState } from 'react'
 
 import { Box, Button, Center, Flex, Heading, Text, VStack } from '@chakra-ui/react'
-import { ExecutionResult } from 'graphql'
-import { useRouter } from 'next/router'
+// import { ExecutionResult } from 'graphql'
+// import { useRouter } from 'next/router'
 import { SiBehance, SiDribbble, SiGithub, SiGumroad, SiInstagram, SiSubstack, SiTiktok, SiTwitter, SiYoutube } from 'react-icons/si'
 
 import { CoreButton } from '@/components/shared/CoreButton'
