@@ -20979,9 +20979,9 @@ pbkdf2@^3.0.17, pbkdf2@^3.0.3, pbkdf2@^3.0.9:
     safe-buffer "^5.0.1"
     sha.js "^2.4.8"
 
-"pbt-chip-client@github:nnons/pbt-chip-client":
+"pbt-chip-client@https://github.com/nnons/pbt-chip-client.git":
   version "0.0.4"
-  resolved "https://codeload.github.com/nnons/pbt-chip-client/tar.gz/475851a879fe7b65a71b7fd7995dd45e46c23eb1"
+  resolved "https://github.com/nnons/pbt-chip-client.git#475851a879fe7b65a71b7fd7995dd45e46c23eb1"
   dependencies:
     ethers "^5.7.2"
 

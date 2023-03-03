@@ -183,8 +183,8 @@ export default function App({ Component, pageProps }: AppProps) {
   const chains = ETH_CHAINS
   const _alchemyProvider: any =
     process.env.NODE_ENV === 'production'
-      ? alchemyProvider({ apiKey: process.env.NEXT_PUBLIC_ALCHEMY_API_KEY_goeETH as string })
-      : alchemyProvider({ apiKey: process.env.NEXT_PUBLIC_ALCHEMY_API_KEY_ETH as string })
+      ? alchemyProvider({ apiKey: process.env.NEXT_PUBLIC_ALCHEMY_API_KEY_ETH as string })
+      : alchemyProvider({ apiKey: process.env.NEXT_PUBLIC_ALCHEMY_API_KEY_goeETH as string })
 
   const { provider: wagmiProvider } = wagmi.configureChains(chains, [
     ethereum.walletConnectProvider({ projectId: process.env.NEXT_PUBLIC_WC_PROJECT_ID as string }),
