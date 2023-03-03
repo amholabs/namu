@@ -19,7 +19,6 @@ export default async function handler(req, res) {
   res=3046022100D5871CDE09C5AB891F4D023EC278DF8F1CE5B6970F478C825D812C946F15593B022100EA326B2683E212F34CF87C051CF0BA00BCD1530B72FE8D8754584F480C38ED3400000000`
   const example = `?v=c3`
   const parsed = parseURLParams(params)
-  console.log(parsed)
   // create a contract instance using the ENS_REGISTRY address and the ENS ABI
   // const contract = new ethers.Contract(ENS_REGISTRY, abi.abi, provider)
 
