@@ -6,47 +6,47 @@ import { useEffect } from 'react'
 
 import { Biconomy } from '@biconomy/mexa'
 import { ChakraProvider, extendTheme } from '@chakra-ui/react'
-import { ComposeClient } from '@composedb/client'
+// import { ComposeClient } from '@composedb/client'
 import { ExternalProvider } from '@ethersproject/providers'
 import * as ethereum from '@web3modal/ethereum'
 import { Web3Modal } from '@web3modal/react'
 import type { AppProps } from 'next/app'
 import * as wagmi from 'wagmi'
-import { goerli, localhost, mainnet, polygon, sepolia } from 'wagmi/chains'
+// import { goerli, localhost, mainnet, polygon, sepolia } from 'wagmi/chains'
 import { alchemyProvider } from 'wagmi/providers/alchemy'
-import { infuraProvider } from 'wagmi/providers/infura'
+// import { infuraProvider } from 'wagmi/providers/infura'
 
 import { ETH_CHAINS } from '@/lib/constants'
 import { Layout } from '@/src/components/layout'
 import { useIsMounted } from '@/src/hooks/useIsMounted'
 import Fonts from '@/src/lib/Fonts'
 import { WalletConnectProvider } from '@/src/providers/WalletConnect'
-import { useStore } from '@/src/store'
-import { PBT_ADDRESS } from 'config'
+// import { useStore } from '@/src/store'
+// import { PBT_ADDRESS } from 'config'
 
-import { definition } from '../out/__generated__/runtime'
+// import { definition } from '../out/__generated__/runtime'
 
 export default function App({ Component, pageProps }: AppProps) {
   const isMounted = useIsMounted()
-  let ceramicUrl
-  switch (process.env.NODE_ENV) {
-    case 'development':
-      ceramicUrl = ``
-      break
-    case 'test':
-      ceramicUrl = ``
-      break
-    case 'production':
-      ceramicUrl = 'https://amho.tv/'
-      break
-    default:
-      ceramicUrl = 'error: ceramic'
-      break
-  }
+  // let ceramicUrl
+  // switch (process.env.NODE_ENV) {
+  //   case 'development':
+  //     ceramicUrl = ``
+  //     break
+  //   case 'test':
+  //     ceramicUrl = ``
+  //     break
+  //   case 'production':
+  //     ceramicUrl = 'https://amho.tv/'
+  //     break
+  //   default:
+  //     ceramicUrl = 'error: ceramic'
+  //     break
+  // }
 
-  useStore.setState({
-    compose: new ComposeClient({ ceramic: process.env.NEXT_PUBLIC_CERAMIC_URL || ceramicUrl, definition }),
-  })
+  // useStore.setState({
+  //   compose: new ComposeClient({ ceramic: process.env.NEXT_PUBLIC_CERAMIC_URL || ceramicUrl, definition }),
+  // })
 
   const breakpoints = {
     sm: '30em',
@@ -196,7 +196,7 @@ export default function App({ Component, pageProps }: AppProps) {
       const biconomy = new Biconomy(wagmiProvider as ExternalProvider, {
         apiKey: process.env.NEXT_PUBLIC_BICONOMY_API_KEY as string,
         debug: true,
-        contractAddresses: [PBT_ADDRESS as string], // list of contract address you want to enable gasless on
+        contractAddresses: [process.env.PBT_ADDRESS as string], // list of contract address you want to enable gasless on
       })
       await biconomy.init()
     })()

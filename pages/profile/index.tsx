@@ -29,9 +29,11 @@ import { getSignatureFromScan } from 'pbt-chip-client/kong'
 import { useAccount, useContractRead, useNetwork, useProvider, useSignMessage, useSigner, useWaitForTransaction } from 'wagmi'
 
 import { CoreButton } from '@/components/shared/CoreButton'
-import { UrlLinkSocialType } from '@/out/__generated__/graphql'
-import { Profile as ProfileType, Query } from '@/out/__generated__/graphql'
-import { abi as PBTabi } from '@/out/AmhoPBTMock.sol/AmhoPBTMock.json'
+// import { UrlLinkSocialType } from '@/out/__generated__/graphql'
+// import { Profile as ProfileType, Query } from '@/out/__generated__/graphql'
+import { OxString } from '@/lib/types'
+// import { abi as PBTabi } from '@/out/AmhoPBTMock.sol/AmhoPBTMock.json'
+// import { abi as PBTabi } from '@/out/AmhoPBTMock.sol/AmhoPBTMock.json'
 import {
   BuildForwardTxRequestParams,
   buildForwardTxRequest,
@@ -40,12 +42,13 @@ import {
   sendTransaction,
 } from '@/scripts/helpers/biconomyForwardHelpers'
 import WalletConnectCustom from '@/src/components/WalletConnectCustom'
+import { PBTabi } from '@/src/lib/constants'
 import { MUTATE_CREATE_PROFILE } from '@/src/lib/constants'
 import { DUMMY_SOCIAL_LINKS, DUMMY_TOKEN_DATA } from '@/src/lib/dummy'
 import { useStore } from '@/src/store'
 import { formatKeys, setScanVariables } from '@/src/utils/scan'
 import MobileLayout from 'app/MobileLayout'
-import { PBT_ADDRESS } from 'config'
+// import { PBT_ADDRESS } from 'config'
 
 export default function Profile() {
   const provider = useProvider()
@@ -93,7 +96,7 @@ export default function Profile() {
   }, [finalizedTx])
 
   useContractRead({
-    address: PBT_ADDRESS,
+    address: process.env.PBT_ADDRESS as OxString,
     abi: PBTabi,
     functionName: 'getNonce',
     overrides: { from: address },
@@ -129,7 +132,7 @@ export default function Profile() {
         ? contractInterface.encodeFunctionData('mintTokenWithChip', [sigData, blockNum, nonce])
         : contractInterface.encodeFunctionData('mintTokenWithChip', [sigData, blockNum, nonce])
 
-      const to = PBT_ADDRESS
+      const to = process.env.PBT_ADDRESS as OxString
 
       let forwarder = await getBiconomyForwarderConfig(chain.id)
 
@@ -229,42 +232,42 @@ export default function Profile() {
 
   // const { open } = useWeb3Modal()
 
-  const [profile, setProfile] = useState<ProfileType>({
-    id: '',
-    name: '',
-    description: '',
-    walletAddresses: [{ address: '0x0', blockchainNetwork: 'ethereum' }],
-    image: '',
-  })
-  const compose = useStore.getState().compose
+  // const [profile, setProfile] = useState<ProfileType>({
+  //   id: '',
+  //   name: '',
+  //   description: '',
+  //   walletAddresses: [{ address: '0x0', blockchainNetwork: 'ethereum' }],
+  //   image: '',
+  // })
+  // const compose = useStore.getState().compose
 
   const handleNavigate = (uri: string) => {
     router.push(uri)
   }
 
   // eslint-disable-next-line unused-imports/no-unused-vars
-  const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setProfile({ ...profile, name: e.target.value })
-  }
+  // const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  //   setProfile({ ...profile, name: e.target.value })
+  // }
 
-  const handleProfileUpdate = async () => {
-    const { name } = profile
-    const output = await compose
-      .executeQuery(`${MUTATE_CREATE_PROFILE}`, {
-        i: {
-          content: {
-            name,
-            image: '',
-            description: '',
-            walletAddresses: { address: '0x0', blockchainNetwork: 'ethereum' },
-          },
-        },
-      })
-      .then((res) => {
-        console.log(res)
-      })
-    return output
-  }
+  // const handleProfileUpdate = async () => {
+  //   const { name } = profile
+  //   const output = await compose
+  //     .executeQuery(`${MUTATE_CREATE_PROFILE}`, {
+  //       i: {
+  //         content: {
+  //           name,
+  //           image: '',
+  //           description: '',
+  //           walletAddresses: { address: '0x0', blockchainNetwork: 'ethereum' },
+  //         },
+  //       },
+  //     })
+  //     .then((res) => {
+  //       console.log(res)
+  //     })
+  //   return output
+  // }
 
   return (
     <>
@@ -287,8 +290,8 @@ export default function Profile() {
                 // value={profile.name}
                 value="ENIGMA BAG"
                 width="auto"
-                onChange={handleNameChange}
-                onBlur={handleProfileUpdate}
+                // onChange={handleNameChange}
+                // onBlur={handleProfileUpdate}
               />
             </Heading>
             <Tag size="lg" variant="solid" color="white" bg="black">
@@ -307,11 +310,11 @@ export default function Profile() {
               size="sm"
               key={id}
               clickHandler={async () => {
-                if (data.type == UrlLinkSocialType.Base) {
+                if (data.priority == true) {
                   if (process.env.NODE_ENV === 'development') {
-                    await handleMintPrepareStage()
-                  } else {
                     await handleMintPrepare()
+                  } else {
+                    await handleMintPrepareStage()
                   }
                 } else {
                   handleNavigate(data.link)

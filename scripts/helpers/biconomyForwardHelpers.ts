@@ -3,7 +3,7 @@ import { ethers } from 'ethers'
 import { goerli } from 'wagmi'
 
 import { ETH_CHAINS } from '@/lib/constants'
-import { PBT_ADDRESS } from 'config'
+// import { PBT_ADDRESS } from 'config'
 
 type OxString = `0x${string}`
 
@@ -481,7 +481,7 @@ const sendTransaction = async ({ userAddress, request, sig, domainSeparator, sig
         'Content-Type': 'application/json;charset=utf-8',
       },
       body: JSON.stringify({
-        to: PBT_ADDRESS,
+        to: process.env.PBT_ADDRESS,
         apiId: process.env.NEXT_PUBLIC_BICONOMY_API_ID,
         params: params,
         from: userAddress,

@@ -13,73 +13,73 @@ import MobileLayout from 'app/MobileLayout'
 import { Query } from '../../out/__generated__/graphql'
 
 export default function Found() {
-  const compose = useStore.getState().compose
-  const router = useRouter()
+  // const compose = useStore.getState().compose
+  // const router = useRouter()
   const [no, setNo] = useState<boolean>(false)
-  const [found, setFound] = useState<boolean>(false)
+  // const [found, setFound] = useState<boolean>(false)
   const [name, setName] = useState<string>('')
-  const [image, setImage] = useState<string>('')
-  const [desc, setDesc] = useState<string>('')
-  const [loading, setLoading] = useState<boolean>(false)
-  const [walletAddresses] = useState<{ address: string; blockchainNetwork: 'ethereum' }[]>([{ address: '0x0', blockchainNetwork: 'ethereum' }])
+  // const [image, setImage] = useState<string>('')
+  // const [desc, setDesc] = useState<string>('')
+  // const [loading, setLoading] = useState<boolean>(false)
+  // const [walletAddresses] = useState<{ address: string; blockchainNetwork: 'ethereum' }[]>([{ address: '0x0', blockchainNetwork: 'ethereum' }])
 
-  const submitName = async () => {
-    setLoading(true)
-    if (found) {
-      setLoading(false)
-      router.push('/onboarding/profile/benefits')
-    }
-    await createProfile(name, desc, image, walletAddresses[0]).then((result: any) => {
-      if (result.data?.createProfile?.document?.name) {
-        const loadedName = result.data.createProfile?.document?.name
-        useStore.setState({ name: loadedName })
-        setLoading(false)
-        router.push('/onboarding/profile/benefits')
-      }
-      console.log('results: ', result)
-    })
-  }
+  // const submitName = async () => {
+  //   setLoading(true)
+  //   if (found) {
+  //     setLoading(false)
+  //     router.push('/onboarding/profile/benefits')
+  //   }
+  //   await createProfile(name, desc, image, walletAddresses[0]).then((result: any) => {
+  //     if (result.data?.createProfile?.document?.name) {
+  //       const loadedName = result.data.createProfile?.document?.name
+  //       useStore.setState({ name: loadedName })
+  //       setLoading(false)
+  //       router.push('/onboarding/profile/benefits')
+  //     }
+  //     console.log('results: ', result)
+  //   })
+  // }
 
-  useEffect(() => {
-    ;(async () => {
-      await loadSession()
-      const output = await queryProfile()
-      if (output.data?.viewer?.profile) {
-        setName(output.data?.viewer?.profile?.name)
-        setImage(output.data?.viewer?.profile?.image)
-        setDesc(output.data?.viewer?.profile?.description)
-        setFound(true)
-      } else {
-      }
-    })()
-  }, [])
+  // useEffect(() => {
+  //   ;(async () => {
+  //     await loadSession()
+  //     // const output = await queryProfile()
+  //     if (output.data?.viewer?.profile) {
+  //       setName(output.data?.viewer?.profile?.name)
+  //       setImage(output.data?.viewer?.profile?.image)
+  //       setDesc(output.data?.viewer?.profile?.description)
+  //       setFound(true)
+  //     } else {
+  //     }
+  //   })()
+  // }, [])
 
   // TODO: Check if profile exists, if not then create one
   // eslint-disable-next-line
-  const queryProfile = async (): Promise<ExecutionResult<Pick<Query, 'viewer'>>> => {
-    const output = compose.executeQuery(QUERY_PROFILE_VIEWER)
-    return output
-  }
+  // const queryProfile = async (): Promise<ExecutionResult<Pick<Query, 'viewer'>>> => {
+  //   // const output = compose.executeQuery(QUERY_PROFILE_VIEWER)
+  //   // return output
+  // }
 
   // eslint-disable-next-line
-  const createProfile = async (
-    name: string,
-    image: string,
-    description: string,
-    walletAddresses: { address: string; blockchainNetwork: 'ethereum' }
-  ) => {
-    const output = await compose.executeQuery(`${MUTATE_CREATE_PROFILE}`, {
-      i: {
-        content: {
-          name,
-          image,
-          description,
-          walletAddresses: walletAddresses,
-        },
-      },
-    })
-    return output
-  }
+  // const createProfile = async (
+  //   name: string,
+  //   image: string,
+  //   description: string,
+  //   walletAddresses: { address: string; blockchainNetwork: 'ethereum' }
+  // ) => {
+  //   const output = await compose.executeQuery(`${MUTATE_CREATE_PROFILE}`, {
+  //     i: {
+  //       content: {
+  //         name,
+  //         image,
+  //         description,
+  //         walletAddresses: walletAddresses,
+  //       },
+  //     },
+  //   })
+  //   return output
+  // }
 
   return (
     <MobileLayout>
@@ -135,18 +135,18 @@ export default function Found() {
               focusBorderColor="brand.900"
               placeholder="What is your name?"
             />
-            <CoreButton isLoading={loading} size="xs" clickHandler={submitName}>
+            {/* <CoreButton isLoading={loading} size="xs" clickHandler={submitName}>
               CONFIRM
-            </CoreButton>
+            </CoreButton> */}
           </VStack>
         ) : (
           <Flex alignItems="center" marginBottom="3rem">
             <Text fontSize="xs">Owner detected is 0xabc... you?</Text>
             <Spacer />
             <HStack spacing={5}>
-              <Text fontSize="sm" onClick={submitName} _hover={{ textDecoration: 'underline' }}>
+              {/* <Text fontSize="sm" onClick={submitName} _hover={{ textDecoration: 'underline' }}>
                 YES
-              </Text>
+              </Text> */}
               <Text fontSize="sm" onClick={() => setNo(true)} _hover={{ textDecoration: 'underline' }}>
                 NO
               </Text>

@@ -6,40 +6,40 @@ import { useRouter } from 'next/router'
 import { SiBehance, SiDribbble, SiGithub, SiGumroad, SiInstagram, SiSubstack, SiTiktok, SiTwitter, SiYoutube } from 'react-icons/si'
 
 import { CoreButton } from '@/components/shared/CoreButton'
-import { Query, UrlLinkSocialType } from '@/out/__generated__/graphql'
+// import { Query, UrlLinkSocialType } from '@/out/__generated__/graphql'
 import UrlLink from '@/src/components/app/UrlLink'
 import { MUTATE_CREATE_URLLINK, QUERY_URLLINK_VIEWER } from '@/src/lib/constants'
 import { useStore } from '@/src/store'
 import MobileLayout from 'app/MobileLayout'
 
 export default function Setup() {
-  const router = useRouter()
-  const compose = useStore.getState().compose
+  // const router = useRouter()
+  // const compose = useStore.getState().compose
   // eslint-disable-next-line
-  const createUrlLink = async (type: UrlLinkSocialType, title: string, link: string, profileId: string) => {
-    compose.executeQuery(`${MUTATE_CREATE_URLLINK}`, {
-      i: {
-        content: {
-          type,
-          title,
-          link,
-          profileId,
-        },
-      },
-    })
-  }
+  // const createUrlLink = async (type: UrlLinkSocialType, title: string, link: string, profileId: string) => {
+  // compose.executeQuery(`${MUTATE_CREATE_URLLINK}`, {
+  //   i: {
+  //     content: {
+  //       type,
+  //       title,
+  //       link,
+  //       profileId,
+  //     },
+  //   },
+  // })
+  // }
 
   // eslint-disable-next-line
-  const queryUrlLink = async (): Promise<ExecutionResult<Pick<Query, 'viewer'>>> => {
-    const output = compose.executeQuery(QUERY_URLLINK_VIEWER)
-    return output
-  }
+  // const queryUrlLink = async (): Promise<ExecutionResult<Pick<Query, 'viewer'>>> => {
+  //   // const output = compose.executeQuery(QUERY_URLLINK_VIEWER)
+  //   // return output
+  // }
   const name = useStore.getState().name
   const nameCapitalized = name.charAt(0).toUpperCase() + name.slice(1)
   const [isLoading, setLoading] = useState<boolean>(false)
-  const nextPage = (uri: string) => {
-    router.push(uri)
-  }
+  // const nextPage = (uri: string) => {
+  // router.push(uri)
+  // }
   return (
     <MobileLayout>
       <VStack align="stretch">
@@ -62,7 +62,7 @@ export default function Setup() {
             <CoreButton
               isLoading={isLoading}
               clickHandler={() => {
-                nextPage('/onboarding/profile/complete')
+                // nextPage('/onboarding/profile/complete')
                 setLoading(true)
               }}>
               SUBMIT
@@ -70,7 +70,7 @@ export default function Setup() {
           </Box>
           <Button
             onClick={() => {
-              nextPage('/onboarding/profile/complete')
+              // nextPage('/onboarding/profile/complete')
             }}
             size="xs"
             variant="unstyled">

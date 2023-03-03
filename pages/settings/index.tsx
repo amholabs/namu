@@ -10,7 +10,7 @@ import { CoreButton } from '@/components/shared/CoreButton'
 import WalletConnectCustom from '@/src/components/WalletConnectCustom'
 import { formatKeys, setScanVariables } from '@/src/utils/scan'
 import MobileLayout from 'app/MobileLayout'
-import { PBT_ADDRESS } from 'config'
+// import { PBT_ADDRESS } from 'config'
 
 import { abi as chipTableAbi } from '../../artifacts/contracts/src/ChipTable.sol/ChipTable.json'
 import { abi } from '../../artifacts/contracts/src/mocks/AmhoPBTMock.sol/AmhoPBTMock.json'
@@ -28,7 +28,8 @@ export default function Setttings() {
   const debounceNumToSeed = useDebounce(numToSeed)
 
   const { config: seedChipConfig } = usePrepareContractWrite({
-    address: PBT_ADDRESS,
+    //@ts-ignore
+    address: process.env.PBT_ADDRESS,
     abi,
     functionName: 'seedChipAddresses',
     args: [keys, debounceNumToSeed],
