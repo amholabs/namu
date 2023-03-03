@@ -134,6 +134,12 @@ export default function Profile() {
 
       const to = process.env.NEXT_PUBLIC_PBT_ADDRESS as OxString
 
+      const gasLimit = await provider.estimateGas({
+        to,
+        from: address,
+        data: functionSig,
+      })
+
       let forwarder = await getBiconomyForwarderConfig(chain.id)
 
       let forwarderContract = new ethers.Contract(forwarder.address, forwarder.abi, signer as ethers.Signer)
@@ -144,7 +150,7 @@ export default function Profile() {
       const requestConfig: BuildForwardTxRequestParams = {
         account: address,
         to,
-        gasLimitNum: 300000,
+        gasLimitNum: Number(gasLimit),
         batchId,
         batchNonce,
         data: functionSig,
