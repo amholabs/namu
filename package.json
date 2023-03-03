@@ -88,7 +88,7 @@
     "framer-motion": "^8.5.5",
     "global": "^4.4.0",
     "graphql": "^16.6.0",
-    "halo-chip": "github:nnons/halo-chip",
+    "halo-chip": "https://github.com/nnons/halo-chip.git",
     "hardhat-gas-reporter": "^1.0.9",
     "iron-session": "^6.3.1",
     "lokijs": "~1.5.12",

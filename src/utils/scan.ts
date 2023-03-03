@@ -63,41 +63,41 @@ export const loadAuthMethod = async (address: string, slot: string): Promise<Aut
   return authMethod
 }
 
-export const loadSession = async () => {
-  const compose = useStore.getState().compose
-  // const compose = new ComposeClient({ ceramic: 'https://amhocer.tunnelto.dev/', definition })
-  const { address, slot } = useStore.getState()
-  const sessionStr = localStorage.getItem('didsession')
+// export const loadSession = async () => {
+//   const compose = useStore.getState().compose
+//   // const compose = new ComposeClient({ ceramic: 'https://amhocer.tunnelto.dev/', definition })
+//   const { address, slot } = useStore.getState()
+//   const sessionStr = localStorage.getItem('didsession')
 
-  let session
-  let resources = compose.resources
+//   let session
+//   let resources = compose.resources
 
-  if (sessionStr) {
-    session = await DIDSession.fromSession(sessionStr)
-  }
+//   if (sessionStr) {
+//     session = await DIDSession.fromSession(sessionStr)
+//   }
 
-  if (!session || (session.hasSession && session.isExpired)) {
-    const authMethod = await loadAuthMethod(address, slot)
-    session = await DIDSession.authorize(authMethod, { resources })
-    // localStorage.setItem('didsession', session.serialize())
-  }
+//   if (!session || (session.hasSession && session.isExpired)) {
+//     const authMethod = await loadAuthMethod(address, slot)
+//     session = await DIDSession.authorize(authMethod, { resources })
+//     // localStorage.setItem('didsession', session.serialize())
+//   }
 
-  // compose.setDID(session.did)
-  // return session
-}
+//   // compose.setDID(session.did)
+//   // return session
+// }
 
-export const generateSession = async () => {
-  const compose = useStore.getState().compose
-  try {
-    const keys = await setScanVariables()
-    const { address, slot } = keys[0]
-    const resources = compose.resources
-    const authMethod = await loadAuthMethod(address, slot)
-    const session: any = await DIDSession.authorize(authMethod, { resources })
-    localStorage.setItem('didsession', session.serialize())
-    compose.setDID(session.did)
-    return session
-  } catch (err) {
-    return null
-  }
-}
+// export const generateSession = async () => {
+//   const compose = useStore.getState().compose
+//   try {
+//     const keys = await setScanVariables()
+//     const { address, slot } = keys[0]
+//     const resources = compose.resources
+//     const authMethod = await loadAuthMethod(address, slot)
+//     const session: any = await DIDSession.authorize(authMethod, { resources })
+//     localStorage.setItem('didsession', session.serialize())
+//     compose.setDID(session.did)
+//     return session
+//   } catch (err) {
+//     return null
+//   }
+// }

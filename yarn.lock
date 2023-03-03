@@ -15860,9 +15860,9 @@ gzip-size@^6.0.0:
   dependencies:
     duplexer "^0.1.2"
 
-"halo-chip@github:nnons/halo-chip":
+"halo-chip@https://github.com/nnons/halo-chip.git":
   version "0.2.0"
-  resolved "https://codeload.github.com/nnons/halo-chip/tar.gz/f244ba74dab2d22a34d1c2df6fee50eb0179f548"
+  resolved "https://github.com/nnons/halo-chip.git#979da2e9248f00ffae230a5bf0b594cc1623917c"
   dependencies:
     "@ethersproject/bytes" "^5.7.0"
     "@ethersproject/hash" "^5.7.0"
