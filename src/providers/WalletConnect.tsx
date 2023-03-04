@@ -1,7 +1,5 @@
 import { ReactNode } from 'react'
 
-import { EthereumClient, modalConnectors, walletConnectProvider } from '@web3modal/ethereum'
-import { Web3Modal } from '@web3modal/react'
 import * as wagmi from 'wagmi'
 
 interface Props {

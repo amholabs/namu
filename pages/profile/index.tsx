@@ -61,8 +61,8 @@ export default function Profile() {
   const [request, setRequest] = useState<any>()
   const [sig, setSig] = useState<string | null>(null)
   const [txHash, setTxHash] = useState<`0x${string}` | undefined>(undefined)
-  const [blockNum, setBlockNumber] = useState<number>(0)
-  const [nonce, setNonce] = useState<number>(0)
+  const [blockNum, setBlockNumber] = useState<number | null>(null)
+  const [nonce, setNonce] = useState<number | null>(null)
   const [dataSigned, setDataSigned] = useState<string | Uint8Array>()
 
   const {
@@ -95,17 +95,27 @@ export default function Profile() {
     }
   }, [finalizedTx])
 
-  useContractRead({
+  const { data: getNonceData, isSuccess: getNonceSuccess } = useContractRead({
     address: process.env.NEXT_PUBLIC_PBT_ADDRESS as OxString,
     abi: PBTabi,
     functionName: 'getNonce',
     overrides: { from: address },
-    onSuccess(data) {
-      const toNum = BigNumber.from(data)
+  })
+
+  // const { writeAsync: mintWrite } = useContractWrite({
+  //   mode: 'recklesslyUnprepared',
+  //   address: process.env.NEXT_PUBLIC_PBT_ADDRESS as OxString,
+  //   abi: PBTabi,
+  //   functionName: 'mintTokenWithChip',
+  //   args: [sig, blockNum, nonce, { gasLimit: 300000 }],
+  // })
+  useEffect(() => {
+    if (getNonceSuccess) {
+      const toNum = BigNumber.from(getNonceData)
       console.log(toNum.toNumber())
       setNonce(toNum.toNumber())
-    },
-  })
+    }
+  }, [getNonceSuccess])
 
   useEffect(() => {
     ;(async () => {
@@ -125,12 +135,10 @@ export default function Profile() {
   }, [dataSigned])
 
   const buildRequestForGasless = async (sigData?: any) => {
-    if (chain) {
+    if (sigData && chain && blockNum && nonce) {
       const contractInterface = new ethers.utils.Interface(PBTabi)
 
-      const functionSig = sigData
-        ? contractInterface.encodeFunctionData('mintTokenWithChip', [sigData, blockNum, nonce])
-        : contractInterface.encodeFunctionData('mintTokenWithChip', [sigData, blockNum, nonce])
+      const functionSig = sigData && contractInterface.encodeFunctionData('mintTokenWithChip', [sigData, blockNum, nonce])
 
       const to = process.env.NEXT_PUBLIC_PBT_ADDRESS as OxString
 
@@ -202,7 +210,7 @@ export default function Profile() {
     await provider.getBlock('latest').then(async (block) => {
       setBlockNumber(block.number)
       await setScanVariables().then((keys) => {
-        if (address && keys) {
+        if (address && keys && nonce) {
           const { hashedKeysAddresses } = formatKeys(keys)
           keyRaw = hashedKeysAddresses[0].slice(2)
           const cpKeyRaw = keyRaw
