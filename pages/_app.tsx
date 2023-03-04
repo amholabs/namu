@@ -55,6 +55,7 @@ export default function App({ Component, pageProps }: AppProps) {
     xl: '80em',
     '2xl': '96em',
   }
+
   const theme = extendTheme({
     config: { initialColorMode: 'light' },
     breakpoints,

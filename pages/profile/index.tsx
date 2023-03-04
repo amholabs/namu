@@ -26,7 +26,7 @@ import { parseURLParamsWithoutLatch } from 'halo-chip'
 import { useRouter } from 'next/router'
 import { getSignatureFromScan } from 'pbt-chip-client/kong'
 // eslint-disable-next-line import/order
-import { useAccount, useContractRead, useNetwork, useProvider, useSignMessage, useSigner, useWaitForTransaction } from 'wagmi'
+import { useAccount, useContractRead, useContractWrite, useNetwork, useProvider, useSignMessage, useSigner, useWaitForTransaction } from 'wagmi'
 
 import { CoreButton } from '@/components/shared/CoreButton'
 // import { UrlLinkSocialType } from '@/out/__generated__/graphql'
@@ -76,6 +76,14 @@ export default function Profile() {
     const initSendTransaction = async () => {
       const hash = await sendTransaction({ userAddress: address, request, sig: signMessageData, signatureType: 'PERSONAL_SIGN' })
       setTxHash(hash)
+      if (hash) {
+        onClose()
+        toast({
+          title: 'Mint Success',
+          status: 'success',
+          isClosable: true,
+        })
+      }
     }
     signMessageSuccess && initSendTransaction()
   }, [signMessageSuccess])
@@ -95,27 +103,53 @@ export default function Profile() {
     }
   }, [finalizedTx])
 
-  const { data: getNonceData, isSuccess: getNonceSuccess } = useContractRead({
+  const {
+    // data: getNonceData,
+    // isSuccess: getNonceSuccess,
+    refetch: fetchNonce,
+  } = useContractRead({
     address: process.env.NEXT_PUBLIC_PBT_ADDRESS as OxString,
     abi: PBTabi,
     functionName: 'getNonce',
     overrides: { from: address },
+    onSuccess(data) {
+      const toNum = BigNumber.from(data)
+      const nonce = toNum.toNumber()
+      setNonce(nonce)
+    },
   })
 
-  // const { writeAsync: mintWrite } = useContractWrite({
-  //   mode: 'recklesslyUnprepared',
-  //   address: process.env.NEXT_PUBLIC_PBT_ADDRESS as OxString,
-  //   abi: PBTabi,
-  //   functionName: 'mintTokenWithChip',
-  //   args: [sig, blockNum, nonce, { gasLimit: 300000 }],
-  // })
+  const {
+    // writeAsync: mintWrite,
+    data: writeData,
+    isSuccess: writeSuccess,
+  } = useContractWrite({
+    mode: 'recklesslyUnprepared',
+    address: process.env.NEXT_PUBLIC_PBT_ADDRESS as OxString,
+    abi: PBTabi,
+    functionName: 'mintTokenWithChip',
+    args: [sig, blockNum, nonce, { gasLimit: 300000 }],
+  })
+
   useEffect(() => {
-    if (getNonceSuccess) {
-      const toNum = BigNumber.from(getNonceData)
-      console.log(toNum.toNumber())
-      setNonce(toNum.toNumber())
+    if (writeSuccess && writeData) {
+      onClose()
+      toast({
+        title: 'Mint Success',
+        status: 'success',
+        isClosable: true,
+      })
+      setTxHash(writeData.hash)
     }
-  }, [getNonceSuccess])
+  }, [writeSuccess])
+
+  // useEffect(() => {
+  //   if (getNonceSuccess) {
+  //     const toNum = BigNumber.from(getNonceData)
+  //     console.log(toNum.toNumber())
+  //     setNonce(toNum.toNumber())
+  //   }
+  // }, [getNonceSuccess])
 
   useEffect(() => {
     ;(async () => {
@@ -135,7 +169,11 @@ export default function Profile() {
   }, [dataSigned])
 
   const buildRequestForGasless = async (sigData?: any) => {
-    if (sigData && chain && blockNum && nonce) {
+    if (sigData && chain && blockNum) {
+      const { data } = await fetchNonce()
+      const toNum = BigNumber.from(data)
+      const nonce = toNum.toNumber()
+
       const contractInterface = new ethers.utils.Interface(PBTabi)
 
       const functionSig = sigData && contractInterface.encodeFunctionData('mintTokenWithChip', [sigData, blockNum, nonce])
@@ -178,7 +216,10 @@ export default function Profile() {
     let keyRaw = ''
     await provider.getBlock('latest').then(async (block) => {
       setBlockNumber(block.number)
-      const { keys } = await parseURLParamsWithoutLatch(query)
+      const { data } = await fetchNonce()
+      const toNum = BigNumber.from(data)
+      const nonce = toNum.toNumber()
+      const { keys } = parseURLParamsWithoutLatch(query)
       if (address) {
         keyRaw = keys[0].key.slice(2)
         const cpKeyRaw = keyRaw
@@ -209,11 +250,19 @@ export default function Profile() {
     let keyRaw = ''
     await provider.getBlock('latest').then(async (block) => {
       setBlockNumber(block.number)
+      const { data } = await fetchNonce()
+      const toNum = BigNumber.from(data)
+      const nonce = toNum.toNumber()
+
       await setScanVariables().then((keys) => {
         if (address && keys && nonce) {
           const { hashedKeysAddresses } = formatKeys(keys)
           keyRaw = hashedKeysAddresses[0].slice(2)
           const cpKeyRaw = keyRaw
+          console.log('raw key', cpKeyRaw)
+          console.log('address', address)
+          console.log('block hash', block.hash)
+          console.log('nonce', nonce)
           getSignatureFromScan({
             chipPublicKey: cpKeyRaw,
             address: address,
