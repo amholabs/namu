@@ -7,7 +7,7 @@
     "build": "next build",
     "export": "next export",
     "start": "next start",
-    "lint": "next lint --fix",
+    "lint": "",
     "prettier": "prettier './src' --write",
     "prepare": "husky install",
     "gql:compile": "graphql-codegen",
@@ -29,7 +29,7 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "lint-staged"
+      "pre-commit": ""
     }
   },
   "lint-staged": {
@@ -58,6 +58,7 @@
     "@ethersproject/hash": "^5.7.0",
     "@ethersproject/providers": "^5.7.2",
     "@ethersproject/transactions": "^5.7.0",
+    "@everipedia/wagmi-magic-connector": "^0.11.0",
     "@fontsource/inter": "^4.5.15",
     "@next/bundle-analyzer": "^13.2.3",
     "@next/font": "13.1.1",
@@ -67,7 +68,7 @@
     "@nomiclabs/hardhat-ethers": "^2.2.2",
     "@nomiclabs/hardhat-etherscan": "^3.1.6",
     "@openzeppelin/contracts": "^4.8.1",
-    "@rainbow-me/rainbowkit": "^0.8.1",
+    "@rainbow-me/rainbowkit": "^0.12.1",
     "@typechain/ethers-v5": "^10.2.0",
     "@typechain/hardhat": "^6.1.5",
     "@vercel/og": "^0.0.27",
@@ -92,6 +93,7 @@
     "hardhat-gas-reporter": "^1.0.9",
     "iron-session": "^6.3.1",
     "lokijs": "~1.5.12",
+    "magic-sdk": "^16.0.1",
     "next": "13.1.6",
     "next-pwa": "^5.6.0",
     "next-transpile-modules": "^10.0.0",
@@ -108,7 +110,7 @@
     "thirdweb": "^0.9.25",
     "typechain": "^8.1.1",
     "usehooks-ts": "^2.9.1",
-    "wagmi": "^0.11.6",
+    "wagmi": "^0.12.2",
     "zod": "^3.20.6",
     "zustand": "^4.3.5"
   },

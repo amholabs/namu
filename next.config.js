@@ -1,5 +1,6 @@
 /** @type {import('next').NextConfig} */
 // const withTM = require('next-transpile-modules')(['halo-chip', 'fs'])
+const runtimeCaching = require('next-pwa/cache')
 const withPWA = require('next-pwa')({
   dest: 'public',
   disable: true,
@@ -8,7 +9,9 @@ const withPWA = require('next-pwa')({
 })
 
 const nextConfig = {
+  runtimeCaching,
   reactStrictMode: true,
+  buildExcludes: [/app-build-manifest.json$/],
   transpilePackages: ['halo-chip', 'fs'],
   env: {
     mode: process.env.NODE_ENV,

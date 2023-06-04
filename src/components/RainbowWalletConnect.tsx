@@ -9,19 +9,19 @@ import { ConnectButton } from '@rainbow-me/rainbowkit'
 
 export const WalletConnect = () => {
   return (
-    <Flex>
-      <ConnectButton
-        showBalance={false}
-        accountStatus={{
-          smallScreen: 'avatar',
-          largeScreen: 'avatar',
-        }}
-        chainStatus={{
-          smallScreen: 'icon',
-          largeScreen: 'icon',
-        }}
-      />
-    </Flex>
+    // <Flex>
+    <ConnectButton
+      showBalance={false}
+      accountStatus={{
+        smallScreen: 'avatar',
+        largeScreen: 'avatar',
+      }}
+      chainStatus={{
+        smallScreen: 'icon',
+        largeScreen: 'icon',
+      }}
+    />
+    // </Flex>
   )
 }
 

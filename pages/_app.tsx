@@ -1,4 +1,5 @@
 import './app.css'
+import '@rainbow-me/rainbowkit/styles.css'
 
 import '@fontsource/inter/700.css'
 
@@ -8,9 +9,14 @@ import { Biconomy } from '@biconomy/mexa'
 import { ChakraProvider, extendTheme } from '@chakra-ui/react'
 // import { ComposeClient } from '@composedb/client'
 import { ExternalProvider } from '@ethersproject/providers'
+import { MagicConnectConnector } from '@everipedia/wagmi-magic-connector'
+import { RainbowKitProvider, connectorsForWallets } from '@rainbow-me/rainbowkit'
+import { injectedWallet, rainbowWallet } from '@rainbow-me/rainbowkit/wallets'
 import * as ethereum from '@web3modal/ethereum'
 import { Web3Modal } from '@web3modal/react'
+import { Magic } from 'magic-sdk'
 import type { AppProps } from 'next/app'
+import { WagmiConfig } from 'wagmi'
 import * as wagmi from 'wagmi'
 // import { goerli, localhost, mainnet, polygon, sepolia } from 'wagmi/chains'
 import { alchemyProvider } from 'wagmi/providers/alchemy'
@@ -18,9 +24,11 @@ import { alchemyProvider } from 'wagmi/providers/alchemy'
 
 import { ETH_CHAINS } from '@/lib/constants'
 import { Layout } from '@/src/components/layout'
+import { rainbowMagicConnector } from '@/src/connectors/RainbowMagicConnector'
 import { useIsMounted } from '@/src/hooks/useIsMounted'
 import Fonts from '@/src/lib/Fonts'
 import { WalletConnectProvider } from '@/src/providers/WalletConnect'
+import { useStore } from '@/src/store'
 // import { useStore } from '@/src/store'
 // import { PBT_ADDRESS } from 'config'
 
@@ -194,7 +202,7 @@ export default function App({ Component, pageProps }: AppProps) {
 
   useEffect(() => {
     ;(async () => {
-      const biconomy = new Biconomy(wagmiProvider as ExternalProvider, {
+      const biconomy = new Biconomy(window.ethereum as ExternalProvider, {
         apiKey: process.env.NEXT_PUBLIC_BICONOMY_API_KEY as string,
         debug: true,
         contractAddresses: [process.env.NEXT_PUBLIC_PBT_ADDRESS as string], // list of contract address you want to enable gasless on
@@ -203,26 +211,43 @@ export default function App({ Component, pageProps }: AppProps) {
     })()
   }, [])
 
+  const connectors = connectorsForWallets([
+    {
+      groupName: 'Recommended',
+      // @ts-ignore
+      // wallets: [rainbowWallet({ chains })],
+      wallets: [rainbowMagicConnector({ chains })],
+    },
+  ])
+
   const wagmiClient = wagmi.createClient({
     autoConnect: true,
-    connectors: ethereum.modalConnectors({ appName: 'AMHO', chains }),
+    connectors,
+    // connectors: ethereum.modalConnectors({ appName: 'AMHO', chains }),
     provider: wagmiProvider,
   })
-  const projectId = process.env.NEXT_PUBLIC_WC_PROJECT_ID as string
-  const ethereumClient = new ethereum.EthereumClient(wagmiClient, chains)
+
+  // const projectId = process.env.NEXT_PUBLIC_WC_PROJECT_ID as string
+  // const ethereumClient = new ethereum.EthereumClient(wagmiClient, chains)
+
+  // Magic Link Configuration
   return (
     <>
       {isMounted && (
         <ChakraProvider theme={theme}>
           <Fonts />
-          <WalletConnectProvider client={wagmiClient}>
+          {/* <WalletConnectProvider client={wagmiClient}> */}
+          <WagmiConfig client={wagmiClient}>
             <Layout>
-              <Component {...pageProps} />
+              <RainbowKitProvider chains={chains}>
+                <Component {...pageProps} />
+              </RainbowKitProvider>
             </Layout>
-          </WalletConnectProvider>
+            {/* </WalletConnectProvider> */}
+          </WagmiConfig>
         </ChakraProvider>
       )}
-      <Web3Modal themeMode="dark" themeColor="blackWhite" themeBackground="themeColor" projectId={projectId} ethereumClient={ethereumClient} />
+      {/* <Web3Modal themeMode="dark" themeColor="blackWhite" themeBackground="themeColor" projectId={projectId} ethereumClient={ethereumClient} /> */}
     </>
   )
 }

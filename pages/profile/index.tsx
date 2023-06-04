@@ -19,18 +19,22 @@ import {
   useDisclosure,
   useToast,
 } from '@chakra-ui/react'
+import { ConnectButton } from '@rainbow-me/rainbowkit'
 import { ethers } from 'ethers'
 import { BigNumber } from 'ethers'
 // @ts-ignore
 import { parseURLParamsWithoutLatch } from 'halo-chip'
+import { Magic } from 'magic-sdk'
 import { useRouter } from 'next/router'
 import { getSignatureFromScan } from 'pbt-chip-client/kong'
 // eslint-disable-next-line import/order
 import { useAccount, useContractRead, useContractWrite, useNetwork, useProvider, useSignMessage, useSigner, useWaitForTransaction } from 'wagmi'
 
+import RainbowWalletConnectCustom from '@/components/RainbowWalletConnectCustom'
 import { CoreButton } from '@/components/shared/CoreButton'
 // import { UrlLinkSocialType } from '@/out/__generated__/graphql'
 // import { Profile as ProfileType, Query } from '@/out/__generated__/graphql'
+import WalletConnectCustom from '@/components/WalletConnectCustom'
 import { OxString } from '@/lib/types'
 // import { abi as PBTabi } from '@/out/AmhoPBTMock.sol/AmhoPBTMock.json'
 // import { abi as PBTabi } from '@/out/AmhoPBTMock.sol/AmhoPBTMock.json'
@@ -41,21 +45,21 @@ import {
   getDataToSignForPersonalSign,
   sendTransaction,
 } from '@/scripts/helpers/biconomyForwardHelpers'
-import WalletConnectCustom from '@/src/components/WalletConnectCustom'
 import { PBTabi } from '@/src/lib/constants'
 import { MUTATE_CREATE_PROFILE } from '@/src/lib/constants'
 import { DUMMY_SOCIAL_LINKS, DUMMY_TOKEN_DATA } from '@/src/lib/dummy'
 import { useStore } from '@/src/store'
 import { formatKeys, setScanVariables } from '@/src/utils/scan'
 import MobileLayout from 'app/MobileLayout'
+// import RainbowWalletConnect from '@/components/RainbowWalletConnect'
 // import { PBT_ADDRESS } from 'config'
 
 export default function Profile() {
-  const provider = useProvider()
+  // const provider = useProvider()
   const router = useRouter()
   const toast = useToast()
   const { data: signer } = useSigner()
-  const { isOpen, onOpen, onClose } = useDisclosure()
+  const { isOpen, onClose } = useDisclosure()
   const { chain } = useNetwork()
   const { address } = useAccount()
   const [request, setRequest] = useState<any>()
@@ -175,15 +179,10 @@ export default function Profile() {
       const nonce = toNum.toNumber()
 
       const contractInterface = new ethers.utils.Interface(PBTabi)
-
       const functionSig = sigData && contractInterface.encodeFunctionData('mintTokenWithChip', [sigData, blockNum, nonce])
-
       const to = process.env.NEXT_PUBLIC_PBT_ADDRESS as OxString
-
-      let forwarder = await getBiconomyForwarderConfig(chain.id)
-
-      let forwarderContract = new ethers.Contract(forwarder.address, forwarder.abi, signer as ethers.Signer)
-
+      const forwarder = await getBiconomyForwarderConfig(chain.id)
+      const forwarderContract = new ethers.Contract(forwarder.address, forwarder.abi, signer as ethers.Signer)
       const batchNonce = await forwarderContract.getNonce(address, 0)
       const batchId = 0
 
@@ -206,86 +205,87 @@ export default function Profile() {
     }
   }
 
-  const resetVariables = () => {
-    setSig(null)
-    setBlockNumber(0)
-  }
+  // const resetVariables = () => {
+  //   setSig(null)
+  //   setBlockNumber(0)
+  // }
 
-  const handleMintPrepareStage = async () => {
-    const query = router.query
-    let keyRaw = ''
-    await provider.getBlock('latest').then(async (block) => {
-      setBlockNumber(block.number)
-      const { data } = await fetchNonce()
-      const toNum = BigNumber.from(data)
-      const nonce = toNum.toNumber()
-      const { keys } = parseURLParamsWithoutLatch(query)
-      if (address) {
-        keyRaw = keys[0].key.slice(2)
-        const cpKeyRaw = keyRaw
-        getSignatureFromScan({
-          chipPublicKey: cpKeyRaw,
-          address: address,
-          hash: block.hash,
-          nonce,
-        }).then((data: any) => {
-          if (data) {
-            setSig(data)
-            onOpen()
-          }
-        })
-      } else {
-        resetVariables()
-        toast({
-          title: 'Error',
-          description: 'Cannot mint. Try again.',
-          status: 'error',
-          isClosable: true,
-        })
-      }
-    })
-  }
+  // const handleMintPrepareStage = async () => {
+  //   const query = router.query
+  //   let keyRaw = ''
+  //   await provider.getBlock('latest').then(async (block) => {
+  //     setBlockNumber(block.number)
+  //     const { data } = await fetchNonce()
+  //     const toNum = BigNumber.from(data)
+  //     const nonce = toNum.toNumber()
+  //     const { keys } = parseURLParamsWithoutLatch(query)
+  //     console.log(keys)
+  //     if (address) {
+  //       keyRaw = keys[0].key.slice(2)
+  //       const cpKeyRaw = keyRaw
+  //       getSignatureFromScan({
+  //         chipPublicKey: cpKeyRaw,
+  //         address: address,
+  //         hash: block.hash,
+  //         nonce,
+  //       }).then((data: any) => {
+  //         if (data) {
+  //           setSig(data)
+  //           onOpen()
+  //         }
+  //       })
+  //     } else {
+  //       resetVariables()
+  //       toast({
+  //         title: 'Error',
+  //         description: 'Cannot mint. Try again.',
+  //         status: 'error',
+  //         isClosable: true,
+  //       })
+  //     }
+  //   })
+  // }
 
-  const handleMintPrepare = async () => {
-    let keyRaw = ''
-    await provider.getBlock('latest').then(async (block) => {
-      setBlockNumber(block.number)
-      const { data } = await fetchNonce()
-      const toNum = BigNumber.from(data)
-      const nonce = toNum.toNumber()
+  // const handleMintPrepare = async () => {
+  //   let keyRaw = ''
+  //   await provider.getBlock('latest').then(async (block) => {
+  //     setBlockNumber(block.number)
+  //     const { data } = await fetchNonce()
+  //     const toNum = BigNumber.from(data)
+  //     const nonce = toNum.toNumber()
 
-      await setScanVariables().then((keys) => {
-        if (address && keys && nonce) {
-          const { hashedKeysAddresses } = formatKeys(keys)
-          keyRaw = hashedKeysAddresses[0].slice(2)
-          const cpKeyRaw = keyRaw
-          console.log('raw key', cpKeyRaw)
-          console.log('address', address)
-          console.log('block hash', block.hash)
-          console.log('nonce', nonce)
-          getSignatureFromScan({
-            chipPublicKey: cpKeyRaw,
-            address: address,
-            hash: block.hash,
-            nonce,
-          }).then((data: any) => {
-            if (data) {
-              setSig(data)
-              onOpen()
-            }
-          })
-        } else {
-          resetVariables()
-          toast({
-            title: 'Error',
-            description: 'Cannot mint. Try again.',
-            status: 'error',
-            isClosable: true,
-          })
-        }
-      })
-    })
-  }
+  //     await setScanVariables().then((keys) => {
+  //       if (address && keys && nonce) {
+  //         const { hashedKeysAddresses } = formatKeys(keys)
+  //         keyRaw = hashedKeysAddresses[0].slice(2)
+  //         const cpKeyRaw = keyRaw
+  //         console.log('raw key', cpKeyRaw)
+  //         console.log('address', address)
+  //         console.log('block hash', block.hash)
+  //         console.log('nonce', nonce)
+  //         getSignatureFromScan({
+  //           chipPublicKey: cpKeyRaw,
+  //           address: address,
+  //           hash: block.hash,
+  //           nonce,
+  //         }).then((data: any) => {
+  //           if (data) {
+  //             setSig(data)
+  //             onOpen()
+  //           }
+  //         })
+  //       } else {
+  //         resetVariables()
+  //         toast({
+  //           title: 'Error',
+  //           description: 'Cannot mint. Try again.',
+  //           status: 'error',
+  //           isClosable: true,
+  //         })
+  //       }
+  //     })
+  //   })
+  // }
 
   // const { open } = useWeb3Modal()
 
@@ -296,11 +296,16 @@ export default function Profile() {
   //   walletAddresses: [{ address: '0x0', blockchainNetwork: 'ethereum' }],
   //   image: '',
   // })
-  // const compose = useStore.getState().compose
-
   const handleNavigate = (uri: string) => {
     router.push(uri)
   }
+
+  // const handleConnect = async () => {
+  //   const magic = new Magic(process.env.NEXT_PUBLIC_MAGIC_API_KEY as string, {
+  //     network: 'goerli',
+  //   })
+  //   await magic.wallet.connectWithUI()
+  // }
 
   // eslint-disable-next-line unused-imports/no-unused-vars
   // const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -358,7 +363,9 @@ export default function Profile() {
         </Center>
         <Center paddingTop="2rem" paddingBottom="2.0rem">
           <HStack spacing="5">
-            <WalletConnectCustom />
+            {/* <WalletConnectCustom /> */}
+            <RainbowWalletConnectCustom labelConnect="CONNECT" />
+            {/* <ConnectButton /> */}
           </HStack>
         </Center>
         <VStack spacing={3}>
@@ -369,9 +376,9 @@ export default function Profile() {
               clickHandler={async () => {
                 if (data.priority == true) {
                   if (process.env.NODE_ENV === 'development') {
-                    await handleMintPrepare()
+                    // await handleMintPrepareStage()
                   } else {
-                    await handleMintPrepareStage()
+                    // await handleMintPrepare()
                   }
                 } else {
                   handleNavigate(data.link)
